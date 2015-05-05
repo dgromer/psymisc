@@ -1,0 +1,8 @@
+Package: psymisc
+Type: Package
+Title: Miscellaneous functions for psychologists
+Version: 0.1.0
+Date: 2015-03-04
+Authors@R: person("Daniel", "Gromer", role = c("aut", "cre"), email = "dgromer@mailbox.org")
+Description: More about what it does (maybe more than one line)
+License: GPL (>= 2)
