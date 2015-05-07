@@ -3,6 +3,7 @@
 S3method(t_test,default)
 S3method(t_test,formula)
 export(ds)
+export(recode)
 export(se)
 export(t_test)
 import(dplyr)

@@ -5,6 +5,7 @@ psymisc is an R package that provides some useful functions for psychologists th
 ## Functions
 
 -   `ds()`: An alternative to `aggregate` for descriptive statistics
+-   `recode()`: Recode variables
 -   `se()`: Standard error
 -   `t_test()`: A wrapper for `t.test()` that includes sample sizes in its return value
 
