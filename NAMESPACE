@@ -2,8 +2,11 @@
 
 S3method(t_test,default)
 S3method(t_test,formula)
+export(chisq_apa)
+export(cor_apa)
 export(ds)
 export(recode)
 export(se)
 export(t_test)
 import(dplyr)
+importFrom(rmarkdown,render)
