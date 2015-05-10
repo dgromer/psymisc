@@ -18,7 +18,8 @@ t_test.default <- function(x, y = NULL,
   t <- t.test(x = x, y = y, alternative = alternative, mu = mu, paired = paired,
               var.equal = var.equal, conf.level = conf.level, ...)
   
-  t$n <- c(length(x), ifelse(!is.null(y), length(y), integer(0)))
+  t[["data"]]$x <- x
+  t[["data"]]$y <- y
   
   t
 }
@@ -29,7 +30,8 @@ t_test.formula <- function(formula, data, subset, na.action, ...)
 { 
   t <- t.test(formula = formula, data = data, ...)
   
-  t$n <- as.numeric(table(model.frame(formula, data)[2]))
+  mf <- model.frame(formula, data)
+  t$data <- setNames(split(mf[[1]], mf[[2]]), c("x", "y"))
   
   t
 }

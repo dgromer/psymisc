@@ -4,11 +4,12 @@ psymisc is an R package that provides some useful functions for psychologists th
 
 ## Functions
 
--   `ds()`: An alternative to `aggregate` for descriptive statistics
--   `recode()`: Recode variables
--   `se()`: Standard error
--   `t_test()`: A wrapper for `t.test()` that includes sample sizes in its return value
--   `*_apa()`: A set of functions for formatting statistical output ready to copy-and-paste into manuscripts (supports Text, Markdown, RMarkdown, LaTeX and Word). Currently available methods are `chisq_apa` and `cor_apa`.
+-   `cohens_d()`: Calculate Cohen's d effect size.
+-   `ds()`: An alternative to `aggregate()` for descriptive statistics. It wraps `dplyr::group_by` and `dplyr::sumarise` into a convenient formula interface.
+-   `recode()`: Recode variables based on multiple rules.
+-   `se()`: Standard error, SE = SD(x) / sqrt(n)
+-   `t_test()`: A wrapper for `t.test()` that includes the original data in its return list.
+-   `*_apa()`: A set of functions for formatting statistical output ready to copy-and-paste into manuscripts (supports Text, Markdown, RMarkdown, LaTeX and Word). Currently available methods are `chisq_apa()`, `cor_apa()` and `t_apa()`.
 
 
 ## Installation

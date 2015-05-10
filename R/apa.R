@@ -4,7 +4,7 @@
 #' @param x a call to \code{chisq.test}
 #' @param print_n logical indicating whether to show sample size in text
 #' @param format character specifying the output format, one of \code{"text"},
-#'   \code{"latex"}, \code{"markdown"}, \code{rmarkdown} or \code{"word"}
+#'   \code{"latex"}, \code{"markdown"}, \code{"rmarkdown"} or \code{"docx"}.
 #' @param info logical indicating whether to print a message on the used test
 #'   (default is \code{FALSE})
 #' 
@@ -16,10 +16,10 @@ chisq_apa <- function(x, print_n = FALSE, format = "text", info = FALSE)
     stop("`x` must be a call to `chisq.test`")
   }
   
-  statistic <- test_statistic_apa(x$statistic)
+  statistic <- fmt_stat(x$statistic)
   df <- x$parameter
   n <- ifelse(print_n, paste(", n =", sum(x$observed)), "")
-  p <- pvalue_apa(x$p.value)
+  p <- fmt_pval(x$p.value)
   
   if (info) message(x$method)
   
@@ -39,14 +39,28 @@ chisq_apa <- function(x, print_n = FALSE, format = "text", info = FALSE)
   {
     cat("$\\chi^2$(", df, n, ") = ", statistic, ", *p* ", p, sep = "")
   }
-  else if (format == "word")
+  else if (format == "docx")
   {
-    tmp <- tempfile(fileext = ".md")
+    tmp <- tempfile("chi_apa", fileext = ".md")
     sink(tmp)
     chisq_apa(x, format = "rmarkdown")
     sink()
     outfile <- render(tmp, output_format = "word_document", quiet = TRUE)
-    shell(paste0("\"", outfile, "\""))
+    
+    sys <- Sys.info()[['sysname']]
+    
+    if (sys == "Windows")
+    {
+      shell(paste0("\"", outfile, "\""))
+    }
+    else if (sys == "Linux")
+    {
+      system(paste0("xdg-open \"", outfile, "\""))
+    }
+    else if (sys == "Darwin")
+    {
+      system(paste0("open \"", outfile, "\""))
+    }
   }
 }
 
@@ -55,7 +69,7 @@ chisq_apa <- function(x, print_n = FALSE, format = "text", info = FALSE)
 #' @importFrom rmarkdown render
 #' @param x a call to \code{cor.test}
 #' @param format character specifying the output format, one of \code{"text"},
-#'   \code{"latex"}, \code{"markdown"}, \code{rmarkdown} or \code{"word"}
+#'   \code{"latex"}, \code{"markdown"}, \code{"rmarkdown"} or \code{"docx"}.
 #' @param info logical indicating whether to print a message on the used test
 #'   (default is \code{FALSE})
 #' @examples
@@ -72,9 +86,9 @@ cor_apa <- function(x, format = "text", info = FALSE)
   }
   
   coef <- cor_coef(x$method)
-  estimate <- test_statistic_apa(x$estimate)
+  estimate <- fmt_stat(x$estimate)
   df <- x$parameter
-  p <- pvalue_apa(x$p.value)
+  p <- fmt_pval(x$p.value)
   
   if (info) message(x$method)
   
@@ -130,14 +144,28 @@ cor_apa <- function(x, format = "text", info = FALSE)
       cat("$r_s$ = ", estimate, ", *p* ", p, sep = "")
     }
   }
-  else if (format == "word")
+  else if (format == "docx")
   {
-    tmp <- tempfile(fileext = ".md")
+    tmp <- tempfile("cor_apa", fileext = ".md")
     sink(tmp)
     cor_apa(x, format = "rmarkdown")
     sink()
     outfile <- render(tmp, output_format = "word_document", quiet = TRUE)
-    shell(paste0("\"", outfile, "\""))
+    
+    sys <- Sys.info()[['sysname']]
+    
+    if (sys == "Windows")
+    {
+      shell(paste0("\"", outfile, "\""))
+    }
+    else if (sys == "Linux")
+    {
+      system(paste0("xdg-open \"", outfile, "\""))
+    }
+    else if (sys == "Darwin")
+    {
+      system(paste0("open \"", outfile, "\""))
+    }
   }
 }
 
@@ -157,12 +185,68 @@ cor_coef <- function(x)
   }
 }
 
-test_statistic_apa <- function(statistic)
+#' Report t-Test in APA style
+#' 
+#' @importFrom rmarkdown render
+#' @param x a call to \code{t_test}
+#' @param format character specifying the output format, one of \code{"text"},
+#'   \code{"latex"}, \code{"markdown"}, \code{"rmarkdown"} or \code{"docx"}.
+#' @param info logical indicating whether to print a message on the used test
+#'   (default is \code{FALSE})
+#' @export
+t_apa <- function(x, format = "text", info = FALSE)
+{
+  statistic <- fmt_stat(x$statistic)
+  df <- x$parameter
+  p <- fmt_pval(x$p.value)
+  d <- fmt_es(cohens_d(x))
+  
+  if (info) message(x$method)
+  
+  if (format == "text")
+  {
+    cat("t(", df, ") = ", statistic, ", p ", p, ", d ", d, sep = "")
+  }
+  else if (format == "latex")
+  {
+    cat("\\textit{t}(", df, ") = ", statistic, ", \\textit{p} ", p,
+        ", \\textit{d} ", d, sep = "")
+  }
+  else if (format == "markdown" || format == "rmarkdown")
+  {
+    cat("*t*(", df, ") = ", statistic, ", *p* ", p, ", *d* ", d, sep = "")
+  }
+  else if (format == "docx")
+  {
+    tmp <- tempfile("t_apa", fileext = ".md")
+    sink(tmp)
+    t_apa(x, format = "rmarkdown")
+    sink()
+    outfile <- render(tmp, output_format = "word_document", quiet = TRUE)
+    
+    sys <- Sys.info()[['sysname']]
+    
+    if (sys == "Windows")
+    {
+      shell(paste0("\"", outfile, "\""))
+    }
+    else if (sys == "Linux")
+    {
+      system(paste0("xdg-open \"", outfile, "\""))
+    }
+    else if (sys == "Darwin")
+    {
+      system(paste0("open \"", outfile, "\""))
+    }
+  }
+}
+
+fmt_stat <- function(statistic)
 {
   format(round(statistic, 2), nsmall = 2)
 }
 
-pvalue_apa <- function(p)
+fmt_pval <- function(p)
 {
   if (p < .001)
   {
@@ -174,7 +258,7 @@ pvalue_apa <- function(p)
   }
 }
 
-effect_size_apa <- function(es)
+fmt_es <- function(es)
 {
   if (abs(es) < .01)
   {
