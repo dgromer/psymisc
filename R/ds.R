@@ -22,17 +22,23 @@
 #' @export
 ds <- function(.data, formula, funs = c("mean", "se"), names = funs, ...)
 {
+  # Extract variables from formula
   vars <- all.vars(formula)
   
+  # Convert extra arguments in ... to character string
   args <- dots_to_character(...)
   
+  # Group data by RHS if is not "."
   if (vars[2] != ".")
   {
     .data <- group_by_(.data, .dots = vars[2:length(vars)])
   }
   
+  # Add extra arguments to function calls
   dots <- paste0(funs, "(", vars[1], args, ")")
+  # Remove args from call to n() since it does not have arguments
   dots[grep("^n(.*)", dots)] <- "n()"
+  # Convert function calls to formulas in order to include calling environment
   dots <- sapply(paste("~", dots), as.formula)
   
   summarise_(.data, .dots = setNames(dots, names))
