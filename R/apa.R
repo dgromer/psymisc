@@ -11,6 +11,8 @@
 #' @export
 chisq_apa <- function(x, print_n = FALSE, format = "text", info = FALSE)
 {
+  check_format(format)
+  
   if (!grepl("Chi-squared test", x$method))
   {
     stop("`x` must be a call to `chisq.test`")
@@ -78,8 +80,10 @@ chisq_apa <- function(x, print_n = FALSE, format = "text", info = FALSE)
 #' cor_apa(ct, format = "latex")
 #' 
 #' @export
-cor_apa <- function(x, format = "text", info = FALSE)
+cor_apa <- function(x, format = "default", info = FALSE)
 {
+  check_format(format)
+  
   if (!grepl("correlation", x$method))
   {
     stop("`x` must be a call to `cor.test`")
@@ -92,7 +96,18 @@ cor_apa <- function(x, format = "text", info = FALSE)
   
   if (info) message(x$method)
   
-  if (format == "text")
+  if (format == "default")
+  {
+    if (coef == "r")
+    {
+      paste0("r(", df, ") = ", estimate, ", p ", p, sep = "")
+    }
+    else
+    {
+      paste0(coef, " = ", estimate, ", p ", p, sep = "")
+    }
+  }
+  else if (format == "text")
   {
     if (coef == "r")
     {
@@ -194,16 +209,27 @@ cor_coef <- function(x)
 #' @param info logical indicating whether to print a message on the used test
 #'   (default is \code{FALSE})
 #' @export
-t_apa <- function(x, format = "text", info = FALSE)
+t_apa <- function(x, format = "default", info = FALSE)
 {
+  check_format(format)
+  
   statistic <- fmt_stat(x$statistic)
   df <- x$parameter
   p <- fmt_pval(x$p.value)
   d <- fmt_es(cohens_d(x))
   
+  if (grepl("Welch", x$method))
+  {
+    df <- fmt_stat(df)
+  }
+  
   if (info) message(x$method)
   
-  if (format == "text")
+  if (format == "default")
+  {
+    paste("t(", df, ") = ", statistic, ", p ", p, ", d ", d, sep = "")
+  }
+  else if (format == "text")
   {
     cat("t(", df, ") = ", statistic, ", p ", p, ", d ", d, sep = "")
   }
@@ -267,5 +293,13 @@ fmt_es <- function(es)
   else
   {
     paste("=", format(round(es, 2), nsmall = 2))
+  }
+}
+
+check_format <- function(x)
+{
+  if (!x %in% c("default", "text", "markdown", "rmarkdown", "latex", "docx"))
+  {
+    stop("Unknown format")
   }
 }
