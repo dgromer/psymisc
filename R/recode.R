@@ -23,6 +23,7 @@ recode <- function(x, ..., default = NULL, coerce = NULL)
   
   for (i in seq_along(from))
   {
+    # Check if "from" is a vector
     if (grepl("^c\\(.+\\)$", from[i]) || grepl("^[0-9]+\\:[0-9]+$", from[i]))
     {
       x[x %in% eval(parse(text = from[i]))] <- to[i]
