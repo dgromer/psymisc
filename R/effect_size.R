@@ -22,7 +22,7 @@ cohens_d <- function(x, ...) UseMethod("cohens_d")
 #' @export
 cohens_d.default <- function(x, y = NULL, paired = FALSE, na.rm = FALSE)
 {
-  if (!paired)
+  if (!paired && !is.null(y))
   {
     m1 <- mean(x, na.rm = na.rm)
     m2 <- mean(y, na.rm = na.rm)
