@@ -9,8 +9,9 @@ cor_apa(x, format = "default", info = FALSE)
 \arguments{
 \item{x}{a call to \code{cor.test}}
 
-\item{format}{character specifying the output format, one of \code{"text"},
-\code{"latex"}, \code{"markdown"}, \code{"rmarkdown"} or \code{"docx"}.}
+\item{format}{character specifying the output format, one of
+\code{"default"}, \code{"text"}, \code{"latex"}, \code{"markdown"},
+\code{"rmarkdown"} or \code{"docx"}.}
 
 \item{info}{logical indicating whether to print a message on the used test
 (default is \code{FALSE})}

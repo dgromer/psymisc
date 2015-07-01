@@ -87,3 +87,108 @@ cohens_d.htest <- function(ttest)
     cohens_d(ttest$data$x, ttest$data$y)
   }
 }
+
+#' Partial Eta Squared
+#' 
+#' @param x a call to \code{aov} or \code{ez::ezANOVA}
+#' @param effect character string indicating the effect of interest
+#' @export
+petasq <- function(x, effect)
+{
+  # aov
+  if (inherits(x, "aov"))
+  {
+    petasq_aov(x, effect)
+  }
+  # ez::ezANOVA
+  else if (is.list(x) && names(x)[1] == "ANOVA")
+  {
+    petasq_ezanova(x, effect)
+  }
+  # afex
+  else if (is.list(x) && names(x)[1:3] == c("Anova", "lm", "data"))
+  {
+    petasq_afex(x, effect)
+  }
+}
+
+petasq_aov <- function(x, effect)
+{
+  x <- anova(x)
+  
+  if (!effect %in% row.names(x))
+  {
+    stop("Specified effect not found")
+  }
+  
+  x[effect, "Sum Sq"] / (x[effect, "Sum Sq"] + x["Residuals", "Sum Sq"])
+}
+
+petasq_ezanova <- function(x, effect)
+{
+  anova <- x$ANOVA
+  
+  if (!all(c("SSn", "SSd") %in% names(anova)))
+  {
+    stop("Parameter 'detailed' needs to be set to TRUE in call to `ezANOVA`")
+  }
+  
+  if (!effect %in% anova$Effect)
+  {
+    stop("Specified effect not found")
+  }
+  else
+  {
+    row <- which(anova$Effect == effect)
+  }
+  
+  anova[row, "SSn"] / (anova[row, "SSn"] + anova[row, "SSd"])
+}
+
+petasq_afex <- function(x, effect)
+{
+  anova <- x$Anova
+  
+  
+}
+
+getasq <- function(x, effect)
+{
+  # aov
+  if (inherits(x, "aov"))
+  {
+    getasq_anova(anova(x), effect)
+  }
+  # anova
+  else if (inherits(x, "anova"))
+  {
+    getasq_anova(x, effect)
+  }
+  # ez::ezANOVA
+  else if (is.list(x) && names(x)[1] == "ANOVA")
+  {
+    getasq_ezanova(x, effect)
+  }
+  # afex
+  else if (is.list(x) && names(x)[1:3] == c("Anova", "lm", "data"))
+  {
+    getasq_afex(x, effect)
+  }
+}
+
+getasq_ezanova <- function(x, effect)
+{
+  anova <- x$ANOVA
+  
+  if (!all(c("SSn", "SSd") %in% names(anova)))
+  {
+    stop("Parameter 'detailed' needs to be set to TRUE in call to `ezANOVA`")
+  }
+  
+  if (!effect %in% anova$Effect)
+  {
+    stop("Specified effect not found")
+  }
+  
+  anova[which(anova$Effect == effect), "ges"]
+}

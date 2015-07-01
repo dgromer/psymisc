@@ -3,7 +3,7 @@
 #' A wrapper for dplyr's \code{group_by} and \code{summarise} for descriptive
 #' statistics.
 #' 
-#' @import dplyr
+#' @importFrom dplyr group_by_ summarise_
 #' @param .data a data frame containing the variables in the formula
 #'   \code{formula}.
 #' @param formula a formula in the form \code{lhs ~ rhs} where \code{lhs} is a
