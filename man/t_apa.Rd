@@ -13,7 +13,7 @@ t_apa(x, format = "default", info = FALSE)
 \code{"latex"}, \code{"markdown"}, \code{"rmarkdown"} or \code{"docx"}.}
 
 \item{info}{logical indicating whether to print a message on the used test
-(default is \code{FALSE})}
+  (default is \code{FALSE})}
 }
 \description{
 Report t-Test in APA style
