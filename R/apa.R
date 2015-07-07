@@ -330,7 +330,7 @@ anova_apa_ezanova <- function(x, sph_corr, es, format, info)
     {
       corr_method <- "GG"
     }
-    else if (sph_corr == "huynd-feldt" || sph_corr == "hf")
+    else if (sph_corr == "huynh-feldt" || sph_corr == "hf")
     {
       corr_method <- "HF"
     }
