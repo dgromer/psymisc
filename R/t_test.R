@@ -18,8 +18,21 @@ t_test.default <- function(x, y = NULL,
   t <- t.test(x = x, y = y, alternative = alternative, mu = mu, paired = paired,
               var.equal = var.equal, conf.level = conf.level, ...)
   
-  t[["data"]]$x <- x
-  t[["data"]]$y <- y
+  # Add data to return list, remove NA
+  if (is.null(y))
+  {
+    t[["data"]]$x <- na.omit(x)
+  }
+  else if (!paired)
+  {
+    t[["data"]]$x <- na.omit(x)
+    t[["data"]]$y <- na.omit(y)
+  }
+  else
+  {
+    t[["data"]]$x <- x[complete.cases(x, y)]
+    t[["data"]]$y <- y[complete.cases(x, y)]
+  }
   
   t
 }
@@ -30,7 +43,7 @@ t_test.formula <- function(formula, data, subset, na.action, ...)
 { 
   t <- t.test(formula = formula, data = data, ...)
   
-  mf <- model.frame(formula, data)
+  mf <- na.omit(model.frame(formula, data))
   t$data <- setNames(split(mf[[1]], mf[[2]]), c("x", "y"))
   
   t
