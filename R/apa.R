@@ -16,7 +16,7 @@ chisq_apa <- function(x, print_n = FALSE, format = "default", info = FALSE)
   
   if (!grepl("Chi-squared test", x$method))
   {
-    stop("`x` must be a call to `chisq.test`")
+    stop("'x' must be a call to `chisq.test`")
   }
   
   statistic <- fmt_stat(x$statistic)
@@ -46,28 +46,14 @@ chisq_apa <- function(x, print_n = FALSE, format = "default", info = FALSE)
   {
     cat("$\\chi^2$(", df, n, ") = ", statistic, ", *p* ", p, sep = "")
   }
+  else if (format == "html")
+  {
+    cat("<i>&chi;</i><sup>2</sup>(", df, n, ") = ", statistic, ", <i>p</i> ",
+        p, sep = "")
+  }
   else if (format == "docx")
   {
-    tmp <- tempfile("chi_apa", fileext = ".md")
-    sink(tmp)
-    chisq_apa(x, format = "rmarkdown")
-    sink()
-    outfile <- render(tmp, output_format = "word_document", quiet = TRUE)
-    
-    sys <- Sys.info()[['sysname']]
-    
-    if (sys == "Windows")
-    {
-      shell(paste0("\"", outfile, "\""))
-    }
-    else if (sys == "Linux")
-    {
-      system(paste0("xdg-open \"", outfile, "\""))
-    }
-    else if (sys == "Darwin")
-    {
-      system(paste0("open \"", outfile, "\""))
-    }
+    to_docx("chisq_apa", x)
   }
 }
 
@@ -92,7 +78,7 @@ cor_apa <- function(x, format = "default", info = FALSE)
   
   if (!grepl("correlation", x$method))
   {
-    stop("`x` must be a call to `cor.test`")
+    stop("'x' must be a call to `cor.test`")
   }
   
   coef <- cor_coef(x$method)
@@ -165,28 +151,24 @@ cor_apa <- function(x, format = "default", info = FALSE)
       cat("$r_s$ = ", estimate, ", *p* ", p, sep = "")
     }
   }
+  else if (format == "html")
+  {
+    if (coef == "r")
+    {
+      cat("<i>r</i>(", df, ") = ", estimate, ", <i>p</i> ", p, sep = "")
+    }
+    else if (coef == "tau")
+    {
+      cat("<i>r<sub>&tau;</sub></i> = ", estimate, ", <i>p</i> ", p, sep = "")
+    }
+    else
+    {
+      cat("<i>r<sub>s</sub></i> = ", estimate, ", <i>p</i> ", p, sep = "")
+    }
+  }
   else if (format == "docx")
   {
-    tmp <- tempfile("cor_apa", fileext = ".md")
-    sink(tmp)
-    cor_apa(x, format = "rmarkdown")
-    sink()
-    outfile <- render(tmp, output_format = "word_document", quiet = TRUE)
-    
-    sys <- Sys.info()[['sysname']]
-    
-    if (sys == "Windows")
-    {
-      shell(paste0("\"", outfile, "\""))
-    }
-    else if (sys == "Linux")
-    {
-      system(paste0("xdg-open \"", outfile, "\""))
-    }
-    else if (sys == "Darwin")
-    {
-      system(paste0("open \"", outfile, "\""))
-    }
+    to_docx("cor_apa", x)
   }
 }
 
@@ -249,28 +231,14 @@ t_apa <- function(x, format = "default", info = FALSE)
   {
     cat("*t*(", df, ") = ", statistic, ", *p* ", p, ", *d* ", d, sep = "")
   }
+  else if (format == "html")
+  {
+    cat("<i>t</i>(", df, ") = ", statistic, ", <i>p</i>", p, ", <i>d</i> ", d,
+        sep = "")
+  }
   else if (format == "docx")
   {
-    tmp <- tempfile("t_apa", fileext = ".md")
-    sink(tmp)
-    t_apa(x, format = "rmarkdown")
-    sink()
-    outfile <- render(tmp, output_format = "word_document", quiet = TRUE)
-    
-    sys <- Sys.info()[['sysname']]
-    
-    if (sys == "Windows")
-    {
-      shell(paste0("\"", outfile, "\""))
-    }
-    else if (sys == "Linux")
-    {
-      system(paste0("xdg-open \"", outfile, "\""))
-    }
-    else if (sys == "Darwin")
-    {
-      system(paste0("open \"", outfile, "\""))
-    }
+    to_docx("t_apa", x)
   }
 }
 
@@ -344,6 +312,7 @@ anova_apa_ezanova <- function(x, sph_corr, es, format, info)
                           x$`Sphericity Corrections`, by = "Effect") %>%
       `[`(.$p < .05, )
     
+    
     if (nrow(mauchlys) > 0)
     {
       # Apply correction to degrees of freedom
@@ -381,18 +350,18 @@ anova_apa_ezanova <- function(x, sph_corr, es, format, info)
   anova_apa_build(tbl, es, format)
 }
 
+#' @importFrom dplyr data_frame
 #' @importFrom rmarkdown render
 anova_apa_build <- function(tbl, es_name, format)
 {
   if (format == "default")
   {
-    out <- data.frame(
+    out <- data_frame(
       Effect = tbl$effects,
       Text = paste0("F(", tbl$df_n, ",", tbl$df_d, ") = ",
                     format(tbl$statistic, width = max(nchar(tbl$statistic)),
                            justify = "right"),
-                    ", p ", tbl$p, ", ", es_name, " ", tbl$es),
-      stringsAsFactors = FALSE
+                    ", p ", tbl$p, ", ", es_name, " ", tbl$es)
     )
   }
   
@@ -417,6 +386,12 @@ anova_apa_build <- function(tbl, es_name, format)
                   tbl$statistic, ", *p* ", tbl$p, ", ", latex_es(es_name),
                   " ", tbl$es, "\n")
   }
+  else if (format == "html")
+  {
+    out <- paste0(tbl$effects, " <i>F</i>(", tbl$df_n, ",", tbl$df_d, ") = ",
+                  tbl$statistics, ", <i>p</i> ", tbl$p, ", ", html_es(es_name),
+                  " ", tbl$es, "\n")
+  }
   else if (format == "latex")
   {
     out <- paste0(tbl$effects, " \\textit{F}(", tbl$df_n, ",", tbl$df_d, ") = ",
@@ -434,20 +409,7 @@ anova_apa_build <- function(tbl, es_name, format)
     sink()
     outfile <- render(tmp, output_format = "word_document", quiet = TRUE)
     
-    sys <- Sys.info()[['sysname']]
-    
-    if (sys == "Windows")
-    {
-      shell(paste0("\"", outfile, "\""))
-    }
-    else if (sys == "Linux")
-    {
-      system(paste0("xdg-open \"", outfile, "\""))
-    }
-    else if (sys == "Darwin")
-    {
-      system(paste0("open \"", outfile, "\""))
-    }
+    sys_open(outfile)
     
     return()
   }
@@ -468,38 +430,51 @@ anova_apa_build <- function(tbl, es_name, format)
 # Format a test statistic
 fmt_stat <- function(statistic)
 {
-  format(round(statistic, 2), nsmall = 2)
+  sprintf("%.2f", statistic)
 }
 
 # Format a p-value
-fmt_pval <- function(p)
+fmt_pval <- function(p, equal_sign = TRUE)
 {
   if (p < .001)
   {
     "< .001"
   }
+  else if (p == 1)
+  {
+    "> .999"
+  }
+  else if (equal_sign)
+  {
+    paste("=", substr(sprintf("%.3f", p), 2, 5))
+  }
   else
   {
-    paste("=", substr(format(round(p, 3), nsmall = 3), 2, 5))
+    sprintf("%.3f", p)
   }
 }
 
 # Format an effect size
-fmt_es <- function(es)
+fmt_es <- function(es, equal_sign = TRUE)
 {
   if (abs(es) < .01)
   {
     "< 0.01"
   }
+  else if (equal_sign)
+  {
+    paste("=", sprintf("%.2f", es))
+  }
   else
   {
-    paste("=", format(round(es, 2), nsmall = 2))
+    sprintf("%.2f", es)
   }
 }
 
 check_format <- function(x)
 {
-  if (!x %in% c("default", "text", "markdown", "rmarkdown", "latex", "docx"))
+  if (!x %in% c("default", "text", "markdown", "rmarkdown", "html", "latex",
+                "docx"))
   {
     stop("Unknown format")
   }
@@ -518,5 +493,49 @@ latex_es <- function(es)
   else if (es == "omegasq")
   {
     "\\omega^2"
+  }
+}
+
+html_es <- function(es)
+{
+  if (es == "petasq")
+  {
+    "&eta;<sup>2</sup><sub>p</sub>"
+  }
+  else if (es == "getasq")
+  {
+    "&eta;<sup>2</sup><sub>g</sub>"
+  }
+  else if (es == "omegasq")
+  {
+    "&omega;<sup>2</sup>"
+  }
+}
+to_docx <- function(fun, x)
+{
+  tmp <- tempfile("to_apa", fileext = ".md")
+  sink(tmp)
+  do.call(fun, list(x, format = "rmarkdown"))
+  sink()
+  outfile <- render(tmp, output_format = "word_document", quiet = TRUE)
+  
+  sys_open(outfile)
+}
+
+sys_open <- function(filename)
+{
+  sys <- Sys.info()[['sysname']]
+  
+  if (sys == "Windows")
+  {
+    shell(paste0("\"", filename, "\""))
+  }
+  else if (sys == "Linux")
+  {
+    system(paste0("xdg-open \"", filename, "\""))
+  }
+  else if (sys == "Darwin")
+  {
+    system(paste0("open \"", filename, "\""))
   }
 }
