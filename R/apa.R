@@ -450,7 +450,7 @@ fmt_pval <- function(p, equal_sign = TRUE)
   }
   else
   {
-    sprintf("%.3f", p)
+    substr(sprintf("%.3f", p), 2, 5)
   }
 }
 
