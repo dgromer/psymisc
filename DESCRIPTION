@@ -10,6 +10,7 @@ License: GPL (>= 2)
 Imports:
     dplyr (>= 0.4),
     ggplot2,
+    htmlTable,
     magrittr,
     purrr,
     rmarkdown

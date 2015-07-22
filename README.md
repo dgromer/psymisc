@@ -12,8 +12,8 @@ psymisc is an R package that provides some useful high-level and helper function
 -   `recode()`: Recode variables based on multiple rules.
 -   `routlier()`: Remove or flag outliers.
 -   `se()`: Standard error, SE = SD(x) / sqrt(n)
--   `stats_table()`: Compare group characteristics (means and standard deviations plus significance tests).
--   `t_test()`: A wrapper for `t.test()` that includes the original data in its return list.
+-   `stats_table()`: Compare group characteristics (means and standard deviations plus significance tests). Outputs to either the console or HTML (which can be copy-and-pasted directly into Word).
+-   `t_test()`: A wrapper for `t.test()` that includes the original data in its return list (in order to calculate the effect size in `cohens_d()` and `t_apa()` directly from the data).
 -   `*_apa()`: A set of functions for formatting statistical output according to APA guidelines, ready to copy-and-paste into manuscripts (supports Text, Markdown, RMarkdown, HTML, LaTeX and docx<sup>1</sup>). Currently available methods are `anova_apa()`<sup>2</sup>, `chisq_apa()`, `cor_apa()` and `t_apa()`.
 
 <sup>1</sup> [pandoc](http://pandoc.org/) is required for docx output and needs to be installed manually when not using RStudio (which ships pandoc).
