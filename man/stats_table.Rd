@@ -4,7 +4,8 @@
 \alias{stats_table}
 \title{Statistical table}
 \usage{
-stats_table(.data, iv, ..., sig = FALSE, args = list())
+stats_table(.data, iv, ..., sig = FALSE, format = "default",
+  args = list())
 }
 \arguments{
 \item{.data}{a data frame}
@@ -22,6 +23,7 @@ the last column}
 }
 \description{
 Compiles a table with descriptive and inferential statistics to compare group
-characteristics, e.g. control variables of a control and a treatment group.
+characteristics, e.g. control variables of a treatment group and a control
+group.
 }
 

@@ -6,6 +6,8 @@
 #' 
 #' @importFrom dplyr select
 #' @importFrom purrr enlist
+#' @importFrom htmlTable htmlTable
+#' @importFrom rmarkdown pandoc_convert
 #' @param .data a data frame
 #' @param iv name of the independent variable
 #' @param ... names of the dependent variables
@@ -16,7 +18,8 @@
 #'   passed to \link{t_test}, e.g. \code{var.equal = TRUE}.
 #' 
 #' @export
-stats_table <- function(.data, iv, ..., sig = FALSE, args = list())
+stats_table <- function(.data, iv, ..., sig = FALSE, format = "default",
+                        args = list())
 {
   # Convert iv to character if it is a name
   if (!is.character(substitute(iv)))
@@ -32,6 +35,7 @@ stats_table <- function(.data, iv, ..., sig = FALSE, args = list())
   
   header <- stats_table_header(group_names)
   
+  # Calculate statistics for each dependent variable
   if (length(group_names) == 2)
   {
     rows <- lapply(dvs, function(dv)
@@ -53,7 +57,23 @@ stats_table <- function(.data, iv, ..., sig = FALSE, args = list())
     tbl$sig <- sapply(as.numeric(gsub(">|<", "", tbl$p)), p_to_symbol)
   }
   
-  tbl
+  if (format == "html")
+  {
+    header <- gsub("_.*$", "", names(tbl))[-1]
+    
+    htmlTable(
+      tbl[, -1],
+      header = header,
+      rnames = tbl[[1]],
+      align = paste0("l", paste(rep("r", length(tbl) - 1), collapse = "")),
+      cgroup = c(group_names, ""),
+      n.cgroup = c(rep(2, length(group_names)), ifelse(sig, 4, 3))
+    )
+  }
+  else
+  {
+    tbl
+  }
 }
 
 stats_table_header <- function(iv)
