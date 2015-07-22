@@ -47,6 +47,7 @@ stats_table <- function(.data, iv, ..., sig = FALSE, format = "default",
     rows <- lapply(dvs, function(dv) stats_table_row_aov(.data, dv, iv))
   }
   
+  rows <- lapply(rows, matrix, nrow = 1)
   tbl <- as.data.frame(Reduce(rbind, rows), stringsAsFactors = FALSE)
   names(tbl) <- header
   row.names(tbl) <- NULL
