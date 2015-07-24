@@ -20,7 +20,8 @@ cohens_d <- function(x, ...) UseMethod("cohens_d")
 
 #' @rdname cohens_d
 #' @export
-cohens_d.default <- function(x, y = NULL, paired = FALSE, na.rm = FALSE)
+cohens_d.default <- function(x, y = NULL, paired = FALSE, corr = "none",
+                             na.rm = FALSE)
 {
   if (!paired && !is.null(y))
   {
@@ -33,7 +34,16 @@ cohens_d.default <- function(x, y = NULL, paired = FALSE, na.rm = FALSE)
     n1 <- ifelse(na.rm, length(na.omit(x)), length(x))
     n2 <- ifelse(na.rm, length(na.omit(y)), length(y))
     
-    (m1 - m2) / sqrt(((n1 - 1) * var1 + (n2 - 1) * var2) / ((n1 + n2) - 2))
+    d <- (m1 - m2) / sqrt(((n1 - 1) * var1 + (n2 - 1) * var2) / ((n1 + n2) - 2))
+    
+    if (corr %in% c("hedges_g", "g"))
+    {
+      d <- d * (1 - 3 / (4 * (n1 + n2) - 9))
+    }
+    else if (corr %in% c("glass_delta", "delta"))
+    {
+      d <- (m1 - m2) / sqrt(var2)
+    }
   }
   else
   {
@@ -42,32 +52,36 @@ cohens_d.default <- function(x, y = NULL, paired = FALSE, na.rm = FALSE)
       y <- 0
     }
     
-    mean(x - y) / sd(x - y)
+    d <- mean(x - y) / sd(x - y)
   }
+  
+  d
 }
 
 #' @rdname cohens_d
 #' @export
-cohens_d.data.frame <- function(data, dv, iv, na.rm = FALSE)
+cohens_d.data.frame <- function(data, dv, iv, paired = FALSE, corr = "none",
+                                na.rm = FALSE)
 {
   sp <- split(data[[dv]], data[[iv]])
   
-  cohens_d(sp[[1]], sp[[2]], na.rm = na.rm)
+  cohens_d(sp[[1]], sp[[2]], paired, corr, na.rm)
 }
 
 #' @rdname cohens_d
 #' @export
-cohens_d.formula <- function(formula, data, na.rm = FALSE)
+cohens_d.formula <- function(formula, data, paired = FALSE, corr = "none",
+                             na.rm = FALSE)
 {
   mf <- model.frame(formula, data)
   .data <- setNames(split(mf[[1]], mf[[2]]), c("x", "y"))
   
-  do.call("cohens_d", .data)
+  do.call("cohens_d", c(.data, paired = paired, corr = corr, na.rm = na.rm))
 }
 
 #' @rdname cohens_d
 #' @export
-cohens_d.htest <- function(ttest)
+cohens_d.htest <- function(ttest, corr = "none")
 {
   if (!grepl("t-test", ttest$method) && is.null(ttest[["data"]]))
   {
@@ -84,7 +98,7 @@ cohens_d.htest <- function(ttest)
   }
   else
   {
-    cohens_d(ttest$data$x, ttest$data$y)
+    cohens_d(ttest$data$x, ttest$data$y, corr = corr)
   }
 }
 
@@ -99,6 +113,11 @@ petasq <- function(x, effect)
   if (inherits(x, "aov"))
   {
     petasq_aov(x, effect)
+  }
+  # aovlist
+  if (inherits(x, "aovlist"))
+  {
+    petasq_aovlist(x, effect)
   }
   # ez::ezANOVA
   else if (is.list(x) && names(x)[1] == "ANOVA")
@@ -122,6 +141,35 @@ petasq_aov <- function(x, effect)
   }
   
   x[effect, "Sum Sq"] / (x[effect, "Sum Sq"] + x["Residuals", "Sum Sq"])
+}
+
+#' @importFrom purrr flatten
+#' @importFrom stringr str_trim
+petasq_aovlist <- function(x, effect)
+{
+  if (!effect %in% attr(x$`(Intercept)`$terms, "term.labels"))
+  {
+    stop("Specified effect not found")
+  }
+  
+  # summary.aovlist is a list of lists containing data frames
+  x <- flatten(summary(x))
+  
+  # Look through data frames for specified effect
+  for (i in seq_along(x))
+  {
+    df <- x[[i]]
+    
+    row <- which(str_trim(row.names(df)) == effect)
+    
+    if (length(row) > 0)
+    {
+      petasq <-
+        df[row, "Sum Sq"] / (df[row, "Sum Sq"] + df["Residuals", "Sum Sq"])
+    }
+  }
+  
+  petasq
 }
 
 petasq_ezanova <- function(x, effect)

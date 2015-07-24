@@ -198,14 +198,17 @@ cor_coef <- function(x)
 #'   (default is \code{FALSE})
 #' 
 #' @export
-t_apa <- function(x, format = "default", info = FALSE)
+t_apa <- function(x, es = "cohens_d", format = "default", info = FALSE)
 {
   check_format(format)
   
   statistic <- fmt_stat(x$statistic)
   df <- x$parameter
   p <- fmt_pval(x$p.value)
-  d <- fmt_es(cohens_d(x))
+  d <- fmt_es(cohens_d(x, corr = es))
+  
+  es_name <- switch(es, "cohens_d" = "d", "hedges_g" = "g",
+                    "glass_delta" = "delta")
   
   if (grepl("Welch", x$method))
   {
@@ -216,25 +219,26 @@ t_apa <- function(x, format = "default", info = FALSE)
   
   if (format == "default")
   {
-    paste0("t(", df, ") = ", statistic, ", p ", p, ", d ", d)
+    paste0("t(", df, ") = ", statistic, ", p ", p, ", ", es_name, " ", d)
   }
   else if (format == "text")
   {
-    cat("t(", df, ") = ", statistic, ", p ", p, ", d ", d, sep = "")
+    cat("t(", df, ") = ", statistic, ", p ", p, ", ", es_name, " ", d, sep = "")
   }
   else if (format == "latex")
   {
     cat("\\textit{t}(", df, ") = ", statistic, ", \\textit{p} ", p,
-        ", \\textit{d} ", d, sep = "")
+        ", ", latex_es(es), " ", d, sep = "")
   }
   else if (format == "markdown" || format == "rmarkdown")
   {
-    cat("*t*(", df, ") = ", statistic, ", *p* ", p, ", *d* ", d, sep = "")
+    cat("*t*(", df, ") = ", statistic, ", *p* ", p, ", *", es_name, "* ", d,
+        sep = "")
   }
   else if (format == "html")
   {
-    cat("<i>t</i>(", df, ") = ", statistic, ", <i>p</i>", p, ", <i>d</i> ", d,
-        sep = "")
+    cat("<i>t</i>(", df, ") = ", statistic, ", <i>p</i>", p, ", ", html_es(es),
+        " ", d, sep = "")
   }
   else if (format == "docx")
   {
@@ -482,7 +486,19 @@ check_format <- function(x)
 
 latex_es <- function(es)
 {
-  if (es == "petasq")
+  if (es == "cohens_d")
+  {
+    "\\textit{d}"
+  }
+  else if (es == "hedges_g")
+  {
+    "\\textit{g}"
+  }
+  else if (es == "glass_delta")
+  {
+    "$\\Delta$"
+  }
+  else if (es == "petasq")
   {
     "$\\eta^2_p$"
   }
@@ -498,19 +514,32 @@ latex_es <- function(es)
 
 html_es <- function(es)
 {
-  if (es == "petasq")
+  if (es == "cohens_d")
   {
-    "&eta;<sup>2</sup><sub>p</sub>"
+    "<i>d</i>"
+  }
+  else if (es == "hedges_g")
+  {
+    "<i>g</i>"
+  }
+  else if (es == "glass_delta")
+  {
+    "<i>&Delta;</i>"
+  }
+  else if (es == "petasq")
+  {
+    "<i>&eta;<sup>2</sup><sub>p</sub></i>"
   }
   else if (es == "getasq")
   {
-    "&eta;<sup>2</sup><sub>g</sub>"
+    "<i>&eta;<sup>2</sup><sub>g</sub></i>"
   }
   else if (es == "omegasq")
   {
-    "&omega;<sup>2</sup>"
+    "<i>&omega;<sup>2</sup></i>"
   }
 }
+
 to_docx <- function(fun, x)
 {
   tmp <- tempfile("to_apa", fileext = ".md")
