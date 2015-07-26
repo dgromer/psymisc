@@ -5,7 +5,7 @@
 #' group.
 #' 
 #' @importFrom dplyr select
-#' @importFrom purrr enlist
+#' @importFrom purrr splice
 #' @importFrom htmlTable htmlTable
 #' @importFrom rmarkdown pandoc_convert
 #' @param .data a data frame
@@ -39,7 +39,7 @@ stats_table <- function(.data, iv, ..., sig = FALSE, format = "default",
   if (length(group_names) == 2)
   {
     rows <- lapply(dvs, function(dv)
-      do.call("stats_table_row_ttest", enlist(.data = .data, dv = dv, iv = iv,
+      do.call("stats_table_row_ttest", splice(.data = .data, dv = dv, iv = iv,
                                               args)))
   }
   else
