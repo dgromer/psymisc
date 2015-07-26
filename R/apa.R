@@ -192,6 +192,10 @@ cor_coef <- function(x)
 #' 
 #' @importFrom rmarkdown render
 #' @param x a call to \code{t_test}
+#' @param es character specifying the effect size to report. One of
+#'   \code{"cohens_d"} (default), \code{"hedges_g"} or \code{"glass_delta"} if
+#'   \code{x} is an independent samples t-test. Ignored if \code{x} is a paired
+#'   samples or one sample t-test (cohen's d is reported for these test).
 #' @param format character specifying the output format, one of \code{"text"},
 #'   \code{"latex"}, \code{"markdown"}, \code{"rmarkdown"} or \code{"docx"}.
 #' @param info logical indicating whether to print a message on the used test

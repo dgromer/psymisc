@@ -4,10 +4,15 @@
 \alias{t_apa}
 \title{Report t-Test in APA style}
 \usage{
-t_apa(x, format = "default", info = FALSE)
+t_apa(x, es = "cohens_d", format = "default", info = FALSE)
 }
 \arguments{
 \item{x}{a call to \code{t_test}}
+
+\item{es}{character specifying the effect size to report. One of
+\code{"cohens_d"} (default), \code{"hedges_g"} or \code{"glass_delta"} if
+\code{x} is an independent samples t-test. Ignored if \code{x} is a paired
+samples or one sample t-test (cohen's d is reported for these test).}
 
 \item{format}{character specifying the output format, one of \code{"text"},
 \code{"latex"}, \code{"markdown"}, \code{"rmarkdown"} or \code{"docx"}.}

@@ -10,21 +10,31 @@
 \usage{
 cohens_d(x, ...)
 
-\method{cohens_d}{default}(x, y = NULL, paired = FALSE, na.rm = FALSE)
+\method{cohens_d}{default}(x, y = NULL, paired = FALSE, corr = "none",
+  na.rm = FALSE)
 
-\method{cohens_d}{data.frame}(data, dv, iv, na.rm = FALSE)
+\method{cohens_d}{data.frame}(data, dv, iv, paired = FALSE, corr = "none",
+  na.rm = FALSE)
 
-\method{cohens_d}{formula}(formula, data, na.rm = FALSE)
+\method{cohens_d}{formula}(formula, data, paired = FALSE, corr = "none",
+  na.rm = FALSE)
 
-\method{cohens_d}{htest}(ttest)
+\method{cohens_d}{htest}(ttest, corr = "none")
 }
 \arguments{
 \item{x}{a (non-empty) numeric vector of data values.}
 
 \item{y}{an optional (non-empty) numeric vector of data values.}
 
-\item{paired}{a logical indicating whether you want Cohen's d for a paired
-sample or two samples.}
+\item{paired}{a logical indicating whether Cohen's d should be calculated for
+a paired sample or two independent samples \emph{(default)}. Ignored when
+calculating Cohen's for one sample.}
+
+\item{corr}{character specifying the correction applied to calculation of the
+effect size: \code{"none"} \emph{(default)} returns Cohen's d,
+\code{"hedges_g"} applies Hedges correction and \code{"glass_delta"}
+calculates Glass' \eqn{\Delta} (uses the standard deviation of the second
+group).}
 
 \item{na.rm}{logical. Should missing values be removed?}
 
@@ -38,12 +48,35 @@ dependent variable}
 independent variable}
 
 \item{formula}{a formula of the form \code{lhs ~ rhs} where \code{lhs} is a
-numeric variable giving the data values and \code{rhs} a factor with two
-levels giving the corresponding groups.}
+numeric variable giving the data values (dependent variable) and \code{rhs} a
+factor with two levels giving the corresponding groups (independent
+variable).}
 
-\item{ttest}{an object of class \code{htest} (a call to \code{t_test}).}
+\item{ttest}{an object of class \code{htest} (a call to either \code{t_test}
+(preferred) or \code{t.test}).}
 }
 \description{
-Cohen's d
+Calculate Cohen's d from raw data or a call to \code{t_test}/\code{t.test}.
+}
+\examples{
+cohens_d(c(10, 15, 11, 14, 17), c(22, 18, 23, 25, 20))
+
+# Methods when working with data frames
+results <- data.frame(group = rep(letters[1:2], each = 5),
+                      score = c(10, 15, 11, 14, 17, 22, 18, 23, 25, 20))
+
+cohens_d(results, score, group)
+# or
+cohens_d(results, "score", "group")
+# formula interface
+cohens_d(score ~ group, results)
+
+# Or pass a call to t_test or t.test
+cohens_d(t_test(score ~ group, results))
+}
+\references{
+Lakens, D. (2013). Calculating and reporting effect sizes to facilitate
+  cumulative science: a practical primer for t-tests and ANOVAs.
+  \emph{Frontiers in Psychology}, 4, 863. doi:10.3389/fpsyg.2013.00863
 }
 
