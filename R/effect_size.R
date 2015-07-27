@@ -54,8 +54,6 @@ cohens_d.default <- function(x, y = NULL, paired = FALSE, corr = "none",
 {
   if (!paired && !is.null(y))
   {
-    if (length(x) != length(y)) stop("'x' and 'y' must have the same length")
-    
     m1 <- mean(x, na.rm = na.rm)
     m2 <- mean(y, na.rm = na.rm)
     
@@ -72,6 +70,10 @@ cohens_d.default <- function(x, y = NULL, paired = FALSE, corr = "none",
     if (is.null(y))
     {
       y <- 0
+    }
+    else
+    {
+      if (length(x) != length(y)) stop("'x' and 'y' must have the same length")
     }
     
     d <- mean(x - y, na.rm = na.rm) / sd(x - y, na.rm)
