@@ -274,7 +274,7 @@ petasq_aov <- function(x, effect)
     stop("Specified effect not found")
   }
   
-  x[effect, "Sum Sq"] / (x[effect, "Sum Sq"] + x["Residuals", "Sum Sq"])
+  petasq_(x[effect, "Sum Sq"], x["Residuals", "Sum Sq"])
 }
 
 #' @importFrom purrr flatten
@@ -298,8 +298,7 @@ petasq_aovlist <- function(x, effect)
     
     if (length(row) > 0)
     {
-      petasq <-
-        df[row, "Sum Sq"] / (df[row, "Sum Sq"] + df["Residuals", "Sum Sq"])
+      petasq <- petasq_(df[row, "Sum Sq"], df["Residuals", "Sum Sq"])
     }
   }
   
@@ -324,7 +323,22 @@ petasq_ezanova <- function(x, effect)
     row <- which(anova$Effect == effect)
   }
   
-  anova[row, "SSn"] / (anova[row, "SSn"] + anova[row, "SSd"])
+  petasq_(anova[row, "SSn"], anova[row, "SSd"])
+}
+
+#' Partial Eta Squared
+#' 
+#' Calculate the partial eta squared effect size from sum of
+#' squares.
+#' \deqn{\eta_p^2 = \frac{SS_effect}{SS_effect + SS_error}}{partial eta squared
+#' = SS_effect / (SS_effect + SS_error)}
+#' 
+#' @param ss_effect numeric, sum of squares of the effect
+#' @param ss_error numeric, sum of squares of the corresponding error
+#' @export
+petasq_ <- function(ss_effect, ss_error)
+{
+  ss_effect / (ss_effect + ss_error)
 }
 
 getasq <- function(x, effect)
