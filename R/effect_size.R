@@ -263,11 +263,6 @@ petasq <- function(x, effect)
   {
     petasq_ezanova(x, effect)
   }
-  # afex
-  else if (is.list(x) && names(x)[1:3] == c("Anova", "lm", "data"))
-  {
-    petasq_afex(x, effect)
-  }
 }
 
 petasq_aov <- function(x, effect)
@@ -332,13 +327,6 @@ petasq_ezanova <- function(x, effect)
   anova[row, "SSn"] / (anova[row, "SSn"] + anova[row, "SSd"])
 }
 
-petasq_afex <- function(x, effect)
-{
-  anova <- x$Anova
-  
-  
-}
-
 getasq <- function(x, effect)
 {
   # aov
@@ -355,11 +343,6 @@ getasq <- function(x, effect)
   else if (is.list(x) && names(x)[1] == "ANOVA")
   {
     getasq_ezanova(x, effect)
-  }
-  # afex
-  else if (is.list(x) && names(x)[1:3] == c("Anova", "lm", "data"))
-  {
-    getasq_afex(x, effect)
   }
 }
 
