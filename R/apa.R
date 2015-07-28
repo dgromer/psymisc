@@ -490,58 +490,26 @@ check_format <- function(x)
 
 latex_es <- function(es)
 {
-  if (es == "cohens_d")
-  {
-    "\\textit{d}"
-  }
-  else if (es == "hedges_g")
-  {
-    "\\textit{g}"
-  }
-  else if (es == "glass_delta")
-  {
-    "$\\Delta$"
-  }
-  else if (es == "petasq")
-  {
-    "$\\eta^2_p$"
-  }
-  else if (es == "getasq")
-  {
-    "$\\eta^2_g"
-  }
-  else if (es == "omegasq")
-  {
-    "\\omega^2"
-  }
+  switch(es, 
+        "cohens_d"    = "\\textit{d}",
+        "hedges_g"    = "\\textit{g}",
+        "glass_delta" = "$\\Delta$",
+        "petasq"      = "$\\eta^2_p$",
+        "getasq"      = "$\\eta^2_g",
+        "omegasq"     = "\\omega^2"
+  )
 }
 
 html_es <- function(es)
 {
-  if (es == "cohens_d")
-  {
-    "<i>d</i>"
-  }
-  else if (es == "hedges_g")
-  {
-    "<i>g</i>"
-  }
-  else if (es == "glass_delta")
-  {
-    "<i>&Delta;</i>"
-  }
-  else if (es == "petasq")
-  {
-    "<i>&eta;<sup>2</sup><sub>p</sub></i>"
-  }
-  else if (es == "getasq")
-  {
-    "<i>&eta;<sup>2</sup><sub>g</sub></i>"
-  }
-  else if (es == "omegasq")
-  {
-    "<i>&omega;<sup>2</sup></i>"
-  }
+  switch(es,
+         "cohens_d"    = "<i>d</i>",
+         "hedges_g"    = "<i>g</i>",
+         "glass_delta" = "<i>&Delta;</i>",
+         "petasq"      = "<i>&eta;<sup>2</sup><sub>p</sub></i>",
+         "getasq"      = "<i>&eta;<sup>2</sup><sub>g</sub></i>",
+         "omegasq"     = "<i>&omega;<sup>2</sup></i>"
+  )
 }
 
 to_docx <- function(fun, x)
