@@ -22,6 +22,7 @@ chisq_apa <- function(x, print_n = FALSE, format = c("default", "text",
     stop("'x' must be a call to `chisq.test`")
   }
   
+  # Extract and format test statistics
   statistic <- fmt_stat(x$statistic)
   df <- x$parameter
   n <- ifelse(print_n, paste(", n =", sum(x$observed)), "")
@@ -86,6 +87,7 @@ cor_apa <- function(x, format = c("default", "text", "markdown", "rmarkdown",
     stop("'x' must be a call to `cor.test`")
   }
   
+  # Extract and format test statistics
   coef <- cor_coef(x$method)
   estimate <- fmt_stat(x$estimate)
   df <- x$parameter
@@ -215,6 +217,7 @@ t_apa <- function(x, es = "cohens_d", format = c("default", "text", "markdown",
 {
   format <- match.arg(format)
   
+  # Extract and format test statistics
   statistic <- fmt_stat(x$statistic)
   df <- x$parameter
   p <- fmt_pval(x$p.value)
@@ -223,6 +226,7 @@ t_apa <- function(x, es = "cohens_d", format = c("default", "text", "markdown",
   es_name <- switch(es, "cohens_d" = "d", "hedges_g" = "g",
                     "glass_delta" = "delta")
   
+  # Format degrees of freedom if correction was applied
   if (grepl("Welch", x$method))
   {
     df <- fmt_stat(df)
@@ -317,12 +321,14 @@ anova_apa_ezanova <- function(x, sph_corr, es, format, info)
     stop("Parameter 'detailed' needs to be set to TRUE in call to `ezANOVA`")
   }
   
+  # Extract and format test statistics
   tbl <- data_frame(
     effects = anova$Effect, statistic = sapply(anova$F, fmt_stat),
     df_n = anova$DFn, df_d = anova$DFd, p = sapply(anova$p, fmt_pval),
     es = sapply(effects, function(.) fmt_es(do.call(es, list(x, .))))
   )
   
+  # Apply correction for violation of sphericity if required
   if ("Mauchly's Test for Sphericity" %in% names(x) && sph_corr != "none")
   {
     if (sph_corr == "greenhouse-geisser" || sph_corr == "gg")
@@ -502,6 +508,7 @@ fmt_es <- function(es, equal_sign = TRUE)
   }
 }
 
+# Format different effect sizes in RMarkdown
 rmarkdown_es <- function(es)
 {
   switch(es, 
@@ -514,6 +521,7 @@ rmarkdown_es <- function(es)
   )
 }
 
+# Format different effect sizes in LaTeX
 latex_es <- function(es)
 {
   switch(es, 
@@ -526,6 +534,7 @@ latex_es <- function(es)
   )
 }
 
+# Format different effect sizes in HTML
 html_es <- function(es)
 {
   switch(es,
@@ -538,6 +547,7 @@ html_es <- function(es)
   )
 }
 
+# Create a docx file and open it
 apa_to_docx <- function(fun, x, ...)
 {
   tmp <- tempfile("to_apa", fileext = ".md")
@@ -549,6 +559,7 @@ apa_to_docx <- function(fun, x, ...)
   sys_open(outfile)
 }
 
+# Open with standard application on different operating systems
 sys_open <- function(filename)
 {
   sys <- Sys.info()[['sysname']]
