@@ -13,6 +13,7 @@ Imports:
     htmlTable,
     magrittr,
     purrr,
-    rmarkdown
+    rmarkdown,
+    stringr
 URL: https://github.com/dgromer/psymisc
 BugReports:https://github.com/dgromer/psymisc/issues
