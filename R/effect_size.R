@@ -202,19 +202,19 @@ cohens_d_ <- function(m1 = NULL, m2 = NULL, sd1 = NULL, sd2 = NULL, n1 = NULL,
                       corr = "none")
 {
   if (!any(sapply(list(m1, m2, sd1, sd2, n1, n2), is.null)) &&
-      !corr %in% c("glass_delta", "delta"))
+      corr != "glass_delta")
   {
     d <- (m1 - m2) /
       sqrt(((n1 - 1) * sd1 ^ 2 + (n2 - 1) * sd2 ^ 2) / ((n1 + n2) - 2))
     
-    if (corr %in% c("hedges_g", "g"))
+    if (corr == "hedges_g")
     {
       j <- function(a) gamma(a / 2) / (sqrt(gamma(a / 2)) * gamma((a - 1) / 2))
       
       d <- d * j(n1 + n2 - 2)
     }
   }
-  else if (corr %in% c("glass_delta", "delta"))
+  else if (corr == "glass_delta")
   {
     if (!any(sapply(list(m1, m2, sd2), is.null)))
     {
