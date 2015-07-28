@@ -3,16 +3,19 @@
 #' @importFrom rmarkdown render
 #' @param x a call to \code{chisq.test}
 #' @param print_n logical indicating whether to show sample size in text
-#' @param format character specifying the output format, one of
-#'   \code{"default"}, \code{"text"}, \code{"latex"}, \code{"markdown"},
-#'   \code{"rmarkdown"} or \code{"docx"}.
+#' @param format character string specifying the output format. One of 
+#'   \code{"default"}, \code{"text"}, \code{"markdown"}, \code{"rmarkdown"},
+#'   \code{html}, \code{"latex"} or \code{"docx"}.
 #' @param info logical indicating whether to print a message on the used test
 #'   (default is \code{FALSE})
 #' 
 #' @export
-chisq_apa <- function(x, print_n = FALSE, format = "default", info = FALSE)
+chisq_apa <- function(x, print_n = FALSE, format = c("default", "text",
+                                                     "markdown", "rmarkdown",
+                                                     "html", "latex", "docx"),
+                      info = FALSE)
 {
-  check_format(format)
+  format <- match.arg(format)
   
   if (!grepl("Chi-squared test", x$method))
   {
@@ -61,9 +64,9 @@ chisq_apa <- function(x, print_n = FALSE, format = "default", info = FALSE)
 #' 
 #' @importFrom rmarkdown render
 #' @param x a call to \code{cor.test}
-#' @param format character specifying the output format, one of
-#'   \code{"default"}, \code{"text"}, \code{"latex"}, \code{"markdown"},
-#'   \code{"rmarkdown"} or \code{"docx"}.
+#' @param format character string specifying the output format. One of 
+#'   \code{"default"}, \code{"text"}, \code{"markdown"}, \code{"rmarkdown"},
+#'   \code{html}, \code{"latex"} or \code{"docx"}.
 #' @param info logical indicating whether to print a message on the used test
 #'   (default is \code{FALSE})
 #' @examples
@@ -72,9 +75,11 @@ chisq_apa <- function(x, print_n = FALSE, format = "default", info = FALSE)
 #' cor_apa(ct, format = "latex")
 #' 
 #' @export
-cor_apa <- function(x, format = "default", info = FALSE)
+cor_apa <- function(x, format = c("default", "text", "markdown", "rmarkdown",
+                                  "html", "latex", "docx"),
+                    info = FALSE)
 {
-  check_format(format)
+  format <- match.arg(format)
   
   if (!grepl("correlation", x$method))
   {
@@ -196,15 +201,19 @@ cor_coef <- function(x)
 #'   \code{"cohens_d"} (default), \code{"hedges_g"} or \code{"glass_delta"} if
 #'   \code{x} is an independent samples t-test. Ignored if \code{x} is a paired
 #'   samples or one sample t-test (cohen's d is reported for these test).
-#' @param format character specifying the output format, one of \code{"text"},
-#'   \code{"latex"}, \code{"markdown"}, \code{"rmarkdown"} or \code{"docx"}.
+#' @param format character string specifying the output format. One of 
+#'   \code{"default"}, \code{"text"}, \code{"markdown"}, \code{"rmarkdown"},
+#'   \code{html}, \code{"latex"} or \code{"docx"}.
 #' @param info logical indicating whether to print a message on the used test
 #'   (default is \code{FALSE})
 #' 
 #' @export
-t_apa <- function(x, es = "cohens_d", format = "default", info = FALSE)
+t_apa <- function(x, es = "cohens_d", format = c("default", "text", "markdown",
+                                                 "rmarkdown", "html", "latex",
+                                                 "docx"),
+                  info = FALSE)
 {
-  check_format(format)
+  format <- match.arg(format)
   
   statistic <- fmt_stat(x$statistic)
   df <- x$parameter
@@ -264,17 +273,19 @@ t_apa <- function(x, es = "cohens_d", format = "default", info = FALSE)
 #'   \code{"huynh-feldt"} or \code{"none"} (you may also use the abbreviations
 #'   \code{"gg"} or \code{"hf"}).
 #' @param es character string indicating the effect size to show in the output,
-#'   one of \code{"petasq"}, \code{"getasq"}.
-#' @param format character string specifying the output format, one of
-#'   \code{"default"}, \code{"text"}, \code{"latex"}, \code{"markdown"},
-#'   \code{"rmarkdown"} or \code{"docx"}.
+#'   one of \code{"petasq"} or \code{"getasq"}.
+#' @param format character string specifying the output format. One of 
+#'   \code{"default"}, \code{"text"}, \code{"markdown"}, \code{"rmarkdown"},
+#'   \code{html}, \code{"latex"} or \code{"docx"}.
 #' @param info logical indicating whether to print a message on the used test
 #'   (default is \code{FALSE})
 #' @export
 anova_apa <- function(x, sph_corr = "greenhouse-geisser", es = "petasq",
-                      format = "default", info = FALSE)
+                      format = c("default", "text", "markdown", "rmarkdown",
+                                 "html", "latex", "docx"),
+                      info = FALSE)
 {
-  check_format(format)
+  format <- match.arg(format)
   
   if (is.list(x) && names(x)[1] == "ANOVA")
   {
@@ -481,15 +492,6 @@ fmt_es <- function(es, equal_sign = TRUE)
   else
   {
     sprintf("%.2f", es)
-  }
-}
-
-check_format <- function(x)
-{
-  if (!x %in% c("default", "text", "markdown", "rmarkdown", "html", "latex",
-                "docx"))
-  {
-    stop("Unknown format")
   }
 }
 

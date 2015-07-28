@@ -17,11 +17,11 @@ ANOVA). Can be one of \code{"greenhouse-geisser"} (default),
 \code{"gg"} or \code{"hf"}).}
 
 \item{es}{character string indicating the effect size to show in the output,
-one of \code{"petasq"}, \code{"getasq"}.}
+one of \code{"petasq"} or \code{"getasq"}.}
 
-\item{format}{character string specifying the output format, one of
-\code{"default"}, \code{"text"}, \code{"latex"}, \code{"markdown"},
-\code{"rmarkdown"} or \code{"docx"}.}
+\item{format}{character string specifying the output format. One of
+\code{"default"}, \code{"text"}, \code{"markdown"}, \code{"rmarkdown"},
+\code{html}, \code{"latex"} or \code{"docx"}.}
 
 \item{info}{logical indicating whether to print a message on the used test
 (default is \code{FALSE})}

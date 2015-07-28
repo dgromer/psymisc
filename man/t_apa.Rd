@@ -14,8 +14,9 @@ t_apa(x, es = "cohens_d", format = "default", info = FALSE)
 \code{x} is an independent samples t-test. Ignored if \code{x} is a paired
 samples or one sample t-test (cohen's d is reported for these test).}
 
-\item{format}{character specifying the output format, one of \code{"text"},
-\code{"latex"}, \code{"markdown"}, \code{"rmarkdown"} or \code{"docx"}.}
+\item{format}{character string specifying the output format. One of
+\code{"default"}, \code{"text"}, \code{"markdown"}, \code{"rmarkdown"},
+\code{html}, \code{"latex"} or \code{"docx"}.}
 
 \item{info}{logical indicating whether to print a message on the used test
   (default is \code{FALSE})}

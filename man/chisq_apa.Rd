@@ -4,16 +4,17 @@
 \alias{chisq_apa}
 \title{Report Chi-squared test in APA style}
 \usage{
-chisq_apa(x, print_n = FALSE, format = "default", info = FALSE)
+chisq_apa(x, print_n = FALSE, format = c("default", "text", "markdown",
+  "rmarkdown", "html", "latex", "docx"), info = FALSE)
 }
 \arguments{
 \item{x}{a call to \code{chisq.test}}
 
 \item{print_n}{logical indicating whether to show sample size in text}
 
-\item{format}{character specifying the output format, one of
-\code{"default"}, \code{"text"}, \code{"latex"}, \code{"markdown"},
-\code{"rmarkdown"} or \code{"docx"}.}
+\item{format}{character string specifying the output format. One of
+\code{"default"}, \code{"text"}, \code{"markdown"}, \code{"rmarkdown"},
+\code{html}, \code{"latex"} or \code{"docx"}.}
 
 \item{info}{logical indicating whether to print a message on the used test
   (default is \code{FALSE})}
