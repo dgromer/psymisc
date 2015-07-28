@@ -234,10 +234,15 @@ t_apa <- function(x, es = "cohens_d", format = "default", info = FALSE)
     cat("\\textit{t}(", df, ") = ", statistic, ", \\textit{p} ", p,
         ", ", latex_es(es), " ", d, sep = "")
   }
-  else if (format == "markdown" || format == "rmarkdown")
+  else if (format == "markdown")
   {
     cat("*t*(", df, ") = ", statistic, ", *p* ", p, ", *", es_name, "* ", d,
         sep = "")
+  }
+  else if (format == "rmarkdown")
+  {
+    cat("*t*(", df, ") = ", statistic, ", *p* ", p, ", ", rmarkdown_es(es), " ",
+        d, sep = "")
   }
   else if (format == "html")
   {
@@ -246,7 +251,7 @@ t_apa <- function(x, es = "cohens_d", format = "default", info = FALSE)
   }
   else if (format == "docx")
   {
-    apa_to_docx("t_apa", x)
+    apa_to_docx("t_apa", x, es = es)
   }
 }
 
@@ -488,6 +493,18 @@ check_format <- function(x)
   }
 }
 
+rmarkdown_es <- function(es)
+{
+  switch(es, 
+         "cohens_d"    = "*d*",
+         "hedges_g"    = "*g*",
+         "glass_delta" = "$\\Delta$",
+         "petasq"      = "$\\eta^2_p$",
+         "getasq"      = "$\\eta^2_g",
+         "omegasq"     = "\\omega^2"
+  )
+}
+
 latex_es <- function(es)
 {
   switch(es, 
@@ -512,11 +529,11 @@ html_es <- function(es)
   )
 }
 
-apa_to_docx <- function(fun, x)
+apa_to_docx <- function(fun, x, ...)
 {
   tmp <- tempfile("to_apa", fileext = ".md")
   sink(tmp)
-  do.call(fun, list(x, format = "rmarkdown"))
+  do.call(fun, list(x, format = "rmarkdown", ...))
   sink()
   outfile <- render(tmp, output_format = "word_document", quiet = TRUE)
   
