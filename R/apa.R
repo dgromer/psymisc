@@ -228,6 +228,13 @@ t_apa <- function(x, es = "cohens_d", format = c("default", "text", "markdown",
     df <- fmt_stat(df)
   }
   
+  if (es != "cohens_d" && (grepl("One Sample|Paired", x$method)))
+  {
+    warning(paste0("'", es, "' not available for ", x$method, ",",
+                   " 'cohens_d' will be reported instead."))
+    es_name <- "d"
+  }
+  
   if (info) message(x$method)
   
   if (format == "default")
