@@ -53,7 +53,7 @@ chisq_apa <- function(x, print_n = FALSE, format = "default", info = FALSE)
   }
   else if (format == "docx")
   {
-    to_docx("chisq_apa", x)
+    apa_to_docx("chisq_apa", x)
   }
 }
 
@@ -168,7 +168,7 @@ cor_apa <- function(x, format = "default", info = FALSE)
   }
   else if (format == "docx")
   {
-    to_docx("cor_apa", x)
+    apa_to_docx("cor_apa", x)
   }
 }
 
@@ -246,7 +246,7 @@ t_apa <- function(x, es = "cohens_d", format = "default", info = FALSE)
   }
   else if (format == "docx")
   {
-    to_docx("t_apa", x)
+    apa_to_docx("t_apa", x)
   }
 }
 
@@ -512,7 +512,7 @@ html_es <- function(es)
   )
 }
 
-to_docx <- function(fun, x)
+apa_to_docx <- function(fun, x)
 {
   tmp <- tempfile("to_apa", fileext = ".md")
   sink(tmp)
