@@ -243,7 +243,8 @@ cohens_d_ <- function(m1 = NULL, m2 = NULL, sd1 = NULL, sd2 = NULL, n1 = NULL,
 
 #' Partial Eta Squared
 #' 
-#' @param x a call to \code{aov} or \code{ez::ezANOVA}
+#' @param x a call to \code{aov}, \code{ez::ezANOVA} or
+#'   \code{afex::aov_ez}/\code{afex::aov_car}/\code{afex::aov_4}
 #' @param effect character string indicating the effect of interest
 #' @export
 petasq <- function(x, effect)
@@ -257,6 +258,11 @@ petasq <- function(x, effect)
   if (inherits(x, "aovlist"))
   {
     petasq_aovlist(x, effect)
+  }
+  # afex
+  else if (inherits(x, "afex_aov"))
+  {
+    petasq_afex(x, effect)
   }
   # ez::ezANOVA
   else if (is.list(x) && names(x)[1] == "ANOVA")
@@ -303,6 +309,18 @@ petasq_aovlist <- function(x, effect)
   }
   
   petasq
+}
+
+petasq_afex <- function(x, effect)
+{
+  anova <- anova(x, es = "pes", intercept = TRUE)
+  
+  if (!effect %in% row.names(anova))
+  {
+    stop("Specified effect not found")
+  }
+  
+  anova[effect, "pes"]
 }
 
 petasq_ezanova <- function(x, effect)
@@ -353,11 +371,40 @@ getasq <- function(x, effect)
   {
     getasq_anova(x, effect)
   }
+  else if (inherits(x, "afex_aov"))
+  {
+    getasq_afex(x, effect)
+  }
   # ez::ezANOVA
   else if (is.list(x) && names(x)[1] == "ANOVA")
   {
     getasq_ezanova(x, effect)
   }
+}
+
+getasq_afex <- function(x, effect)
+{
+  # afex drops the 'observed' argument when calling `anova` on the afex_aov
+  # object, so we need to get the getasq values from $anova_table. The only
+  # thing we can't retrieve is the getasq for the intercept ...
+  if (effect == "(Intercept)")
+  {
+    return(NA)
+  }
+  
+  anova <- x$anova_table
+  
+  if (!"ges" %in% names(anova))
+  {
+    stop("Argument 'es' needs to be set to \"ges\" in call to ´aov_*`")
+  }
+  
+  if (!effect %in% row.names(anova))
+  {
+    stop("Specified effect not found")
+  }
+  
+  anova[effect, "ges"]
 }
 
 getasq_ezanova <- function(x, effect)

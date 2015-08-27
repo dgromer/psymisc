@@ -128,7 +128,7 @@ p_to_symbol <- function(p)
   }
   else if (p < .1 && p >= .05)
   {
-    "#"
+    "."
   }
   else if (p < .05 && p >= .01)
   {

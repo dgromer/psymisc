@@ -298,14 +298,100 @@ anova_apa <- function(x, sph_corr = "greenhouse-geisser", es = "petasq",
 {
   format <- match.arg(format)
   
-  if (is.list(x) && names(x)[1] == "ANOVA")
+  if (inherits(x, "afex_aov"))
+  {
+    anova_apa_afex(x, sph_corr, es, format, info)
+  }
+  else if (is.list(x) && names(x)[1] == "ANOVA")
   {
     anova_apa_ezanova(x, sph_corr, es, format, info)
   }
   else
   {
-    stop("'x' must be a call to `ez::ezANOVA`")
+    stop("'x' must be a call to `ez::ezANOVA` or `afex::aov_*`")
   }
+}
+
+#' @importFrom dplyr data_frame
+#' @importFrom magrittr %>% %<>%
+anova_apa_afex <- function(x, sph_corr, es, format, info)
+{
+  info_msg <- ""
+  
+  # Set 'correction' to FALSE because afex does greenhouse-geisser correction on
+  # all within-effects by default
+  anova <- anova(x, intercept = TRUE, correction = "none")
+  
+  # Extract information from object
+  tbl <- data_frame(
+    effects = row.names(anova), statistic = sapply(anova$F, fmt_stat),
+    df_n = anova$`num Df`, df_d = anova$`den Df`,
+    p = sapply(anova$`Pr(>F)`, fmt_pval),
+    symb = sapply(anova$`Pr(>F)`, p_to_symbol),
+    es = sapply(effects, function(.) fmt_es(do.call(es, list(x, .)),
+                                            leading_zero = FALSE))
+  )
+  
+  if (length(attr(x, "within")) != 0)
+  {
+    s <- summary(x)
+    
+    if (sph_corr == "greenhouse-geisser" || sph_corr == "gg")
+    {
+      corr_method <- "GG"
+    }
+    else if (sph_corr == "huynh-feldt" || sph_corr == "hf")
+    {
+      corr_method <- "HF"
+    }
+    else
+    {
+      stop(paste0("Unknown correction method '", sph_corr, "'"))
+    }
+    
+    sph_tests <- s$sphericity.tests
+    
+    # Check which effects do not meet the assumption of sphericity
+    mauchlys <- sph_tests[, "p-value"] %>%
+      `[`(. < .05) %>%
+      names()
+    
+    if (length(mauchlys) > 0)
+    {
+      # Apply correction to degrees of freedom
+      tbl[tbl$effects == mauchlys, c("df_n", "df_d")] %<>%
+        `*`(s$pval.adjustments[mauchlys, paste(corr_method, "eps")]) %>%
+        lapply(fmt_stat)
+      
+      # Replace p-values in tbl with corrected ones
+      tbl[tbl$effects == mauchlys, "p"] <-
+        s$pval.adjustments[mauchlys, paste0("Pr(>F[", corr_method, "])")] %>%
+        sapply(fmt_pval)
+      
+      # Add performed corrections to info message
+      info_msg %<>% paste0(
+        "Sphericity corrections:\n",
+        "  The following effects were adjusted using the ",
+        ifelse(corr_method == "GG", "Greenhouse-Geisser", "Huynh-Feldt"),
+        " correction:\n",
+        paste0("  ", mauchlys, " (Mauchly's W = ",
+               sapply(sph_tests[mauchlys, "Test statistic"], fmt_stat),
+               ", p ", sapply(sph_tests[mauchlys, "p-value"], fmt_pval), ")",
+               collapse = "\n")
+      )
+    }
+    else
+    {
+      info_msg %<>% paste0(
+        "Sphericity corrections:\n",
+        "  No corrections applied, all p-values for Mauchly's test p > .05"
+      )
+    }
+  }
+  
+  if (info && info_msg != "") message(info_msg)
+  
+  anova_apa_build(tbl, es, format)
 }
 
 #' @importFrom dplyr data_frame left_join
@@ -325,7 +411,9 @@ anova_apa_ezanova <- function(x, sph_corr, es, format, info)
   tbl <- data_frame(
     effects = anova$Effect, statistic = sapply(anova$F, fmt_stat),
     df_n = anova$DFn, df_d = anova$DFd, p = sapply(anova$p, fmt_pval),
-    es = sapply(effects, function(.) fmt_es(do.call(es, list(x, .))))
+    symb = sapply(anova$p, p_to_symbol),
+    es = sapply(effects, function(.) fmt_es(do.call(es, list(x, .)),
+                                            leading_zero = FALSE))
   )
   
   # Apply correction for violation of sphericity if required
@@ -393,12 +481,14 @@ anova_apa_build <- function(tbl, es_name, format)
 {
   if (format == "default")
   {
+    # TODO: align df also?
     out <- data_frame(
       Effect = tbl$effects,
-      Text = paste0("F(", tbl$df_n, ",", tbl$df_d, ") = ",
-                    format(tbl$statistic, width = max(nchar(tbl$statistic)),
-                           justify = "right"),
-                    ", p ", tbl$p, ", ", es_name, " ", tbl$es)
+      ` ` = paste0("F(", tbl$df_n, ",", tbl$df_d, ") = ",
+                   format(tbl$statistic, width = max(nchar(tbl$statistic)),
+                          justify = "right"),
+                   ", p ", tbl$p, ", ", es_name, " ", tbl$es, " ",
+                   format(tbl$symb, width = 3))
     )
   }
   
@@ -453,7 +543,7 @@ anova_apa_build <- function(tbl, es_name, format)
 
   if (format == "default")
   {
-    out
+    print.data.frame(out)
   }
   else
   {
@@ -492,20 +582,32 @@ fmt_pval <- function(p, equal_sign = TRUE)
 }
 
 # Format an effect size
-fmt_es <- function(es, equal_sign = TRUE)
+fmt_es <- function(es, leading_zero = TRUE, equal_sign = TRUE)
 {
+  if (is.na(es))
+  {
+    return(ifelse(leading_zero, "=   NA", "=  NA"))
+  }
+  
   if (abs(es) < .01)
   {
-    "< 0.01"
+    es <- "< 0.01"
   }
   else if (equal_sign)
   {
-    paste("=", sprintf("%.2f", es))
+    es <- paste("=", sprintf("%.2f", es))
   }
   else
   {
-    sprintf("%.2f", es)
+    es <- sprintf("%.2f", es)
   }
+  
+  if (!leading_zero)
+  {
+    es <- sub("0.", ".", es)
+  }
+  
+  es
 }
 
 # Format different effect sizes in RMarkdown

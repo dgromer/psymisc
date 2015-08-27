@@ -4,7 +4,8 @@
 \alias{t_apa}
 \title{Report t-Test in APA style}
 \usage{
-t_apa(x, es = "cohens_d", format = "default", info = FALSE)
+t_apa(x, es = "cohens_d", format = c("default", "text", "markdown",
+  "rmarkdown", "html", "latex", "docx"), info = FALSE)
 }
 \arguments{
 \item{x}{a call to \code{t_test}}
