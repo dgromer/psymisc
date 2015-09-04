@@ -18,9 +18,11 @@
 #'   passed to \link{t_test}, e.g. \code{var.equal = TRUE}.
 #' 
 #' @export
-stats_table <- function(.data, iv, ..., sig = FALSE, format = "default",
-                        args = list())
+stats_table <- function(.data, iv, ..., sig = FALSE,
+                        format = c("default", "html"), args = list())
 {
+  format <- match.arg(format)
+  
   # Convert iv to character if it is a name
   if (!is.character(substitute(iv)))
   {

@@ -4,7 +4,7 @@
 \alias{stats_table}
 \title{Statistical table}
 \usage{
-stats_table(.data, iv, ..., sig = FALSE, format = "default",
+stats_table(.data, iv, ..., sig = FALSE, format = c("default", "html"),
   args = list())
 }
 \arguments{

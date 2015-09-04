@@ -4,7 +4,7 @@
 \alias{fplot}
 \title{fplot}
 \usage{
-fplot(.data, formula, geom = "bar")
+fplot(.data, formula, geom = c("bar", "line", "boxplot"))
 }
 \arguments{
 \item{.data}{a data frame containing the variables in the formula

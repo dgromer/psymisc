@@ -13,8 +13,10 @@
 #'   (default), \code{"line"} and \code{"boxplot"}.
 #' 
 #' @export
-fplot <- function(.data, formula, geom = "bar")
+fplot <- function(.data, formula, geom = c("bar", "line", "boxplot"))
 {
+  geom <- match.arg(geom)
+  
   # Get dependent variable
   dv <- all.vars(formula)[1]
   

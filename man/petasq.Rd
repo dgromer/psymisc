@@ -7,7 +7,8 @@
 petasq(x, effect)
 }
 \arguments{
-\item{x}{a call to \code{aov} or \code{ez::ezANOVA}}
+\item{x}{a call to \code{aov}, \code{ez::ezANOVA} or
+\code{afex::aov_ez}/\code{afex::aov_car}/\code{afex::aov_4}}
 
 \item{effect}{character string indicating the effect of interest}
 }
