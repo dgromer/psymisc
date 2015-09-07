@@ -44,14 +44,7 @@ fplot <- function(.data, formula, geom = c("bar", "line", "boxplot"))
   descr <- left_join(expand.grid(level_list, stringsAsFactors = FALSE), descr,
                      by = vars)
   
-  if (geom %in% c("bar", "line"))
-  {
-    do.call(paste0("fplot_", geom), list(x = descr, dv = dv, vars = vars))
-  }
-  else
-  {
-    stop("Unknown type passed to argument 'geom'")
-  }
+  do.call(paste0("fplot_", geom), list(x = descr, dv = dv, vars = vars))
 }
 
 #' @import ggplot2
