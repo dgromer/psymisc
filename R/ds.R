@@ -3,7 +3,7 @@
 #' A wrapper for dplyr's \code{group_by} and \code{summarise} for descriptive
 #' statistics.
 #' 
-#' @importFrom dplyr group_by_ summarise_
+#' @importFrom dplyr group_by_ summarise_ ungroup
 #' @param .data a data frame containing the variables in the formula
 #'   \code{formula}.
 #' @param formula a formula in the form \code{lhs ~ rhs} where \code{lhs} is a
@@ -41,7 +41,7 @@ ds <- function(.data, formula, funs = c("mean", "se"), names = funs, ...)
   # Convert function calls to formulas in order to include calling environment
   dots <- sapply(paste("~", dots), as.formula)
   
-  summarise_(.data, .dots = setNames(dots, names))
+  ungroup(summarise_(.data, .dots = setNames(dots, names)))
 }
 
 dots_to_character <- function(...)
