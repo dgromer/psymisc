@@ -4,6 +4,7 @@
 #' data.
 #' 
 #' @importFrom dplyr left_join
+#' @importFrom tidyr complete_
 #' @param .data a data frame containing the variables in the formula
 #'   \code{formula}.
 #' @param formula a formula in the form \code{lhs ~ rhs} where \code{lhs} is
@@ -31,18 +32,8 @@ fplot <- function(.data, formula, geom = c("bar", "line", "boxplot"))
   # Calculate means and standard errors
   descr <- ds(.data, formula, na.rm = TRUE)
   
-  # Keep empty groups in descr:
-  # Workaround for https://github.com/hadley/dplyr/issues/341
-  
-  # List of factor levels for expand.grid
-  level_list <- lapply(vars, function(.) levels(factor(.data[[.]])))
-  level_list <- setNames(level_list, vars)
-  
-  # Factor columns need to be character for joining
-  descr[, vars] <- lapply(descr[, vars], as.character)
-  
-  descr <- left_join(expand.grid(level_list, stringsAsFactors = FALSE), descr,
-                     by = vars)
+  # Keep empty groups in descr
+  descr <- complete_(descr, vars, fill = list())
   
   do.call(paste0("fplot_", geom), list(x = descr, dv = dv, vars = vars))
 }
