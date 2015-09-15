@@ -26,7 +26,8 @@ use e.g. \code{c(NULL, 3)}.}
 and upper limits for outlier detection. If only one side should be scanned
 use e.g. \code{c(10, NULL)}.}
 
-\item{info}{}
+\item{info}{logical indicating whether to print the number of outliers
+  detected to the console.}
 }
 \description{
 Remove or flag outliers in a data frame

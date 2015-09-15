@@ -353,8 +353,8 @@ anova_apa_afex <- function(x, sph_corr, es, format, info)
     df_n = anova$`num Df`, df_d = anova$`den Df`,
     p = sapply(anova$`Pr(>F)`, fmt_pval),
     symb = sapply(anova$`Pr(>F)`, p_to_symbol),
-    es = sapply(effects, function(.) fmt_es(do.call(es, list(x, .)),
-                                            leading_zero = FALSE))
+    es = sapply(effects, function(effect) fmt_es(do.call(es, list(x, effect)),
+                                                 leading_zero = FALSE))
   )
   
   if (length(attr(x, "within")) != 0)
@@ -437,8 +437,8 @@ anova_apa_ezanova <- function(x, sph_corr, es, format, info)
     effects = anova$Effect, statistic = sapply(anova$F, fmt_stat),
     df_n = anova$DFn, df_d = anova$DFd, p = sapply(anova$p, fmt_pval),
     symb = sapply(anova$p, p_to_symbol),
-    es = sapply(effects, function(.) fmt_es(do.call(es, list(x, .)),
-                                            leading_zero = FALSE))
+    es = sapply(effects, function(effect) fmt_es(do.call(es, list(x, effect)),
+                                                 leading_zero = FALSE))
   )
   
   # Apply correction for violation of sphericity if required

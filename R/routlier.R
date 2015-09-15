@@ -14,7 +14,8 @@
 #' @param absolute numeric vector of length two indicating the absolute lower
 #'   and upper limits for outlier detection. If only one side should be scanned
 #'   use e.g. \code{c(10, NULL)}.
-#' @param info
+#' @param info logical indicating whether to print the number of outliers
+#'   detected to the console.
 #' 
 #' @export
 routlier <- function(.data, ..., action = "na", z = c(-3, 3), absolute = NULL,

@@ -25,6 +25,7 @@
 #' variable).
 #' @param ttest an object of class \code{htest} (a call to either \code{t_test}
 #'   (preferred) or \code{t.test}).
+#' @param ... Further arguments passed to methods.
 #' @references
 #'   Lakens, D. (2013). Calculating and reporting effect sizes to facilitate
 #'   cumulative science: a practical primer for t-tests and ANOVAs.
@@ -33,21 +34,21 @@
 #' cohens_d(c(10, 15, 11, 14, 17), c(22, 18, 23, 25, 20))
 #' 
 #' # Methods when working with data frames
-#' cohens_d(heights, dv = anx_lvl1, iv = group)
+#' cohens_d(height, dv = anx_lvl1, iv = group)
 #' # or
-#' cohens_d(heights, dv = "anx_lvl1", iv = "group")
+#' cohens_d(height, dv = "anx_lvl1", iv = "group")
 #' # formula interface
-#' cohens_d(anx_lvl1 ~ group, heights)
+#' cohens_d(anx_lvl1 ~ group, height)
 #' 
 #' # Or pass a call to t_test or t.test
-#' cohens_d(t_test(anx_lvl1 ~ group, heights))
+#' cohens_d(t_test(anx_lvl1 ~ group, height))
 #' @export
-cohens_d <- function(x, ...) UseMethod("cohens_d")
+cohens_d <- function(...) UseMethod("cohens_d")
 
 #' @rdname cohens_d
 #' @export
 cohens_d.default <- function(x, y = NULL, paired = FALSE, corr = "none",
-                             na.rm = FALSE)
+                             na.rm = FALSE, ...)
 {
   if (!paired && !is.null(y))
   {
@@ -82,7 +83,7 @@ cohens_d.default <- function(x, y = NULL, paired = FALSE, corr = "none",
 #' @rdname cohens_d
 #' @export
 cohens_d.data.frame <- function(data, dv, iv, paired = FALSE, corr = "none",
-                                na.rm = FALSE)
+                                na.rm = FALSE, ...)
 {
   # Convert iv and dv to character if they are a name
   if (!is.character(substitute(iv))) iv <- as.character(substitute(iv))
@@ -96,7 +97,7 @@ cohens_d.data.frame <- function(data, dv, iv, paired = FALSE, corr = "none",
 #' @rdname cohens_d
 #' @export
 cohens_d.formula <- function(formula, data, paired = FALSE, corr = "none",
-                             na.rm = FALSE)
+                             na.rm = FALSE, ...)
 {
   mf <- model.frame(formula, data)
   .data <- setNames(split(mf[[1]], mf[[2]]), c("x", "y"))
@@ -106,7 +107,7 @@ cohens_d.formula <- function(formula, data, paired = FALSE, corr = "none",
 
 #' @rdname cohens_d
 #' @export
-cohens_d.htest <- function(ttest, corr = "none")
+cohens_d.htest <- function(ttest, corr = "none", ...)
 {
   if (!grepl("t-test", ttest$method))
   {
@@ -358,17 +359,7 @@ petasq_ <- function(ss_effect, ss_error)
 
 getasq <- function(x, effect)
 {
-  # aov
-  if (inherits(x, "aov"))
-  {
-    getasq_anova(anova(x), effect)
-  }
-  # anova
-  else if (inherits(x, "anova"))
-  {
-    getasq_anova(x, effect)
-  }
-  else if (inherits(x, "afex_aov"))
+  if (inherits(x, "afex_aov"))
   {
     getasq_afex(x, effect)
   }
@@ -393,7 +384,7 @@ getasq_afex <- function(x, effect)
   
   if (!"ges" %in% names(anova))
   {
-    stop("Argument 'es' needs to be set to \"ges\" in call to ´aov_*`")
+    stop("Argument 'es' needs to be set to \"ges\" in call to `aov_*`")
   }
   
   if (!effect %in% row.names(anova))

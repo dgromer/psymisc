@@ -8,20 +8,22 @@
 \alias{cohens_d.htest}
 \title{Cohen's d}
 \usage{
-cohens_d(x, ...)
+cohens_d(...)
 
 \method{cohens_d}{default}(x, y = NULL, paired = FALSE, corr = "none",
-  na.rm = FALSE)
+  na.rm = FALSE, ...)
 
 \method{cohens_d}{data.frame}(data, dv, iv, paired = FALSE, corr = "none",
-  na.rm = FALSE)
+  na.rm = FALSE, ...)
 
 \method{cohens_d}{formula}(formula, data, paired = FALSE, corr = "none",
-  na.rm = FALSE)
+  na.rm = FALSE, ...)
 
-\method{cohens_d}{htest}(ttest, corr = "none")
+\method{cohens_d}{htest}(ttest, corr = "none", ...)
 }
 \arguments{
+\item{...}{Further arguments passed to methods.}
+
 \item{x}{a (non-empty) numeric vector of data values.}
 
 \item{y}{an optional (non-empty) numeric vector of data values.}
@@ -62,14 +64,14 @@ Calculate Cohen's d from raw data or a call to \code{t_test}/\code{t.test}.
 cohens_d(c(10, 15, 11, 14, 17), c(22, 18, 23, 25, 20))
 
 # Methods when working with data frames
-cohens_d(heights, dv = anx_lvl1, iv = group)
+cohens_d(height, dv = anx_lvl1, iv = group)
 # or
-cohens_d(heights, dv = "anx_lvl1", iv = "group")
+cohens_d(height, dv = "anx_lvl1", iv = "group")
 # formula interface
-cohens_d(anx_lvl1 ~ group, heights)
+cohens_d(anx_lvl1 ~ group, height)
 
 # Or pass a call to t_test or t.test
-cohens_d(t_test(anx_lvl1 ~ group, heights))
+cohens_d(t_test(anx_lvl1 ~ group, height))
 }
 \references{
 Lakens, D. (2013). Calculating and reporting effect sizes to facilitate

@@ -13,6 +13,8 @@
 #' @param ... names of the dependent variables
 #' @param sig logical indicating whether to show significance with symbols in
 #'   the last column
+#' @param format character string indicating the output format, must be either
+#'   \code{"default"} or {"html"}. The latter prints the table as a htmlwidget
 #' @param args a list with further arguments passed to functions. If the
 #'   independent variable has two levels, then \code{args} can contain arguments
 #'   passed to \link{t_test}, e.g. \code{var.equal = TRUE}.
@@ -92,7 +94,7 @@ stats_table_header <- function(iv)
 
 stats_table_row_aov <- function(.data, dv, iv, es = "petasq")
 {
-  stats <- stats_table_descriptives(.data, dv, iv, na.rm)
+  stats <- stats_table_descriptives(.data, dv, iv)
   
   test <- anova(aov(as.formula(paste(dv, "~", iv)), .data))
 

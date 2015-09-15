@@ -17,6 +17,9 @@ stats_table(.data, iv, ..., sig = FALSE, format = c("default", "html"),
 \item{sig}{logical indicating whether to show significance with symbols in
 the last column}
 
+\item{format}{character string indicating the output format, must be either
+\code{"default"} or {"html"}. The latter prints the table as a htmlwidget}
+
 \item{args}{a list with further arguments passed to functions. If the
 independent variable has two levels, then \code{args} can contain arguments
 passed to \link{t_test}, e.g. \code{var.equal = TRUE}.}
