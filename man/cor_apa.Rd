@@ -21,8 +21,6 @@ cor_apa(x, format = c("default", "text", "markdown", "rmarkdown", "html",
 Report Correlation in APA style
 }
 \examples{
-ct <- cor.test(runif(20), runif(20))
-cor_apa(ct)
-cor_apa(ct, format = "latex")
+cor_apa(cor.test(~ anx_lvl1 + anx_lvl2, height))
 }
 

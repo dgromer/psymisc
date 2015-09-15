@@ -18,12 +18,17 @@ stats_table(.data, iv, ..., sig = FALSE, format = c("default", "html"),
 the last column}
 
 \item{args}{a list with further arguments passed to functions. If the
-  independent variable has two levels, then \code{args} can contain arguments
-  passed to \link{t_test}, e.g. \code{var.equal = TRUE}.}
+independent variable has two levels, then \code{args} can contain arguments
+passed to \link{t_test}, e.g. \code{var.equal = TRUE}.}
 }
 \description{
 Compiles a table with descriptive and inferential statistics to compare group
 characteristics, e.g. control variables of a treatment group and a control
 group.
+}
+\examples{
+stats_table(height, iv = group, age:aq_avoi)
+stats_table(height, iv = group, age:aq_avoi, sig = TRUE, format = "html",
+            args = list(var.equal = TRUE))
 }
 

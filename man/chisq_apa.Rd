@@ -17,9 +17,12 @@ chisq_apa(x, print_n = FALSE, format = c("default", "text", "markdown",
 \code{html}, \code{"latex"} or \code{"docx"}.}
 
 \item{info}{logical indicating whether to print a message on the used test
-  (default is \code{FALSE})}
+(default is \code{FALSE})}
 }
 \description{
 Report Chi-squared test in APA style
+}
+\examples{
+chisq_apa(chisq.test(height$group, height$sex))
 }
 

@@ -33,17 +33,14 @@
 #' cohens_d(c(10, 15, 11, 14, 17), c(22, 18, 23, 25, 20))
 #' 
 #' # Methods when working with data frames
-#' results <- data.frame(group = rep(letters[1:2], each = 5),
-#'                       score = c(10, 15, 11, 14, 17, 22, 18, 23, 25, 20))
-#' 
-#' cohens_d(results, score, group)
+#' cohens_d(heights, dv = anx_lvl1, iv = group)
 #' # or
-#' cohens_d(results, "score", "group")
+#' cohens_d(heights, dv = "anx_lvl1", iv = "group")
 #' # formula interface
-#' cohens_d(score ~ group, results)
+#' cohens_d(anx_lvl1 ~ group, heights)
 #' 
 #' # Or pass a call to t_test or t.test
-#' cohens_d(t_test(score ~ group, results))
+#' cohens_d(t_test(anx_lvl1 ~ group, heights))
 #' @export
 cohens_d <- function(x, ...) UseMethod("cohens_d")
 

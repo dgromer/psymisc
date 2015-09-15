@@ -16,7 +16,10 @@
 #' @param args a list with further arguments passed to functions. If the
 #'   independent variable has two levels, then \code{args} can contain arguments
 #'   passed to \link{t_test}, e.g. \code{var.equal = TRUE}.
-#' 
+#' @examples
+#' stats_table(height, iv = group, age:aq_avoi)
+#' stats_table(height, iv = group, age:aq_avoi, sig = TRUE, format = "html",
+#'             args = list(var.equal = TRUE))
 #' @export
 stats_table <- function(.data, iv, ..., sig = FALSE,
                         format = c("default", "html"), args = list())
@@ -30,7 +33,7 @@ stats_table <- function(.data, iv, ..., sig = FALSE,
   }
   
   # Get a vector of the levels of the iv
-  group_names <- unique(.data[[iv]])
+  group_names <- as.character(unique(.data[[iv]]))
 
   # Get the column names of the dvs
   dvs <- names(select(.data, ...))

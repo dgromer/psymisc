@@ -18,6 +18,8 @@
 #' @examples 
 #' ds(sleep, extra ~ group)
 #' ds(sleep, extra ~ group, funs = c("median", "var", "n"))
+#' 
+#' ds(height, anx_lvl1 ~ group + sex)
 #' @seealso \link{aggregate}
 #' @export
 ds <- function(.data, formula, funs = c("mean", "se"), names = funs, ...)

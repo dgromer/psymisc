@@ -8,6 +8,8 @@
 #'   \code{html}, \code{"latex"} or \code{"docx"}.
 #' @param info logical indicating whether to print a message on the used test
 #'   (default is \code{FALSE})
+#' @examples
+#' chisq_apa(chisq.test(height$group, height$sex))
 #' 
 #' @export
 chisq_apa <- function(x, print_n = FALSE, format = c("default", "text",
@@ -71,9 +73,7 @@ chisq_apa <- function(x, print_n = FALSE, format = c("default", "text",
 #' @param info logical indicating whether to print a message on the used test
 #'   (default is \code{FALSE})
 #' @examples
-#' ct <- cor.test(runif(20), runif(20))
-#' cor_apa(ct)
-#' cor_apa(ct, format = "latex")
+#' cor_apa(cor.test(~ anx_lvl1 + anx_lvl2, height))
 #' 
 #' @export
 cor_apa <- function(x, format = c("default", "text", "markdown", "rmarkdown",
@@ -208,6 +208,8 @@ cor_coef <- function(x)
 #'   \code{html}, \code{"latex"} or \code{"docx"}.
 #' @param info logical indicating whether to print a message on the used test
 #'   (default is \code{FALSE})
+#' @examples
+#' t_apa(t_test(anx_lvl1 ~ group, height))
 #' 
 #' @export
 t_apa <- function(x, es = "cohens_d", format = c("default", "text", "markdown",
@@ -290,6 +292,29 @@ t_apa <- function(x, es = "cohens_d", format = c("default", "text", "markdown",
 #'   \code{html}, \code{"latex"} or \code{"docx"}.
 #' @param info logical indicating whether to print a message on the used test
 #'   (default is \code{FALSE})
+#' @examples
+#' \dontrun{
+#' library(dplyr)
+#' library(tidyr)
+#' 
+#' # Convert data from wide format to long format
+#' data <- height %>%
+#'   select(id, group, anx_lvl1:anx_lvl3) %>%
+#'   gather(key = "level", value = "anxiety", anx_lvl1:anx_lvl3)
+#' 
+#' # Use ez package
+#' library(ez)
+#' ezANOVA(data, dv = anxiety, wid = id, within = level, between = group,
+#'         detailed = TRUE) %>%
+#'   anova_apa()
+#' 
+#' # Use afex package
+#' library(afex)
+#' aov_ez(id = "id", dv = "anxiety", data = data, between = "group",
+#'        within = "level") %>%
+#'   anova_apa()
+#' }
+#' 
 #' @export
 anova_apa <- function(x, sph_corr = "greenhouse-geisser", es = "petasq",
                       format = c("default", "text", "markdown", "rmarkdown",

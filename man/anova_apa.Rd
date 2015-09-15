@@ -30,4 +30,27 @@ one of \code{"petasq"} or \code{"getasq"}.}
 \description{
 Report ANOVA in APA style
 }
+\examples{
+\dontrun{
+library(dplyr)
+library(tidyr)
+
+# Convert data from wide format to long format
+data <- height \%>\%
+  select(id, group, anx_lvl1:anx_lvl3) \%>\%
+  gather(key = "level", value = "anxiety", anx_lvl1:anx_lvl3)
+
+# Use ez package
+library(ez)
+ezANOVA(data, dv = anxiety, wid = id, within = level, between = group,
+        detailed = TRUE) \%>\%
+  anova_apa()
+
+# Use afex package
+library(afex)
+aov_ez(id = "id", dv = "anxiety", data = data, between = "group",
+       within = "level") \%>\%
+  anova_apa()
+}
+}
 

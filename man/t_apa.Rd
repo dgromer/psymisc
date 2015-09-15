@@ -20,9 +20,12 @@ samples or one sample t-test (cohen's d is reported for these test).}
 \code{html}, \code{"latex"} or \code{"docx"}.}
 
 \item{info}{logical indicating whether to print a message on the used test
-  (default is \code{FALSE})}
+(default is \code{FALSE})}
 }
 \description{
 Report t-Test in APA style
+}
+\examples{
+t_apa(t_test(anx_lvl1 ~ group, height))
 }
 
