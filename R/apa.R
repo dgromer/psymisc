@@ -629,7 +629,14 @@ fmt_es <- function(es, leading_zero = TRUE, equal_sign = TRUE)
   
   if (!leading_zero)
   {
-    es <- sub("0.", ".", es)
+    if (es == "= 1.00")
+    {
+      es <- "> .99"
+    }
+    else
+    {
+      es <- sub("0.", ".", es)
+    }
   }
   
   es
