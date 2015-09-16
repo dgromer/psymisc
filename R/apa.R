@@ -650,7 +650,7 @@ rmarkdown_es <- function(es)
          "hedges_g"    = "*g*",
          "glass_delta" = "$\\Delta$",
          "petasq"      = "$\\eta^2_p$",
-         "getasq"      = "$\\eta^2_g",
+         "getasq"      = "$\\eta^2_g$",
          "omegasq"     = "\\omega^2"
   )
 }
@@ -663,7 +663,7 @@ latex_es <- function(es)
         "hedges_g"    = "\\textit{g}",
         "glass_delta" = "$\\Delta$",
         "petasq"      = "$\\eta^2_p$",
-        "getasq"      = "$\\eta^2_g",
+        "getasq"      = "$\\eta^2_g$",
         "omegasq"     = "\\omega^2"
   )
 }
