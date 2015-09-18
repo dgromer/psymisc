@@ -229,11 +229,11 @@ cohens_d_ <- function(m1 = NULL, m2 = NULL, sd1 = NULL, sd2 = NULL, n1 = NULL,
   }
   else if (!any(sapply(list(t, n), is.null)) && !paired)
   {
-    d <- 2 * t * sqrt(n)
+    d <- 2 * t / sqrt(n)
   }
   else if (!any(sapply(list(t, n), is.null)) && paired)
   {
-    d <- t * sqrt(n)
+    d <- t / sqrt(n)
   }
   
   d
