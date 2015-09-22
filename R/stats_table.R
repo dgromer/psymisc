@@ -40,30 +40,24 @@ stats_table <- function(.data, iv, ..., sig = FALSE,
   # Get the column names of the dvs
   dvs <- names(select(.data, ...))
   
-  header <- stats_table_header(group_names)
+  header <- stats_table_header(group_names, sig)
   
   # Calculate statistics for each dependent variable
   if (length(group_names) == 2)
   {
     rows <- lapply(dvs, function(dv)
       do.call("stats_table_row_ttest", splice(.data = .data, dv = dv, iv = iv,
-                                              args)))
+                                              sig = sig, args)))
   }
   else
   {
-    rows <- lapply(dvs, function(dv) stats_table_row_aov(.data, dv, iv))
+    rows <- lapply(dvs, function(dv) stats_table_row_aov(.data, dv, iv, sig))
   }
   
   rows <- lapply(rows, matrix, nrow = 1)
   tbl <- as.data.frame(Reduce(rbind, rows), stringsAsFactors = FALSE)
   names(tbl) <- header
   row.names(tbl) <- NULL
-  
-  # Show significance symbols in last column if sig is TRUE
-  if (sig)
-  {
-    tbl$sig <- sapply(as.numeric(gsub(">|<", "", tbl$p)), p_to_symbol)
-  }
   
   if (format == "html")
   {
@@ -84,29 +78,32 @@ stats_table <- function(.data, iv, ..., sig = FALSE,
   }
 }
 
-stats_table_header <- function(iv)
+stats_table_header <- function(iv, sig)
 {
+  sig <- if (sig) "sig" else character(0)
+  
   c("Variable", paste(c("M", "SD"), rep(iv, each = 2), sep = "_"),
     ifelse(length(iv) > 2, "F", "t"), "p",
-    ifelse(length(iv) > 2, "petasq", "d"))
+    ifelse(length(iv) > 2, "petasq", "d"), sig)
 }
 
 
-stats_table_row_aov <- function(.data, dv, iv, es = "petasq")
+stats_table_row_aov <- function(.data, dv, iv, es = "petasq", sig)
 {
   stats <- stats_table_descriptives(.data, dv, iv)
   
   test <- anova(aov(as.formula(paste(dv, "~", iv)), .data))
 
-  f <- fmt_stat(test[["F value"]][1])
-  p <- fmt_pval(test[["Pr(>F)"]][1], equal_sign = FALSE)
-  petasq <- fmt_es(test[["Sum Sq"]][1] / sum(test[["Sum Sq"]]),
-                   equal_sign = FALSE)
+   f <- fmt_stat(test[["F value"]][1])
+   p <- fmt_pval(test[["Pr(>F)"]][1], equal_sign = FALSE)
+   petasq <- fmt_es(test[["Sum Sq"]][1] / sum(test[["Sum Sq"]]),
+                    equal_sign = FALSE)
+   sig <- if (sig)  p_to_symbol(test[["Pr(>F)"]][1]) else character(0)
   
-  c(dv, stats, f, p, petasq)
+  c(dv, stats, f, p, petasq, sig)
 }
 
-stats_table_row_ttest <- function(.data, dv, iv, ...)
+stats_table_row_ttest <- function(.data, dv, iv, sig, ...)
 {
   stats <- stats_table_descriptives(.data, dv, iv)
   
@@ -115,8 +112,9 @@ stats_table_row_ttest <- function(.data, dv, iv, ...)
   t <- fmt_stat(test$statistic)
   p <- fmt_pval(test$p.value, equal_sign = FALSE)
   d <- fmt_es(cohens_d(test), equal_sign = FALSE)
+  sig <- if (sig) p_to_symbol(test$p.value) else character(0)
   
-  c(dv, stats, t, p, d)
+  c(dv, stats, t, p, d, sig)
 }
 
 stats_table_descriptives <- function(.data, dv, iv)
