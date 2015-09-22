@@ -4,8 +4,8 @@
 \alias{stats_table}
 \title{Statistical table}
 \usage{
-stats_table(.data, iv, ..., sig = FALSE, format = c("default", "html"),
-  args = list())
+stats_table(.data, iv, ..., sig = FALSE, format = c("default", "html",
+  "latex"), args = list())
 }
 \arguments{
 \item{.data}{a data frame}
@@ -17,8 +17,11 @@ stats_table(.data, iv, ..., sig = FALSE, format = c("default", "html"),
 \item{sig}{logical indicating whether to show significance with symbols in
 the last column}
 
-\item{format}{character string indicating the output format, must be either
-\code{"default"} or {"html"}. The latter prints the table as a htmlwidget}
+\item{format}{character string indicating the output format, one of
+\code{"default"}, \code{"html"} or \code{"latex"}. For HTML, the table is
+displayed as a htmlwidget. For LaTeX, the \code{tabularx} environment is
+used, which requires the tabularx package. The utilized \code{\\cmidrule}
+command requires either the booktabs or ctable package.}
 
 \item{args}{a list with further arguments passed to functions. If the
 independent variable has two levels, then \code{args} can contain arguments

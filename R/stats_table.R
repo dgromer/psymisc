@@ -13,8 +13,11 @@
 #' @param ... names of the dependent variables
 #' @param sig logical indicating whether to show significance with symbols in
 #'   the last column
-#' @param format character string indicating the output format, must be either
-#'   \code{"default"} or {"html"}. The latter prints the table as a htmlwidget
+#' @param format character string indicating the output format, one of 
+#'   \code{"default"}, \code{"html"} or \code{"latex"}. For HTML, the table is 
+#'   displayed as a htmlwidget. For LaTeX, the \code{tabularx} environment is
+#'   used, which requires the tabularx package. The utilized \code{\\cmidrule}
+#'   command requires either the booktabs or ctable package.
 #' @param args a list with further arguments passed to functions. If the
 #'   independent variable has two levels, then \code{args} can contain arguments
 #'   passed to \link{t_test}, e.g. \code{var.equal = TRUE}.
@@ -24,7 +27,7 @@
 #'             args = list(var.equal = TRUE))
 #' @export
 stats_table <- function(.data, iv, ..., sig = FALSE,
-                        format = c("default", "html"), args = list())
+                        format = c("default", "html", "latex"), args = list())
 {
   format <- match.arg(format)
   
@@ -72,10 +75,30 @@ stats_table <- function(.data, iv, ..., sig = FALSE,
       n.cgroup = c(rep(2, length(group_names)), ifelse(sig, 4, 3))
     )
   }
+  else if (format == "latex")
+  {
+    header <- gsub("_.*$", "", names(tbl))[-1]
+    
+    cat("\\begin{tabularx}{\\textwidth}{Xrrrrrrr}\n\\hline\n",
+        paste0(" & \\multicolumn{2}{c}{", group_names, "}"), " & & & \\\\\n",
+        "\\cmidrule(lr){2-3}\\cmidrule(lr){4-5}\n",
+        " & ", paste(paste0("\\textit{", header, "}"), collapse = " & "),
+        " \\\\\n",
+        tbl_to_latex(tbl), " \\\\\n",
+        "\\hline\n\\end{tabularx}", sep = "")
+  }
   else
   {
     tbl
   }
+}
+
+#' @importFrom magrittr %>%
+tbl_to_latex <- function(x)
+{
+  x %>%
+    apply(1, paste, collapse = " & ") %>%
+    paste(collapse = " \\\\\n")
 }
 
 stats_table_header <- function(iv, sig)
