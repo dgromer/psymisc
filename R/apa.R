@@ -509,7 +509,7 @@ anova_apa_build <- function(tbl, es_name, format)
     # TODO: align df also?
     out <- data_frame(
       Effect = tbl$effects,
-      ` ` = paste0("F(", tbl$df_n, ",", tbl$df_d, ") = ",
+      ` ` = paste0("F(", tbl$df_n, ", ", tbl$df_d, ") = ",
                    format(tbl$statistic, width = max(nchar(tbl$statistic)),
                           justify = "right"),
                    ", p ", tbl$p, ", ", es_name, " ", tbl$es, " ",
@@ -522,39 +522,39 @@ anova_apa_build <- function(tbl, es_name, format)
   
   if (format == "text")
   {
-    out <- paste0(tbl$effects, " F(", tbl$df_n, ",", tbl$df_d, ") = ",
+    out <- paste0(tbl$effects, " F(", tbl$df_n, ", ", tbl$df_d, ") = ",
                   tbl$statistic, ", p ", tbl$p, ", ", es_name, " ", tbl$es, 
                   "\n")
   }
   else if (format == "markdown")
   {
-    out <- paste0(tbl$effects, " *F*(", tbl$df_n, ",", tbl$df_d, ") = ",
+    out <- paste0(tbl$effects, " *F*(", tbl$df_n, ", ", tbl$df_d, ") = ",
                   tbl$statistic, ", *p* ", tbl$p, ", *", es_name, "* ",
                   tbl$es, "\n")
   }
   else if (format == "rmarkdown")
   {
-    out <- paste0(tbl$effects, " *F*(", tbl$df_n, ",", tbl$df_d, ") = ",
+    out <- paste0(tbl$effects, " *F*(", tbl$df_n, ", ", tbl$df_d, ") = ",
                   tbl$statistic, ", *p* ", tbl$p, ", ", latex_es(es_name),
                   " ", tbl$es, "\n")
   }
   else if (format == "html")
   {
-    out <- paste0(tbl$effects, " <i>F</i>(", tbl$df_n, ",", tbl$df_d, ") = ",
+    out <- paste0(tbl$effects, " <i>F</i>(", tbl$df_n, ", ", tbl$df_d, ") = ",
                   tbl$statistics, ", <i>p</i> ", tbl$p, ", ", html_es(es_name),
                   " ", tbl$es, "\n")
   }
   else if (format == "latex")
   {
-    out <- paste0(tbl$effects, " \\textit{F}(", tbl$df_n, ",", tbl$df_d, ") = ",
-                  tbl$statistic, ", \\textit{p} ", tbl$p, ", ",
+    out <- paste0(tbl$effects, " \\textit{F}(", tbl$df_n, ", ", tbl$df_d,
+                  ") = ", tbl$statistic, ", \\textit{p} ", tbl$p, ", ",
                   latex_es(es_name), " ", tbl$es, "\n")
   }
   else if (format == "docx")
   {
     tmp <- tempfile("anova_apa", fileext = ".md")
     sink(tmp)
-    out <- paste0(tbl$effects, " *F*(", tbl$df_n, ",", tbl$df_d, ") = ",
+    out <- paste0(tbl$effects, " *F*(", tbl$df_n, ", ", tbl$df_d, ") = ",
                   tbl$statistic, ", *p* ", tbl$p, ", ", latex_es(es_name), " ",
                   tbl$es, "\n\n")
     for (i in seq_along(out)) cat(out[i])
