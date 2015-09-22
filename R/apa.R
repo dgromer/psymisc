@@ -223,7 +223,7 @@ t_apa <- function(x, es = "cohens_d", format = c("default", "text", "markdown",
   statistic <- fmt_stat(x$statistic)
   df <- x$parameter
   p <- fmt_pval(x$p.value)
-  d <- fmt_es(cohens_d(x, corr = es))
+  d <- fmt_es(cohens_d(x, corr = ifelse(es == "cohens_d", "none", es)))
   
   es_name <- switch(es, "cohens_d" = "d", "hedges_g" = "g",
                     "glass_delta" = "delta")

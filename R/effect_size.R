@@ -47,9 +47,12 @@ cohens_d <- function(...) UseMethod("cohens_d")
 
 #' @rdname cohens_d
 #' @export
-cohens_d.default <- function(x, y = NULL, paired = FALSE, corr = "none",
+cohens_d.default <- function(x, y = NULL, paired = FALSE,
+                             corr = c("none", "hedges_g", "glass_delta"),
                              na.rm = FALSE, ...)
 {
+  corr <- match.arg(corr)
+  
   if (!paired && !is.null(y))
   {
     m1 <- mean(x, na.rm = na.rm)
@@ -82,9 +85,12 @@ cohens_d.default <- function(x, y = NULL, paired = FALSE, corr = "none",
 
 #' @rdname cohens_d
 #' @export
-cohens_d.data.frame <- function(data, dv, iv, paired = FALSE, corr = "none",
+cohens_d.data.frame <- function(data, dv, iv, paired = FALSE,
+                                corr = c("none", "hedges_g", "glass_delta"),
                                 na.rm = FALSE, ...)
 {
+  corr <- match.arg(corr)
+  
   # Convert iv and dv to character if they are a name
   if (!is.character(substitute(iv))) iv <- as.character(substitute(iv))
   if (!is.character(substitute(dv))) dv <- as.character(substitute(dv))
@@ -96,9 +102,12 @@ cohens_d.data.frame <- function(data, dv, iv, paired = FALSE, corr = "none",
 
 #' @rdname cohens_d
 #' @export
-cohens_d.formula <- function(formula, data, paired = FALSE, corr = "none",
+cohens_d.formula <- function(formula, data, paired = FALSE,
+                             corr = c("none", "hedges_g", "glass_delta"),
                              na.rm = FALSE, ...)
 {
+  corr <- match.arg(corr)
+  
   mf <- model.frame(formula, data)
   .data <- setNames(split(mf[[1]], mf[[2]]), c("x", "y"))
   
@@ -107,8 +116,11 @@ cohens_d.formula <- function(formula, data, paired = FALSE, corr = "none",
 
 #' @rdname cohens_d
 #' @export
-cohens_d.htest <- function(ttest, corr = "none", ...)
+cohens_d.htest <- function(ttest, corr = c("none", "hedges_g", "glass_delta"),
+                           ...)
 {
+  corr <- match.arg(corr)
+  
   if (!grepl("t-test", ttest$method))
   {
     stop('ttest must be a call to either `t_test` or `t.test`')
@@ -197,8 +209,10 @@ cohens_d.htest <- function(ttest, corr = "none", ...)
 #' @export
 cohens_d_ <- function(m1 = NULL, m2 = NULL, sd1 = NULL, sd2 = NULL, n1 = NULL,
                       n2 = NULL, t = NULL, n = NULL, paired = FALSE,
-                      corr = "none")
+                      corr = c("none", "hedges_g", "glass_delta"))
 {
+  corr <- match.arg(corr)
+  
   if (!any(sapply(list(m1, m2, sd1, sd2, n1, n2), is.null)) &&
       corr != "glass_delta")
   {
@@ -207,7 +221,7 @@ cohens_d_ <- function(m1 = NULL, m2 = NULL, sd1 = NULL, sd2 = NULL, n1 = NULL,
     
     if (corr == "hedges_g")
     {
-      j <- function(a) gamma(a / 2) / (sqrt(gamma(a / 2)) * gamma((a - 1) / 2))
+      j <- function(a) gamma(a / 2) / (sqrt(a / 2) * gamma((a - 1) / 2))
       
       d <- d * j(n1 + n2 - 2)
     }
