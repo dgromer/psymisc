@@ -18,6 +18,19 @@ t_test.default <- function(x, y = NULL,
   t <- t.test(x = x, y = y, alternative = alternative, mu = mu, paired = paired,
               var.equal = var.equal, conf.level = conf.level, ...)
   
+  # Ensure that 'data.name' here matches a simple call to t.test (is 'x' and 'y'
+  # otherwise)
+  if (is.null(y))
+  {
+    dname <- deparse(substitute(x))
+  }
+  else
+  {
+    dname <- paste(deparse(substitute(x)), "and", deparse(substitute(y)))
+  }
+  
+  t$data.name <- dname
+  
   # Add data to return list, remove NA
   if (is.null(y))
   {
