@@ -17,4 +17,3 @@ test_that("Between group cohen's d, hedges correction", {
 test_that("Within group cohen's d", {
   expect_equal(round(cohens_d(df$movie_1, df$movie_2, paired = TRUE), 2), 1.5)
 })
-
