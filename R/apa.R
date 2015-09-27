@@ -34,27 +34,27 @@ chisq_apa <- function(x, print_n = FALSE, format = c("default", "text",
   
   if (format == "default")
   {
-    paste0("chi^2(", df, n, ") = ", statistic, ", p ", p)
+    paste0("chi^2(", df, n, ") ", statistic, ", p ", p)
   }
   else if (format == "text")
   {
-    cat("chi^2(", df, n, ") = ", statistic, ", p ", p, sep = "")
+    cat("chi^2(", df, n, ") ", statistic, ", p ", p, sep = "")
   }
   else if (format == "latex")
   {
-    cat("$\\chi^2$(", df, n, ") = ", statistic, ", \\textit{p} ", p, sep = "")
+    cat("$\\chi^2$(", df, n, ") ", statistic, ", \\textit{p} ", p, sep = "")
   }
   else if (format == "markdown")
   {
-    cat("*chi^2*(", df, n, ") = ", statistic, ", *p* ", p, sep = "")
+    cat("*chi^2*(", df, n, ") ", statistic, ", *p* ", p, sep = "")
   }
   else if (format == "rmarkdown")
   {
-    cat("$\\chi^2$(", df, n, ") = ", statistic, ", *p* ", p, sep = "")
+    cat("$\\chi^2$(", df, n, ") ", statistic, ", *p* ", p, sep = "")
   }
   else if (format == "html")
   {
-    cat("<i>&chi;</i><sup>2</sup>(", df, n, ") = ", statistic, ", <i>p</i> ",
+    cat("<i>&chi;</i><sup>2</sup>(", df, n, ") ", statistic, ", <i>p</i> ",
         p, sep = "")
   }
   else if (format == "docx")
@@ -89,7 +89,7 @@ cor_apa <- function(x, format = c("default", "text", "markdown", "rmarkdown",
   
   # Extract and format test statistics
   coef <- cor_coef(x$method)
-  estimate <- fmt_stat(x$estimate)
+  estimate <- fmt_stat(x$estimate, leading_zero = FALSE)
   df <- x$parameter
   p <- fmt_pval(x$p.value)
   
@@ -99,48 +99,48 @@ cor_apa <- function(x, format = c("default", "text", "markdown", "rmarkdown",
   {
     if (coef == "r")
     {
-      paste0("r(", df, ") = ", estimate, ", p ", p)
+      paste0("r(", df, ") ", estimate, ", p ", p)
     }
     else
     {
-      paste0(coef, " = ", estimate, ", p ", p)
+      paste0(coef, " ", estimate, ", p ", p)
     }
   }
   else if (format == "text")
   {
     if (coef == "r")
     {
-      cat("r(", df, ") = ", estimate, ", p ", p, sep = "")
+      cat("r(", df, ") ", estimate, ", p ", p, sep = "")
     }
     else
     {
-      cat(coef, " = ", estimate, ", p ", p, sep = "")
+      cat(coef, " ", estimate, ", p ", p, sep = "")
     }
   }
   else if (format == "latex")
   {
     if (coef == "r")
     {
-      cat("\\textit{r}(", df, ") = ", estimate, ", \\textit{p} ", p, sep = "")
+      cat("\\textit{r}(", df, ") ", estimate, ", \\textit{p} ", p, sep = "")
     }
     else if (coef == "tau")
     {
-      cat("$r_\\tau$ = ", estimate, ", \\textit{p} ", p, sep = "")
+      cat("$r_\\tau$ ", estimate, ", \\textit{p} ", p, sep = "")
     }
     else
     {
-      cat("$r_s$ = ", estimate, ", \\textit{p} ", p, sep = "")
+      cat("$r_s$ ", estimate, ", \\textit{p} ", p, sep = "")
     }
   }
   else if (format == "markdown")
   {
     if (coef == "r")
     {
-      cat("*r*(", df, ") = ", estimate, ", *p* ", p, sep = "")
+      cat("*r*(", df, ") ", estimate, ", *p* ", p, sep = "")
     }
     else
     {
-      cat("*r_", coef, " = ", estimate, ", *p* ", p, sep = "")
+      cat("*r_", coef, " ", estimate, ", *p* ", p, sep = "")
     }
   }
   else if (format == "rmarkdown")
@@ -151,26 +151,26 @@ cor_apa <- function(x, format = c("default", "text", "markdown", "rmarkdown",
     }
     else if (coef == "tau")
     {
-      cat("$r_\\tau$ = ", estimate, ", *p* ", p, sep = "")
+      cat("$r_\\tau$ ", estimate, ", *p* ", p, sep = "")
     }
     else
     {
-      cat("$r_s$ = ", estimate, ", *p* ", p, sep = "")
+      cat("$r_s$ ", estimate, ", *p* ", p, sep = "")
     }
   }
   else if (format == "html")
   {
     if (coef == "r")
     {
-      cat("<i>r</i>(", df, ") = ", estimate, ", <i>p</i> ", p, sep = "")
+      cat("<i>r</i>(", df, ") ", estimate, ", <i>p</i> ", p, sep = "")
     }
     else if (coef == "tau")
     {
-      cat("<i>r<sub>&tau;</sub></i> = ", estimate, ", <i>p</i> ", p, sep = "")
+      cat("<i>r<sub>&tau;</sub></i> ", estimate, ", <i>p</i> ", p, sep = "")
     }
     else
     {
-      cat("<i>r<sub>s</sub></i> = ", estimate, ", <i>p</i> ", p, sep = "")
+      cat("<i>r<sub>s</sub></i> ", estimate, ", <i>p</i> ", p, sep = "")
     }
   }
   else if (format == "docx")
@@ -231,7 +231,7 @@ t_apa <- function(x, es = "cohens_d", format = c("default", "text", "markdown",
   # Format degrees of freedom if correction was applied
   if (grepl("Welch", x$method))
   {
-    df <- fmt_stat(df)
+    df <- fmt_stat(df, equal_sign = FALSE)
   }
   
   if (es != "cohens_d" && (grepl("One Sample|Paired", x$method)))
@@ -245,30 +245,30 @@ t_apa <- function(x, es = "cohens_d", format = c("default", "text", "markdown",
   
   if (format == "default")
   {
-    paste0("t(", df, ") = ", statistic, ", p ", p, ", ", es_name, " ", d)
+    paste0("t(", df, ") ", statistic, ", p ", p, ", ", es_name, " ", d)
   }
   else if (format == "text")
   {
-    cat("t(", df, ") = ", statistic, ", p ", p, ", ", es_name, " ", d, sep = "")
+    cat("t(", df, ") ", statistic, ", p ", p, ", ", es_name, " ", d, sep = "")
   }
   else if (format == "latex")
   {
-    cat("\\textit{t}(", df, ") = ", statistic, ", \\textit{p} ", p,
+    cat("\\textit{t}(", df, ") ", statistic, ", \\textit{p} ", p,
         ", ", latex_es(es), " ", d, sep = "")
   }
   else if (format == "markdown")
   {
-    cat("*t*(", df, ") = ", statistic, ", *p* ", p, ", *", es_name, "* ", d,
+    cat("*t*(", df, ") ", statistic, ", *p* ", p, ", *", es_name, "* ", d,
         sep = "")
   }
   else if (format == "rmarkdown")
   {
-    cat("*t*(", df, ") = ", statistic, ", *p* ", p, ", ", rmarkdown_es(es), " ",
+    cat("*t*(", df, ") ", statistic, ", *p* ", p, ", ", rmarkdown_es(es), " ",
         d, sep = "")
   }
   else if (format == "html")
   {
-    cat("<i>t</i>(", df, ") = ", statistic, ", <i>p</i>", p, ", ", html_es(es),
+    cat("<i>t</i>(", df, ") ", statistic, ", <i>p</i>", p, ", ", html_es(es),
         " ", d, sep = "")
   }
   else if (format == "docx")
@@ -349,7 +349,8 @@ anova_apa_afex <- function(x, sph_corr, es, format, info)
   
   # Extract information from object
   tbl <- data_frame(
-    effects = row.names(anova), statistic = sapply(anova$F, fmt_stat),
+    effects = row.names(anova),
+    statistic = sapply(anova$F, fmt_stat, equal_sign = FALSE),
     df_n = anova$`num Df`, df_d = anova$`den Df`,
     p = sapply(anova$`Pr(>F)`, fmt_pval),
     symb = sapply(anova$`Pr(>F)`, p_to_symbol),
@@ -386,7 +387,7 @@ anova_apa_afex <- function(x, sph_corr, es, format, info)
       # Apply correction to degrees of freedom
       tbl[tbl$effects == mauchlys, c("df_n", "df_d")] %<>%
         `*`(s$pval.adjustments[mauchlys, paste(corr_method, "eps")]) %>%
-        lapply(fmt_stat)
+        lapply(fmt_stat, equal_sign = FALSE)
       
       # Replace p-values in tbl with corrected ones
       tbl[tbl$effects == mauchlys, "p"] <-
@@ -399,7 +400,7 @@ anova_apa_afex <- function(x, sph_corr, es, format, info)
         "  The following effects were adjusted using the ",
         ifelse(corr_method == "GG", "Greenhouse-Geisser", "Huynh-Feldt"),
         " correction:\n",
-        paste0("  ", mauchlys, " (Mauchly's W = ",
+        paste0("  ", mauchlys, " (Mauchly's W ",
                sapply(sph_tests[mauchlys, "Test statistic"], fmt_stat),
                ", p ", sapply(sph_tests[mauchlys, "p-value"], fmt_pval), ")",
                collapse = "\n")
@@ -434,7 +435,8 @@ anova_apa_ezanova <- function(x, sph_corr, es, format, info)
   
   # Extract and format test statistics
   tbl <- data_frame(
-    effects = anova$Effect, statistic = sapply(anova$F, fmt_stat),
+    effects = anova$Effect,
+    statistic = sapply(anova$F, fmt_stat, equal_sign = FALSE),
     df_n = anova$DFn, df_d = anova$DFd, p = sapply(anova$p, fmt_pval),
     symb = sapply(anova$p, p_to_symbol),
     es = sapply(effects, function(effect) fmt_es(do.call(es, list(x, effect)),
@@ -468,7 +470,7 @@ anova_apa_ezanova <- function(x, sph_corr, es, format, info)
       # Apply correction to degrees of freedom
       tbl[tbl$effects == mauchlys$Effect, c("df_n", "df_d")] %<>%
         `*`(mauchlys[[paste0(corr_method, "e")]]) %>%
-        lapply(fmt_stat)
+        lapply(fmt_stat, equal_sign = FALSE)
       
       # Replace p-values in tbl with corrected ones
       tbl[tbl$effects == mauchlys$Effect, "p"] <-
@@ -481,7 +483,7 @@ anova_apa_ezanova <- function(x, sph_corr, es, format, info)
         "  The following effects were adjusted using the ",
         ifelse(corr_method == "GG", "Greenhouse-Geisser", "Huynh-Feldt"),
         " correction:\n",
-        paste0("  ", mauchlys$Effect, " (Mauchly's W = ",
+        paste0("  ", mauchlys$Effect, " (Mauchly's W ",
                sapply(mauchlys$W, fmt_stat), ", p ",
                sapply(mauchlys$p, fmt_pval), ")", collapse = "\n")
       )
@@ -580,9 +582,29 @@ anova_apa_build <- function(tbl, es_name, format)
 }
 
 # Format a test statistic
-fmt_stat <- function(statistic)
+fmt_stat <- function(statistic, leading_zero = TRUE, equal_sign = TRUE)
 {
-  sprintf("%.2f", statistic)
+  if (statistic < .01)
+  {
+    statistic <- "< 0.01"
+  }
+  else
+  {
+    statistic <- sprintf("%.2f", statistic)
+    
+    if (equal_sign)
+    {
+      statistic <- paste("=", statistic)
+    }
+    
+  }
+  
+  if (!leading_zero)
+  {
+    statistic <- sub(" 0\\.", " \\.", statistic)
+  }
+  
+  statistic
 }
 
 # Format a p-value
