@@ -24,13 +24,7 @@ psymisc is an R package that provides some useful high-level and helper function
 
 ## Installation
 
-If not already installed, you need to get the development version of [purrr](https://github.com/hadley/purrr) from GitHub:
-
-```r
-devtools::install_github("hadley/purrr")
-```
-
-The development version then can be installed using:
+The development version can be installed using:
 
 ```r
 install.packages("devtools")
