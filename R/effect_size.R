@@ -61,8 +61,8 @@ cohens_d.default <- function(x, y = NULL, paired = FALSE,
     sd1 <- sd(x, na.rm)
     sd2 <- sd(y, na.rm)
     
-    n1 <- ifelse(na.rm, length(na.omit(x)), length(x))
-    n2 <- ifelse(na.rm, length(na.omit(y)), length(y))
+    n1 <- if (!na.rm) length(x) else length(na.omit(x))
+    n2 <- if (!na.rm) length(y) else length(na.omit(y))
     
     d <- cohens_d_(m1, m2, sd1, sd2, n1, n2, corr = corr)
   }
@@ -126,6 +126,7 @@ cohens_d.htest <- function(ttest, corr = c("none", "hedges_g", "glass_delta"),
     stop('ttest must be a call to either `t_test` or `t.test`')
   }
   
+  # A call to t.test was passed to argument 'ttest'
   if (!is.null(ttest[["data"]]))
   {
     if (grepl("Paired", ttest$method))
@@ -141,6 +142,7 @@ cohens_d.htest <- function(ttest, corr = c("none", "hedges_g", "glass_delta"),
       cohens_d(ttest$data$x, ttest$data$y, corr = corr)
     }
   }
+  # A call to t_test was passed to argument 'ttest'
   else
   {
     if (grepl("Paired", ttest$method))

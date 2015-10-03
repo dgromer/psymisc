@@ -11,5 +11,5 @@
 #' @export
 se <- function(x, na.rm = FALSE)
 {
-  sd(x, na.rm = na.rm) / sqrt(ifelse(na.rm, length(na.omit(x)), length(x)))
+  sd(x, na.rm) / sqrt(if(!na.rm) length(x) else length(na.omit(x)))
 }
