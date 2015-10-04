@@ -8,14 +8,16 @@
 #'   \code{html}, \code{"latex"} or \code{"docx"}.
 #' @param info logical indicating whether to print a message on the used test
 #'   (default is \code{FALSE})
+#' @param print logical indicating wheter to print the formatted output via
+#'   \code{cat} (\code{TRUE}, default) or return as character string.
 #' @examples
 #' chisq_apa(chisq.test(height$group, height$sex))
 #' 
 #' @export
-chisq_apa <- function(x, print_n = FALSE, format = c("default", "text",
-                                                     "markdown", "rmarkdown",
-                                                     "html", "latex", "docx"),
-                      info = FALSE)
+chisq_apa <- function(x, print_n = FALSE, format = c("text", "markdown",
+                                                     "rmarkdown", "html",
+                                                     "latex", "docx"),
+                      info = FALSE, print = TRUE)
 {
   format <- match.arg(format)
   
@@ -24,42 +26,29 @@ chisq_apa <- function(x, print_n = FALSE, format = c("default", "text",
     stop("'x' must be a call to `chisq.test`")
   }
   
+  if (format == "docx")
+  {
+    return(apa_to_docx("chisq_apa", x))
+  }
+  
   # Extract and format test statistics
   statistic <- fmt_stat(x$statistic)
   df <- x$parameter
-  n <- ifelse(print_n, paste(", n =", sum(x$observed)), "")
+  n <- if (print_n) paste(", n =", sum(x$observed)) else ""
   p <- fmt_pval(x$p.value)
   
   if (info) message(x$method)
   
-  if (format == "default")
+  text <- paste0(fmt_symb("chisq", format), "(", df, n, ") ", statistic, ", ",
+                   fmt_symb("p", format), " ", p)
+    
+  if (print)
   {
-    paste0("chi^2(", df, n, ") ", statistic, ", p ", p)
+    cat(text)
   }
-  else if (format == "text")
+  else
   {
-    cat("chi^2(", df, n, ") ", statistic, ", p ", p, sep = "")
-  }
-  else if (format == "latex")
-  {
-    cat("$\\chi^2$(", df, n, ") ", statistic, ", \\textit{p} ", p, sep = "")
-  }
-  else if (format == "markdown")
-  {
-    cat("*chi^2*(", df, n, ") ", statistic, ", *p* ", p, sep = "")
-  }
-  else if (format == "rmarkdown")
-  {
-    cat("$\\chi^2$(", df, n, ") ", statistic, ", *p* ", p, sep = "")
-  }
-  else if (format == "html")
-  {
-    cat("<i>&chi;</i><sup>2</sup>(", df, n, ") ", statistic, ", <i>p</i> ",
-        p, sep = "")
-  }
-  else if (format == "docx")
-  {
-    apa_to_docx("chisq_apa", x)
+    text
   }
 }
 
@@ -72,13 +61,15 @@ chisq_apa <- function(x, print_n = FALSE, format = c("default", "text",
 #'   \code{html}, \code{"latex"} or \code{"docx"}.
 #' @param info logical indicating whether to print a message on the used test
 #'   (default is \code{FALSE})
+#' @param print logical indicating wheter to print the formatted output via
+#'   \code{cat} (\code{TRUE}, default) or return as character string.
 #' @examples
 #' cor_apa(cor.test(~ anx_lvl1 + anx_lvl2, height))
 #' 
 #' @export
-cor_apa <- function(x, format = c("default", "text", "markdown", "rmarkdown",
-                                  "html", "latex", "docx"),
-                    info = FALSE)
+cor_apa <- function(x, format = c("text", "markdown", "rmarkdown", "html",
+                                  "latex", "docx"),
+                    info = FALSE, print = TRUE)
 {
   format <- match.arg(format)
   
@@ -87,111 +78,30 @@ cor_apa <- function(x, format = c("default", "text", "markdown", "rmarkdown",
     stop("'x' must be a call to `cor.test`")
   }
   
+  if (format == "docx")
+  {
+    return(apa_to_docx("cor_apa", x))
+  }
+  
   # Extract and format test statistics
-  coef <- cor_coef(x$method)
+  coef <- tolower(strsplit(x$method, " ")[[1]][1])
   estimate <- fmt_stat(x$estimate, leading_zero = FALSE)
   df <- x$parameter
   p <- fmt_pval(x$p.value)
   
   if (info) message(x$method)
   
-  if (format == "default")
+  text <- paste0(fmt_symb(coef, format),
+                   if (coef == "pearson's") paste0("(", df, ") ") else " ",
+                   estimate, ", ", fmt_symb("p", format), " ", p)
+    
+  if (print)
   {
-    if (coef == "r")
-    {
-      paste0("r(", df, ") ", estimate, ", p ", p)
-    }
-    else
-    {
-      paste0(coef, " ", estimate, ", p ", p)
-    }
+    cat(text)
   }
-  else if (format == "text")
+  else
   {
-    if (coef == "r")
-    {
-      cat("r(", df, ") ", estimate, ", p ", p, sep = "")
-    }
-    else
-    {
-      cat(coef, " ", estimate, ", p ", p, sep = "")
-    }
-  }
-  else if (format == "latex")
-  {
-    if (coef == "r")
-    {
-      cat("\\textit{r}(", df, ") ", estimate, ", \\textit{p} ", p, sep = "")
-    }
-    else if (coef == "tau")
-    {
-      cat("$r_\\tau$ ", estimate, ", \\textit{p} ", p, sep = "")
-    }
-    else
-    {
-      cat("$r_s$ ", estimate, ", \\textit{p} ", p, sep = "")
-    }
-  }
-  else if (format == "markdown")
-  {
-    if (coef == "r")
-    {
-      cat("*r*(", df, ") ", estimate, ", *p* ", p, sep = "")
-    }
-    else
-    {
-      cat("*r_", coef, " ", estimate, ", *p* ", p, sep = "")
-    }
-  }
-  else if (format == "rmarkdown")
-  {
-    if (coef == "r")
-    {
-      cor_apa(x, format = "markdown")
-    }
-    else if (coef == "tau")
-    {
-      cat("$r_\\tau$ ", estimate, ", *p* ", p, sep = "")
-    }
-    else
-    {
-      cat("$r_s$ ", estimate, ", *p* ", p, sep = "")
-    }
-  }
-  else if (format == "html")
-  {
-    if (coef == "r")
-    {
-      cat("<i>r</i>(", df, ") ", estimate, ", <i>p</i> ", p, sep = "")
-    }
-    else if (coef == "tau")
-    {
-      cat("<i>r<sub>&tau;</sub></i> ", estimate, ", <i>p</i> ", p, sep = "")
-    }
-    else
-    {
-      cat("<i>r<sub>s</sub></i> ", estimate, ", <i>p</i> ", p, sep = "")
-    }
-  }
-  else if (format == "docx")
-  {
-    apa_to_docx("cor_apa", x)
-  }
-}
-
-cor_coef <- function(x)
-{
-  if (grepl("Pearson's", x))
-  {
-    "r"
-  }
-  else if (grepl("Kendall's", x))
-  {
-    "tau"
-  }
-  else if (grepl("Spearman's", x))
-  {
-    "s"
+    text
   }
 }
 
@@ -208,25 +118,29 @@ cor_coef <- function(x)
 #'   \code{html}, \code{"latex"} or \code{"docx"}.
 #' @param info logical indicating whether to print a message on the used test
 #'   (default is \code{FALSE})
+#' @param print logical indicating wheter to print the formatted output via
+#'   \code{cat} (\code{TRUE}, default) or return as character string.
 #' @examples
 #' t_apa(t_test(anx_lvl1 ~ group, height))
 #' 
 #' @export
-t_apa <- function(x, es = "cohens_d", format = c("default", "text", "markdown",
+t_apa <- function(x, es = "cohens_d", format = c("text", "markdown",
                                                  "rmarkdown", "html", "latex",
                                                  "docx"),
-                  info = FALSE)
+                  info = FALSE, print = TRUE)
 {
   format <- match.arg(format)
+  
+  if (format == "docx")
+  {
+    return(apa_to_docx("t_apa", x, es = es))
+  }
   
   # Extract and format test statistics
   statistic <- fmt_stat(x$statistic)
   df <- x$parameter
   p <- fmt_pval(x$p.value)
-  d <- fmt_es(cohens_d(x, corr = ifelse(es == "cohens_d", "none", es)))
-  
-  es_name <- switch(es, "cohens_d" = "d", "hedges_g" = "g",
-                    "glass_delta" = "delta")
+  d <- fmt_es(cohens_d(x, corr = if (es == "cohens_d") "none" else es))
   
   # Format degrees of freedom if correction was applied
   if (grepl("Welch", x$method))
@@ -238,42 +152,22 @@ t_apa <- function(x, es = "cohens_d", format = c("default", "text", "markdown",
   {
     warning(paste0("'", es, "' not available for ", x$method, ",",
                    " 'cohens_d' will be reported instead."))
-    es_name <- "d"
+    es <- "cohens_d"
   }
   
   if (info) message(x$method)
   
-  if (format == "default")
+  text <- paste0(fmt_symb("t", format), "(", df, ") ", statistic, ", ",
+                   fmt_symb("p", format), " ", p, ", ", fmt_symb(es, format),
+                   " ", d)
+    
+  if (print)
   {
-    paste0("t(", df, ") ", statistic, ", p ", p, ", ", es_name, " ", d)
+    cat(text)
   }
-  else if (format == "text")
+  else
   {
-    cat("t(", df, ") ", statistic, ", p ", p, ", ", es_name, " ", d, sep = "")
-  }
-  else if (format == "latex")
-  {
-    cat("\\textit{t}(", df, ") ", statistic, ", \\textit{p} ", p,
-        ", ", latex_es(es), " ", d, sep = "")
-  }
-  else if (format == "markdown")
-  {
-    cat("*t*(", df, ") ", statistic, ", *p* ", p, ", *", es_name, "* ", d,
-        sep = "")
-  }
-  else if (format == "rmarkdown")
-  {
-    cat("*t*(", df, ") ", statistic, ", *p* ", p, ", ", rmarkdown_es(es), " ",
-        d, sep = "")
-  }
-  else if (format == "html")
-  {
-    cat("<i>t</i>(", df, ") ", statistic, ", <i>p</i>", p, ", ", html_es(es),
-        " ", d, sep = "")
-  }
-  else if (format == "docx")
-  {
-    apa_to_docx("t_apa", x, es = es)
+    text
   }
 }
 
@@ -292,6 +186,8 @@ t_apa <- function(x, es = "cohens_d", format = c("default", "text", "markdown",
 #'   \code{html}, \code{"latex"} or \code{"docx"}.
 #' @param info logical indicating whether to print a message on the used test
 #'   (default is \code{FALSE})
+#' @param print logical indicating wheter to print the formatted output via
+#'   \code{cat} (\code{TRUE}, default) or return as a data frame.
 #' @examples
 #' \dontrun{
 #' library(dplyr)
@@ -317,19 +213,19 @@ t_apa <- function(x, es = "cohens_d", format = c("default", "text", "markdown",
 #' 
 #' @export
 anova_apa <- function(x, sph_corr = "greenhouse-geisser", es = "petasq",
-                      format = c("default", "text", "markdown", "rmarkdown",
-                                 "html", "latex", "docx"),
-                      info = FALSE)
+                      format = c("text", "markdown", "rmarkdown", "html",
+                                 "latex", "docx"),
+                      info = FALSE, print = TRUE)
 {
   format <- match.arg(format)
   
   if (inherits(x, "afex_aov"))
   {
-    anova_apa_afex(x, sph_corr, es, format, info)
+    anova_apa_afex(x, sph_corr, es, format, info, print)
   }
   else if (is.list(x) && names(x)[1] == "ANOVA")
   {
-    anova_apa_ezanova(x, sph_corr, es, format, info)
+    anova_apa_ezanova(x, sph_corr, es, format, info, print)
   }
   else
   {
@@ -339,7 +235,7 @@ anova_apa <- function(x, sph_corr = "greenhouse-geisser", es = "petasq",
 
 #' @importFrom dplyr data_frame
 #' @importFrom magrittr %>% %<>%
-anova_apa_afex <- function(x, sph_corr, es, format, info)
+anova_apa_afex <- function(x, sph_corr, es, format, info, print)
 {
   info_msg <- ""
   
@@ -350,7 +246,7 @@ anova_apa_afex <- function(x, sph_corr, es, format, info)
   # Extract information from object
   tbl <- data_frame(
     effects = row.names(anova),
-    statistic = sapply(anova$F, fmt_stat, equal_sign = FALSE),
+    statistic = sapply(anova$F, fmt_stat),
     df_n = anova$`num Df`, df_d = anova$`den Df`,
     p = sapply(anova$`Pr(>F)`, fmt_pval),
     symb = sapply(anova$`Pr(>F)`, p_to_symbol),
@@ -387,7 +283,7 @@ anova_apa_afex <- function(x, sph_corr, es, format, info)
       # Apply correction to degrees of freedom
       tbl[tbl$effects == mauchlys, c("df_n", "df_d")] %<>%
         `*`(s$pval.adjustments[mauchlys, paste(corr_method, "eps")]) %>%
-        lapply(fmt_stat, equal_sign = FALSE)
+        lapply(fmt_stat)
       
       # Replace p-values in tbl with corrected ones
       tbl[tbl$effects == mauchlys, "p"] <-
@@ -417,12 +313,12 @@ anova_apa_afex <- function(x, sph_corr, es, format, info)
   
   if (info && info_msg != "") message(info_msg)
   
-  anova_apa_build(tbl, es, format)
+  anova_apa_build(tbl, es, format, print)
 }
 
 #' @importFrom dplyr data_frame left_join
 #' @importFrom magrittr %>% %<>%
-anova_apa_ezanova <- function(x, sph_corr, es, format, info)
+anova_apa_ezanova <- function(x, sph_corr, es, format, info, print)
 {
   info_msg <- ""
   
@@ -436,7 +332,7 @@ anova_apa_ezanova <- function(x, sph_corr, es, format, info)
   # Extract and format test statistics
   tbl <- data_frame(
     effects = anova$Effect,
-    statistic = sapply(anova$F, fmt_stat, equal_sign = FALSE),
+    statistic = sapply(anova$F, fmt_stat),
     df_n = anova$DFn, df_d = anova$DFd, p = sapply(anova$p, fmt_pval),
     symb = sapply(anova$p, p_to_symbol),
     es = sapply(effects, function(effect) fmt_es(do.call(es, list(x, effect)),
@@ -470,7 +366,7 @@ anova_apa_ezanova <- function(x, sph_corr, es, format, info)
       # Apply correction to degrees of freedom
       tbl[tbl$effects == mauchlys$Effect, c("df_n", "df_d")] %<>%
         `*`(mauchlys[[paste0(corr_method, "e")]]) %>%
-        lapply(fmt_stat, equal_sign = FALSE)
+        lapply(fmt_stat)
       
       # Replace p-values in tbl with corrected ones
       tbl[tbl$effects == mauchlys$Effect, "p"] <-
@@ -499,66 +395,37 @@ anova_apa_ezanova <- function(x, sph_corr, es, format, info)
   
   if (info && info_msg != "") message(info_msg)
   
-  anova_apa_build(tbl, es, format)
+  anova_apa_build(tbl, es, format, print)
 }
 
 #' @importFrom dplyr data_frame
+#' @importFrom magrittr %>% %<>%
 #' @importFrom rmarkdown render
-anova_apa_build <- function(tbl, es_name, format)
+anova_apa_build <- function(tbl, es_name, format, print)
 {
-  if (format == "default")
+  if (format == "text" && print)
   {
+    # Split statistic and its sign
+    sign <- substr(tbl$statistic, 1, 1)
+    statistic <- substr(tbl$statistic, 2, nchar(tbl$statistic))
+    
     # TODO: align df also?
-    out <- data_frame(
+    print.data.frame(data_frame(
       Effect = tbl$effects,
-      ` ` = paste0("F(", tbl$df_n, ", ", tbl$df_d, ") = ",
-                   format(tbl$statistic, width = max(nchar(tbl$statistic)),
+      ` ` = paste0("F(", tbl$df_n, ", ", tbl$df_d, ") ", sign,
+                   format(statistic, width = max(nchar(statistic)),
                           justify = "right"),
-                   ", p ", tbl$p, ", ", es_name, " ", tbl$es, " ",
-                   format(tbl$symb, width = 3))
-    )
-  }
-  
-  tbl$effects <- format(paste0(tbl$effects, ":"),
-                        width = max(sapply(tbl$effects, nchar)))
-  
-  if (format == "text")
-  {
-    out <- paste0(tbl$effects, " F(", tbl$df_n, ", ", tbl$df_d, ") = ",
-                  tbl$statistic, ", p ", tbl$p, ", ", es_name, " ", tbl$es, 
-                  "\n")
-  }
-  else if (format == "markdown")
-  {
-    out <- paste0(tbl$effects, " *F*(", tbl$df_n, ", ", tbl$df_d, ") = ",
-                  tbl$statistic, ", *p* ", tbl$p, ", *", es_name, "* ",
-                  tbl$es, "\n")
-  }
-  else if (format == "rmarkdown")
-  {
-    out <- paste0(tbl$effects, " *F*(", tbl$df_n, ", ", tbl$df_d, ") = ",
-                  tbl$statistic, ", *p* ", tbl$p, ", ", latex_es(es_name),
-                  " ", tbl$es, "\n")
-  }
-  else if (format == "html")
-  {
-    out <- paste0(tbl$effects, " <i>F</i>(", tbl$df_n, ", ", tbl$df_d, ") = ",
-                  tbl$statistics, ", <i>p</i> ", tbl$p, ", ", html_es(es_name),
-                  " ", tbl$es, "\n")
-  }
-  else if (format == "latex")
-  {
-    out <- paste0(tbl$effects, " \\textit{F}(", tbl$df_n, ", ", tbl$df_d,
-                  ") = ", tbl$statistic, ", \\textit{p} ", tbl$p, ", ",
-                  latex_es(es_name), " ", tbl$es, "\n")
+                   ", p ", tbl$p, ", ", fmt_symb(es_name, format), " ", tbl$es,
+                   " ", format(tbl$symb, width = 3))
+    ))
   }
   else if (format == "docx")
   {
     tmp <- tempfile("anova_apa", fileext = ".md")
     sink(tmp)
     out <- paste0(tbl$effects, " *F*(", tbl$df_n, ", ", tbl$df_d, ") = ",
-                  tbl$statistic, ", *p* ", tbl$p, ", ", latex_es(es_name), " ",
-                  tbl$es, "\n\n")
+                  tbl$statistic, ", *p* ", tbl$p, ", ",
+                  fmt_symb(es_name, "rmarkdown"), " ", tbl$es, "\n\n")
     for (i in seq_along(out)) cat(out[i])
     sink()
     outfile <- render(tmp, output_format = "word_document", quiet = TRUE)
@@ -567,140 +434,30 @@ anova_apa_build <- function(tbl, es_name, format)
     
     return()
   }
-
-  if (format == "default")
-  {
-    print.data.frame(out)
-  }
   else
   {
-    for (i in seq_along(out))
-    {
-      cat(out[i])
-    }
-  }
-}
-
-# Format a test statistic
-fmt_stat <- function(statistic, leading_zero = TRUE, equal_sign = TRUE)
-{
-  if (statistic < .01)
-  {
-    statistic <- "< 0.01"
-  }
-  else
-  {
-    statistic <- sprintf("%.2f", statistic)
+    text <- paste0(fmt_symb("F", format), "(", tbl$df_n, ", ", tbl$df_d, ") ",
+                   tbl$statistic, ", ", fmt_symb("p", format), " ", tbl$p, ", ",
+                   fmt_symb(es_name, format), " ", tbl$es)
     
-    if (equal_sign)
+    if (print)
     {
-      statistic <- paste("=", statistic)
-    }
-    
-  }
-  
-  if (!leading_zero)
-  {
-    statistic <- sub(" 0\\.", " \\.", statistic)
-  }
-  
-  statistic
-}
-
-# Format a p-value
-fmt_pval <- function(p, equal_sign = TRUE)
-{
-  if (p < .001)
-  {
-    "< .001"
-  }
-  else if (p == 1)
-  {
-    "> .999"
-  }
-  else if (equal_sign)
-  {
-    paste("=", substr(sprintf("%.3f", p), 2, 5))
-  }
-  else
-  {
-    substr(sprintf("%.3f", p), 2, 5)
-  }
-}
-
-# Format an effect size
-fmt_es <- function(es, leading_zero = TRUE, equal_sign = TRUE)
-{
-  if (is.na(es))
-  {
-    return(ifelse(leading_zero, "=   NA", "=  NA"))
-  }
-  
-  if (abs(es) < .01)
-  {
-    es <- "< 0.01"
-  }
-  else if (equal_sign)
-  {
-    es <- paste("=", sprintf("%.2f", es))
-  }
-  else
-  {
-    es <- sprintf("%.2f", es)
-  }
-  
-  if (!leading_zero)
-  {
-    if (es == "= 1.00")
-    {
-      es <- "> .99"
+      # Align names of effects
+      tbl$effects <- format(paste0(tbl$effects, ":"),
+                            width = max(sapply(tbl$effects, nchar)))
+      
+      text <- paste0(tbl$effects, text, "\n")
+      
+      for (i in seq_along(text))
+      {
+        cat(text[i])
+      }
     }
     else
     {
-      es <- sub("0.", ".", es)
+      data_frame(effect = tbl$effects, text = text)
     }
   }
-  
-  es
-}
-
-# Format different effect sizes in RMarkdown
-rmarkdown_es <- function(es)
-{
-  switch(es, 
-         "cohens_d"    = "*d*",
-         "hedges_g"    = "*g*",
-         "glass_delta" = "$\\Delta$",
-         "petasq"      = "$\\eta^2_p$",
-         "getasq"      = "$\\eta^2_g$",
-         "omegasq"     = "\\omega^2"
-  )
-}
-
-# Format different effect sizes in LaTeX
-latex_es <- function(es)
-{
-  switch(es, 
-        "cohens_d"    = "\\textit{d}",
-        "hedges_g"    = "\\textit{g}",
-        "glass_delta" = "$\\Delta$",
-        "petasq"      = "$\\eta^2_p$",
-        "getasq"      = "$\\eta^2_g$",
-        "omegasq"     = "\\omega^2"
-  )
-}
-
-# Format different effect sizes in HTML
-html_es <- function(es)
-{
-  switch(es,
-         "cohens_d"    = "<i>d</i>",
-         "hedges_g"    = "<i>g</i>",
-         "glass_delta" = "<i>&Delta;</i>",
-         "petasq"      = "<i>&eta;<sup>2</sup><sub>p</sub></i>",
-         "getasq"      = "<i>&eta;<sup>2</sup><sub>g</sub></i>",
-         "omegasq"     = "<i>&omega;<sup>2</sup></i>"
-  )
 }
 
 # Create a docx file and open it

@@ -4,8 +4,8 @@
 \alias{cor_apa}
 \title{Report Correlation in APA style}
 \usage{
-cor_apa(x, format = c("default", "text", "markdown", "rmarkdown", "html",
-  "latex", "docx"), info = FALSE)
+cor_apa(x, format = c("text", "markdown", "rmarkdown", "html", "latex",
+  "docx"), info = FALSE, print = TRUE)
 }
 \arguments{
 \item{x}{a call to \code{cor.test}}
@@ -16,6 +16,9 @@ cor_apa(x, format = c("default", "text", "markdown", "rmarkdown", "html",
 
 \item{info}{logical indicating whether to print a message on the used test
 (default is \code{FALSE})}
+
+\item{print}{logical indicating wheter to print the formatted output via
+\code{cat} (\code{TRUE}, default) or return as character string.}
 }
 \description{
 Report Correlation in APA style

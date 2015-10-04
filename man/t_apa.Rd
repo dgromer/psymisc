@@ -4,8 +4,8 @@
 \alias{t_apa}
 \title{Report t-Test in APA style}
 \usage{
-t_apa(x, es = "cohens_d", format = c("default", "text", "markdown",
-  "rmarkdown", "html", "latex", "docx"), info = FALSE)
+t_apa(x, es = "cohens_d", format = c("text", "markdown", "rmarkdown",
+  "html", "latex", "docx"), info = FALSE, print = TRUE)
 }
 \arguments{
 \item{x}{a call to \code{t_test}}
@@ -21,6 +21,9 @@ samples or one sample t-test (cohen's d is reported for these test).}
 
 \item{info}{logical indicating whether to print a message on the used test
 (default is \code{FALSE})}
+
+\item{print}{logical indicating wheter to print the formatted output via
+\code{cat} (\code{TRUE}, default) or return as character string.}
 }
 \description{
 Report t-Test in APA style

@@ -5,8 +5,8 @@
 \title{Report ANOVA in APA style}
 \usage{
 anova_apa(x, sph_corr = "greenhouse-geisser", es = "petasq",
-  format = c("default", "text", "markdown", "rmarkdown", "html", "latex",
-  "docx"), info = FALSE)
+  format = c("text", "markdown", "rmarkdown", "html", "latex", "docx"),
+  info = FALSE, print = TRUE)
 }
 \arguments{
 \item{x}{a call to \code{ez::ezANOVA}.}
@@ -26,6 +26,9 @@ one of \code{"petasq"} or \code{"getasq"}.}
 
 \item{info}{logical indicating whether to print a message on the used test
 (default is \code{FALSE})}
+
+\item{print}{logical indicating wheter to print the formatted output via
+\code{cat} (\code{TRUE}, default) or return as a data frame.}
 }
 \description{
 Report ANOVA in APA style
