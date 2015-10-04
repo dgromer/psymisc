@@ -18,4 +18,7 @@ This function computes the standard error of the mean of the values in
 \code{na.rm} is \code{TRUE} then missing values are removed before
 computation proceeds.
 }
+\seealso{
+\link{sd}
+}
 
