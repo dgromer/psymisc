@@ -14,6 +14,9 @@ stats_table(.data, iv, ..., funs = c("mean", "sd"), sig = FALSE,
 
 \item{...}{names of the dependent variables}
 
+\item{funs}{character vector with function names indicating the parameters to
+calculate (default: \code{c("mean", "sd")}).}
+
 \item{sig}{logical indicating whether to show significance with symbols in
 the last column}
 

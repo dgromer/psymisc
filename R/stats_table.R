@@ -12,6 +12,8 @@
 #' @param .data a data frame
 #' @param iv name of the independent variable
 #' @param ... names of the dependent variables
+#' @param funs character vector with function names indicating the parameters to
+#'   calculate (default: \code{c("mean", "sd")}).
 #' @param sig logical indicating whether to show significance with symbols in
 #'   the last column
 #' @param format character string indicating the output format, one of
@@ -106,6 +108,7 @@ stats_table <- function(.data, iv, ..., funs = c("mean", "sd"), sig = FALSE,
   }
 }
 
+# Convert a data.frame or matrix to LaTeX rows and columns
 #' @importFrom magrittr %>%
 tbl_to_latex <- function(x)
 {
@@ -116,15 +119,22 @@ tbl_to_latex <- function(x)
     paste(collapse = " \\\\\n")
 }
 
+#' @importFrom magrittr %<>%
 stats_table_header <- function(iv, funs, sig)
 {
   sig <- if (sig) "sig" else character(0)
 
-  c("Variable", paste(funs, rep(iv, each = length(funs)), sep = "_"),
-    ifelse(length(iv) > 2, "F", "t"), "p",
-    ifelse(length(iv) > 2, "petasq", "d"), sig)
-}
+  header <- c("Variable", paste(funs, rep(iv, each = length(funs)), sep = "_"),
+              if(length(iv) > 2) "F" else "t", "p",
+              if(length(iv) > 2) "petasq" else "d", sig)
 
+  # Replace "mean" with "M", "sd" with "SD" and "se" with "SE"
+  header %<>% gsub("^mean_", "M_", .)
+  header %<>% gsub("^sd_", "SD_", .)
+  header %<>% gsub("^se_", "SE_", .)
+
+  header
+}
 
 stats_table_row_aov <- function(.data, dv, iv, es = "petasq", funs, sig)
 {
@@ -134,11 +144,10 @@ stats_table_row_aov <- function(.data, dv, iv, es = "petasq", funs, sig)
 
   f <- test[["F value"]][1] %>% fmt_stat(equal_sign = FALSE)
   p <- test[["Pr(>F)"]][1] %>% fmt_pval(equal_sign = FALSE)
-  petasq <- test[["Sum Sq"]][1] / sum(test[["Sum Sq"]]) %>%
-    fmt_es(equal_sign = FALSE)
-  sig <- if (sig)  test[["Pr(>F)"]][1] %>% p_to_symbol() else character(0)
+  es <- petasq(test, iv) %>% fmt_es(equal_sign = FALSE)
+  sig <- if (sig) test[["Pr(>F)"]][1] %>% p_to_symbol() else character(0)
 
-  c(dv, stats, f, p, petasq, sig)
+  c(dv, stats, f, p, es, sig)
 }
 
 #' @importFrom magrittr %>%
