@@ -1,5 +1,5 @@
 #' Cohen's d
-#' 
+#'
 #' Calculate Cohen's d from raw data or a call to \code{t_test}/\code{t.test}.
 #'
 #' @param x a (non-empty) numeric vector of data values.
@@ -32,14 +32,14 @@
 #'   \emph{Frontiers in Psychology}, 4, 863. doi:10.3389/fpsyg.2013.00863
 #' @examples
 #' cohens_d(c(10, 15, 11, 14, 17), c(22, 18, 23, 25, 20))
-#' 
+#'
 #' # Methods when working with data frames
 #' cohens_d(height, dv = anx_lvl1, iv = group)
 #' # or
 #' cohens_d(height, dv = "anx_lvl1", iv = "group")
 #' # formula interface
 #' cohens_d(anx_lvl1 ~ group, height)
-#' 
+#'
 #' # Or pass a call to t_test or t.test
 #' cohens_d(t_test(anx_lvl1 ~ group, height))
 #' @export
@@ -52,18 +52,18 @@ cohens_d.default <- function(x, y = NULL, paired = FALSE,
                              na.rm = FALSE, ...)
 {
   corr <- match.arg(corr)
-  
+
   if (!paired && !is.null(y))
   {
     m1 <- mean(x, na.rm = na.rm)
     m2 <- mean(y, na.rm = na.rm)
-    
+
     sd1 <- sd(x, na.rm)
     sd2 <- sd(y, na.rm)
-    
+
     n1 <- if (!na.rm) length(x) else length(na.omit(x))
     n2 <- if (!na.rm) length(y) else length(na.omit(y))
-    
+
     d <- cohens_d_(m1, m2, sd1, sd2, n1, n2, corr = corr)
   }
   else
@@ -76,10 +76,10 @@ cohens_d.default <- function(x, y = NULL, paired = FALSE,
     {
       if (length(x) != length(y)) stop("'x' and 'y' must have the same length")
     }
-    
+
     d <- mean(x - y, na.rm = na.rm) / sd(x - y, na.rm)
   }
-  
+
   d
 }
 
@@ -90,13 +90,13 @@ cohens_d.data.frame <- function(data, dv, iv, paired = FALSE,
                                 na.rm = FALSE, ...)
 {
   corr <- match.arg(corr)
-  
+
   # Convert iv and dv to character if they are a name
   if (!is.character(substitute(iv))) iv <- as.character(substitute(iv))
   if (!is.character(substitute(dv))) dv <- as.character(substitute(dv))
-  
+
   sp <- split(data[[dv]], data[[iv]])
-  
+
   cohens_d(sp[[1]], sp[[2]], paired, corr, na.rm)
 }
 
@@ -107,10 +107,10 @@ cohens_d.formula <- function(formula, data, paired = FALSE,
                              na.rm = FALSE, ...)
 {
   corr <- match.arg(corr)
-  
+
   mf <- model.frame(formula, data)
   .data <- setNames(split(mf[[1]], mf[[2]]), c("x", "y"))
-  
+
   do.call("cohens_d", c(.data, paired = paired, corr = corr, na.rm = na.rm))
 }
 
@@ -120,12 +120,12 @@ cohens_d.htest <- function(ttest, corr = c("none", "hedges_g", "glass_delta"),
                            ...)
 {
   corr <- match.arg(corr)
-  
+
   if (!grepl("t-test", ttest$method))
   {
     stop('ttest must be a call to either `t_test` or `t.test`')
   }
-  
+
   # A call to t.test was passed to argument 'ttest'
   if (!is.null(ttest[["data"]]))
   {
@@ -169,7 +169,7 @@ cohens_d.htest <- function(ttest, corr = c("none", "hedges_g", "glass_delta"),
           "Glass Delta is not supported when passing a test from `t.test`.",
           "Use `t_test` instead."))
       }
-      
+
       cohens_d_(t = unname(ttest$statistic), n = unname(ttest$parameter + 2),
                 corr = corr)
     }
@@ -177,9 +177,9 @@ cohens_d.htest <- function(ttest, corr = c("none", "hedges_g", "glass_delta"),
 }
 
 #' Cohen's d
-#' 
+#'
 #' Calculate Cohens'd from different statistics (see Details).
-#' 
+#'
 #' @param m1 numeric, mean of the first group
 #' @param m2 numeric, mean of the second group
 #' @param sd1 numeric, standard deviation of the first group
@@ -214,17 +214,17 @@ cohens_d_ <- function(m1 = NULL, m2 = NULL, sd1 = NULL, sd2 = NULL, n1 = NULL,
                       corr = c("none", "hedges_g", "glass_delta"))
 {
   corr <- match.arg(corr)
-  
+
   if (!any(sapply(list(m1, m2, sd1, sd2, n1, n2), is.null)) &&
       corr != "glass_delta")
   {
     d <- (m1 - m2) /
       sqrt(((n1 - 1) * sd1 ^ 2 + (n2 - 1) * sd2 ^ 2) / ((n1 + n2) - 2))
-    
+
     if (corr == "hedges_g")
     {
       j <- function(a) gamma(a / 2) / (sqrt(a / 2) * gamma((a - 1) / 2))
-      
+
       d <- d * j(n1 + n2 - 2)
     }
   }
@@ -251,12 +251,12 @@ cohens_d_ <- function(m1 = NULL, m2 = NULL, sd1 = NULL, sd2 = NULL, n1 = NULL,
   {
     d <- t / sqrt(n)
   }
-  
+
   d
 }
 
 #' Partial Eta Squared
-#' 
+#'
 #' @param x a call to \code{aov}, \code{ez::ezANOVA} or
 #'   \code{afex::aov_ez}/\code{afex::aov_car}/\code{afex::aov_4}
 #' @param effect character string indicating the effect of interest
@@ -288,12 +288,12 @@ petasq <- function(x, effect)
 petasq_aov <- function(x, effect)
 {
   x <- anova(x)
-  
+
   if (!effect %in% row.names(x))
   {
     stop("Specified effect not found")
   }
-  
+
   petasq_(x[effect, "Sum Sq"], x["Residuals", "Sum Sq"])
 }
 
@@ -305,47 +305,47 @@ petasq_aovlist <- function(x, effect)
   {
     stop("Specified effect not found")
   }
-  
+
   # summary.aovlist is a list of lists containing data frames
   x <- flatten(summary(x))
-  
+
   # Look through data frames for specified effect
   for (i in seq_along(x))
   {
     df <- x[[i]]
-    
+
     row <- which(str_trim(row.names(df)) == effect)
-    
+
     if (length(row) > 0)
     {
       petasq <- petasq_(df[row, "Sum Sq"], df["Residuals", "Sum Sq"])
     }
   }
-  
+
   petasq
 }
 
 petasq_afex <- function(x, effect)
 {
   anova <- anova(x, es = "pes", intercept = TRUE)
-  
+
   if (!effect %in% row.names(anova))
   {
     stop("Specified effect not found")
   }
-  
+
   anova[effect, "pes"]
 }
 
 petasq_ezanova <- function(x, effect)
 {
   anova <- x$ANOVA
-  
+
   if (!all(c("SSn", "SSd") %in% names(anova)))
   {
     stop("Parameter 'detailed' needs to be set to TRUE in call to `ezANOVA`")
   }
-  
+
   if (!effect %in% anova$Effect)
   {
     stop("Specified effect not found")
@@ -354,17 +354,17 @@ petasq_ezanova <- function(x, effect)
   {
     row <- which(anova$Effect == effect)
   }
-  
+
   petasq_(anova[row, "SSn"], anova[row, "SSd"])
 }
 
 #' Partial Eta Squared
-#' 
+#'
 #' Calculate the partial eta squared effect size from sum of
 #' squares.
 #' \deqn{\eta_p^2 = \frac{SS_effect}{SS_effect + SS_error}}{partial eta squared
 #' = SS_effect / (SS_effect + SS_error)}
-#' 
+#'
 #' @param ss_effect numeric, sum of squares of the effect
 #' @param ss_error numeric, sum of squares of the corresponding error
 #' @export
@@ -395,35 +395,35 @@ getasq_afex <- function(x, effect)
   {
     return(NA)
   }
-  
+
   anova <- x$anova_table
-  
+
   if (!"ges" %in% names(anova))
   {
     stop("Argument 'es' needs to be set to \"ges\" in call to `aov_*`")
   }
-  
+
   if (!effect %in% row.names(anova))
   {
     stop("Specified effect not found")
   }
-  
+
   anova[effect, "ges"]
 }
 
 getasq_ezanova <- function(x, effect)
 {
   anova <- x$ANOVA
-  
+
   if (!all(c("SSn", "SSd") %in% names(anova)))
   {
     stop("Parameter 'detailed' needs to be set to TRUE in call to `ezANOVA`")
   }
-  
+
   if (!effect %in% anova$Effect)
   {
     stop("Specified effect not found")
   }
-  
+
   anova[which(anova$Effect == effect), "ges"]
 }
