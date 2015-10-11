@@ -4,8 +4,8 @@
 \alias{routlier}
 \title{Remove or flag outliers in a data frame}
 \usage{
-routlier(.data, ..., action = "na", z = c(-3, 3), absolute = NULL,
-  info = FALSE)
+routlier(.data, ..., action = c("na", "flag", "remove"), z = c(-3, 3),
+  absolute = NULL, info = FALSE)
 }
 \arguments{
 \item{.data}{a data frame}

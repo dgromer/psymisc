@@ -1,5 +1,5 @@
 #' Remove or flag outliers in a data frame
-#' 
+#'
 #' @importFrom dplyr select
 #' @param .data a data frame
 #' @param ... names of the columns to check for outliers
@@ -16,27 +16,30 @@
 #'   use e.g. \code{c(10, NULL)}.
 #' @param info logical indicating whether to print the number of outliers
 #'   detected to the console.
-#' 
+#'
 #' @export
-routlier <- function(.data, ..., action = "na", z = c(-3, 3), absolute = NULL,
-                     info = FALSE)
+routlier <- function(.data, ..., action = c("na", "flag", "remove"),
+                     z = c(-3, 3), absolute = NULL, info = FALSE)
 {
+  action <- match(action)
+
   x <- select(.data, ...)
-  
+
   if (is.null(absolute))
   {
+    # Apply outlier detection to z-scores
     outliers <- lapply(scale(x), detect_outliers, z)
   }
   else
   {
     outliers <- lapply(x, detect_outliers, absolute)
   }
-  
+
   if (info)
   {
     message(paste(sum(sapply(x, outliers)), "outlier(s) detected."))
   }
-  
+
   if (action == "na")
   {
     for (s in names(outliers))
@@ -48,11 +51,11 @@ routlier <- function(.data, ..., action = "na", z = c(-3, 3), absolute = NULL,
   {
     .data$outlier <- Reduce(`|`, outliers)
   }
-  else if (action == "remove" || action == "rm")
+  else if (action == "remove")
   {
     .data <- .data[!Reduce(`|`, outliers), , drop = FALSE]
   }
-  
+
   .data
 }
 
@@ -66,7 +69,7 @@ detect_outliers <- function(x, borders)
   {
     lower <- rep(FALSE, length(x))
   }
-  
+
   if (!is.null(borders[2]))
   {
     upper <- sapply(x, function(.) . > borders[2])
@@ -75,6 +78,6 @@ detect_outliers <- function(x, borders)
   {
     upper <- rep(FALSE, length(x))
   }
-  
+
   lower | upper
 }
