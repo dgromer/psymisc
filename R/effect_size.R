@@ -269,7 +269,7 @@ petasq <- function(x, effect)
     petasq_aov(x, effect)
   }
   # aovlist
-  if (inherits(x, "aovlist"))
+  else if (inherits(x, "aovlist"))
   {
     petasq_aovlist(x, effect)
   }
@@ -282,6 +282,10 @@ petasq <- function(x, effect)
   else if (is.list(x) && names(x)[1] == "ANOVA")
   {
     petasq_ezanova(x, effect)
+  }
+  else
+  {
+    stop("Unknown object passed to argument 'x'")
   }
 }
 
