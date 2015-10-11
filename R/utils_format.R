@@ -1,26 +1,26 @@
-# Format a test statistic
-fmt_stat <- function(statistic, leading_zero = TRUE, equal_sign = TRUE)
+# Format a statistic, e.g. t, F, mean, standard deviation
+fmt_stat <- function(statistic, leading_zero = TRUE, equal_sign = TRUE,
+                     negative_values = TRUE)
 {
-  if (statistic < .01)
+  if (!negative_values && statistic < .01)
   {
     statistic <- "< 0.01"
   }
   else
   {
     statistic <- sprintf("%.2f", statistic)
-    
+
     if (equal_sign)
     {
       statistic <- paste("=", statistic)
     }
-    
   }
-  
+
   if (!leading_zero)
   {
     statistic <- sub(" 0\\.", " \\.", statistic)
   }
-  
+
   statistic
 }
 
@@ -52,7 +52,7 @@ fmt_es <- function(es, leading_zero = TRUE, equal_sign = TRUE)
   {
     return(ifelse(leading_zero, "=   NA", "=  NA"))
   }
-  
+
   if (abs(es) < .01)
   {
     es <- "< 0.01"
@@ -65,7 +65,7 @@ fmt_es <- function(es, leading_zero = TRUE, equal_sign = TRUE)
   {
     es <- sprintf("%.2f", es)
   }
-  
+
   if (!leading_zero)
   {
     if (es == "= 1.00")
@@ -77,7 +77,7 @@ fmt_es <- function(es, leading_zero = TRUE, equal_sign = TRUE)
       es <- sub("0.", ".", es)
     }
   }
-  
+
   es
 }
 
@@ -167,5 +167,29 @@ fmt_symb <- function(x, format)
            "r"           = "<i>r</i>",
            "spearman's"  = "<i>r<sub>s</sub></i>",
            "t"           = "<i>t</i>")
+  }
+}
+
+p_to_symbol <- function(p)
+{
+  if (p >= .1)
+  {
+    ""
+  }
+  else if (p < .1 && p >= .05)
+  {
+    "."
+  }
+  else if (p < .05 && p >= .01)
+  {
+    "*"
+  }
+  else if (p < .01 && p >= .001)
+  {
+    "**"
+  }
+  else if (p < .001)
+  {
+    "***"
   }
 }
