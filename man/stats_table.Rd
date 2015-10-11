@@ -4,8 +4,8 @@
 \alias{stats_table}
 \title{Statistical table}
 \usage{
-stats_table(.data, iv, ..., sig = FALSE, format = c("default", "html",
-  "latex"), args = list())
+stats_table(.data, iv, ..., funs = c("mean", "sd"), sig = FALSE,
+  format = c("default", "html", "latex"), args = list())
 }
 \arguments{
 \item{.data}{a data frame}
