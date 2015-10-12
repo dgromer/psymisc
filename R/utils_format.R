@@ -18,7 +18,7 @@ fmt_stat <- function(statistic, leading_zero = TRUE, equal_sign = TRUE,
 
   if (!leading_zero)
   {
-    statistic <- sub(" 0\\.", " \\.", statistic)
+    statistic <- sub("0\\.", "\\.", statistic)
   }
 
   statistic
@@ -172,7 +172,11 @@ fmt_symb <- function(x, format)
 
 p_to_symbol <- function(p)
 {
-  if (p >= .1)
+  if (is.na(p))
+  {
+    ""
+  }
+  else if (p >= .1)
   {
     ""
   }

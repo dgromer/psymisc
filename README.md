@@ -7,6 +7,7 @@ psymisc is an R package that provides some useful high-level and helper function
 ## Functions
 
 -   `cohens_d()`/`cohens_d_()`: Calculate Cohen's d effect size (from raw data, t-test or statistical parameters). Also supports Hedge's g* and Glass's &Delta;.
+-   `cor_table`: Create a correlation matrix similar to `cor` but with significance asterisks.
 -   `ds()`: An alternative to `aggregate()` for summary statistics. It wraps `dplyr::group_by()` and `dplyr::summarise()` into a convenient formula interface.
 -   `fplot()`: Convenient plotting of means and standard errors or boxplots of factorial data.
 -	`mean_cor()`: Calculate the mean of several correlations using Fisher-Z-transformation.
