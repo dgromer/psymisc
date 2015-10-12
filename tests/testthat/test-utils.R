@@ -1,11 +1,13 @@
 test_that("Formatting of statistics", {
-  expect_match(fmt_stat(12.345), "= 12.35")
-  expect_match(fmt_stat(-12.345), "= -12.35")
-  expect_match(fmt_stat(12.345, equal_sign = FALSE), "12.35")
-  expect_match(fmt_stat(.004), "0.00")
-  expect_match(fmt_stat(.004, negative_values = FALSE), "< 0.01")
+  expect_match(fmt_stat(12.345), "= 12\\.35")
+  expect_match(fmt_stat(-12.345), "= -12\\.35")
+  expect_match(fmt_stat(12.345, equal_sign = FALSE), "12\\.35")
+  expect_match(fmt_stat(.004), "0\\.00")
+  expect_match(fmt_stat(.004, negative_values = FALSE), "< 0\\.01")
   expect_match(fmt_stat(.004, leading_zero = FALSE, negative_values = FALSE),
-               "< .01")
+               "< \\.01")
+  expect_match(fmt_stat(-.93, equal_sign = FALSE, leading_zero = FALSE),
+               "-\\.93")
 })
 
 test_that("Formatting of p-values", {
