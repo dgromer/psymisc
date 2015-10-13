@@ -5,13 +5,14 @@ Version: 0.1.0.9000
 Authors@R: person("Daniel", "Gromer", role = c("aut", "cre"), email = "dgromer@mailbox.org")
 Description: Miscellaneous high-level and helper functions for psychologists that make everyday data analysis a little bit easier.
 LazyData: true
-Depends: 
+Depends:
     R (>= 3.1.0)
 License: GPL (>= 2)
-Imports: 
+Imports:
     dplyr (>= 0.4),
     ggplot2,
     htmlTable,
+    knitr,
     magrittr,
     purrr,
     rmarkdown,

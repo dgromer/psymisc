@@ -4,16 +4,11 @@
 \alias{cor_table}
 \title{Correlation table}
 \usage{
-cor_table(data, method = c("pearson", "kendall", "spearman"), adjust = NULL,
-  labels = names(data), format = c("text", "html", "latex"),
-  part = c("lower", "upper"))
+cor_table(data, adjust = NULL, labels = names(data), format = c("text",
+  "html", "latex", "markdown", "rmarkdown"), part = c("lower", "upper"))
 }
 \arguments{
 \item{data}{a data frame}
-
-\item{method}{a character string indicating which correlation coefficient is
-to be used for the test. One of \code{"pearson"}, \code{"kendall"}, or
-\code{"spearman"}, can be abbreviated.}
 
 \item{adjust}{character string indicating the method used for adjusting
 p-values for muliple comparisons. See \link{p.adjust.methods} for available
