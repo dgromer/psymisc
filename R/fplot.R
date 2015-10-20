@@ -1,9 +1,10 @@
 #' fplot
-#' 
+#'
 #' Convenient plotting of means and standard errors or boxplots of factorial
 #' data.
-#' 
+#'
 #' @importFrom dplyr left_join
+#' @importFrom magrittr %<>%
 #' @importFrom tidyr complete_
 #' @param .data a data frame containing the variables in the formula
 #'   \code{formula}.
@@ -12,29 +13,32 @@
 #'   factors with two or more levels giving the corresponding groups.
 #' @param geom character indicating the ggplot2 geom used. One of \code{"bar"}
 #'   (default), \code{"line"} and \code{"boxplot"}.
-#' 
+#'
 #' @export
 fplot <- function(.data, formula, geom = c("bar", "line", "boxplot"))
 {
   geom <- match.arg(geom)
-  
+
   # Get dependent variable
   dv <- all.vars(formula)[1]
-  
+
   # Get independent variables
   vars <- all.vars(formula)[-1]
-  
+
   if (geom == "boxplot")
   {
     return(fplot_boxplot(.data, dv, vars))
   }
-  
+
   # Calculate means and standard errors
   descr <- ds(.data, formula, na.rm = TRUE)
-  
+
   # Keep empty groups in descr
   descr <- complete_(descr, vars, fill = list())
-  
+
+  # Ensure that independent variables are factors
+  descr[1:length(vars)] %<>% lapply(as.factor)
+
   do.call(paste0("fplot_", geom), list(x = descr, dv = dv, vars = vars))
 }
 
@@ -57,7 +61,7 @@ fplot_bar <- function(x, dv, vars)
                     position = position_dodge(.9)) +
       theme_classic() +
       labs(y = dv)
-    
+
   }
   else if (length(vars) == 3)
   {
@@ -108,7 +112,7 @@ fplot_line <- function(x, dv, vars)
                     na.rm = TRUE) +
       theme_classic() +
       labs(y = dv)
-    
+
   }
   else if (length(vars) == 3)
   {
@@ -145,7 +149,7 @@ fplot_boxplot <- function(x, dv, vars)
 {
   # Convert vars to factors
   x[vars] <- lapply(x[vars], as.factor)
-  
+
   if (length(vars) == 1)
   {
     ggplot(x, aes_string(x = vars, y = dv)) +
@@ -159,7 +163,7 @@ fplot_boxplot <- function(x, dv, vars)
       geom_boxplot() +
       theme_classic() +
       labs(y = dv)
-    
+
   }
   else if (length(vars) == 3)
   {
