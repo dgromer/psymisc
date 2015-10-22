@@ -27,7 +27,7 @@ ds <- function(.data, formula, funs = c("mean", "se"), names = funs, ...)
   # Extract variables from formula
   vars <- all.vars(formula)
 
-  # Convert extra arguments in ... to character string
+  # Convert extra arguments in ... to a single character string
   args <- dots_to_character(...)
 
   # Group data by RHS if is not "."

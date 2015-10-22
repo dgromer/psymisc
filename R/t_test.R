@@ -1,10 +1,10 @@
 #' Student's t-Test
-#' 
+#'
 #' A wrapper for \code{t.test} that also returns sample sizes.
-#' 
+#'
 #' @inheritParams stats::t.test
 #' @seealso \link{t.test}
-#' 
+#'
 #' @export
 t_test <- function(x, ...) UseMethod("t_test")
 
@@ -17,9 +17,9 @@ t_test.default <- function(x, y = NULL,
 {
   t <- t.test(x = x, y = y, alternative = alternative, mu = mu, paired = paired,
               var.equal = var.equal, conf.level = conf.level, ...)
-  
-  # Ensure that 'data.name' here matches a simple call to t.test (is 'x' and 'y'
-  # otherwise)
+
+  # Ensure that the 'data.name' element in the returned list matches that of a
+  # call to t.test (is "x and y" otherwise)
   if (is.null(y))
   {
     dname <- deparse(substitute(x))
@@ -28,9 +28,9 @@ t_test.default <- function(x, y = NULL,
   {
     dname <- paste(deparse(substitute(x)), "and", deparse(substitute(y)))
   }
-  
+
   t$data.name <- dname
-  
+
   # Add data to return list, remove NA
   if (is.null(y))
   {
@@ -46,18 +46,18 @@ t_test.default <- function(x, y = NULL,
     t[["data"]]$x <- x[complete.cases(x, y)]
     t[["data"]]$y <- y[complete.cases(x, y)]
   }
-  
+
   t
 }
 
 #' @rdname t_test
 #' @export
 t_test.formula <- function(formula, data, subset, na.action, ...)
-{ 
+{
   t <- t.test(formula = formula, data = data, ...)
-  
+
   mf <- na.omit(model.frame(formula, data))
   t$data <- setNames(split(mf[[1]], mf[[2]]), c("x", "y"))
-  
+
   t
 }

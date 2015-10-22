@@ -21,6 +21,7 @@ chisq_apa <- function(x, print_n = FALSE, format = c("text", "markdown",
 {
   format <- match.arg(format)
 
+  # Check if 'x' was a call to `chisq.test`
   if (!grepl("Chi-squared test", x$method))
   {
     stop("'x' must be a call to `chisq.test`")
@@ -74,7 +75,7 @@ cor_apa <- function(x, format = c("text", "markdown", "rmarkdown", "html",
 {
   format <- match.arg(format)
 
-  # Check if 'x' is a call to `cor.test`
+  # Check if 'x' was a call to `cor.test`
   if (!grepl("correlation", x$method))
   {
     stop("'x' must be a call to `cor.test`")
@@ -134,6 +135,12 @@ t_apa <- function(x, es = "cohens_d", format = c("text", "markdown",
                   info = FALSE, print = TRUE)
 {
   format <- match.arg(format)
+
+  # Check if 'x' was a call to `t_test` or `t.test`
+  if (!grepl("t-test", x$method))
+  {
+    stop("'x' must be a call to `t_test` or `t.test`")
+  }
 
   if (format == "docx")
   {
@@ -224,6 +231,9 @@ anova_apa <- function(x, effect = NULL, sph_corr = "greenhouse-geisser",
 {
   format <- match.arg(format)
 
+  # Use a pseudo-S3 method dispatch here, because `ezANOVA` returns a list
+  # without a particular class
+
   if (inherits(x, "afex_aov"))
   {
     anova_apa_afex(x, effect, sph_corr, es, format, info, print)
@@ -259,6 +269,7 @@ anova_apa_afex <- function(x, effect, sph_corr, es, format, info, print)
                                                  leading_zero = FALSE))
   )
 
+  # Check if within-effects are present
   if (length(attr(x, "within")) != 0)
   {
     s <- summary(x)
@@ -276,6 +287,7 @@ anova_apa_afex <- function(x, effect, sph_corr, es, format, info, print)
       stop(paste0("Unknown correction method '", sph_corr, "'"))
     }
 
+    # Extract Mauchly's test of sphericity
     sph_tests <- s$sphericity.tests
 
     # Check which effects do not meet the assumption of sphericity

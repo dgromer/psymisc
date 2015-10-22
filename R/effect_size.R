@@ -53,6 +53,7 @@ cohens_d.default <- function(x, y = NULL, paired = FALSE,
 {
   corr <- match.arg(corr)
 
+  # Two independent samples
   if (!paired && !is.null(y))
   {
     m1 <- mean(x, na.rm = na.rm)
@@ -68,6 +69,7 @@ cohens_d.default <- function(x, y = NULL, paired = FALSE,
   }
   else
   {
+    # One sample
     if (is.null(y))
     {
       y <- 0
@@ -77,6 +79,7 @@ cohens_d.default <- function(x, y = NULL, paired = FALSE,
       if (length(x) != length(y)) stop("'x' and 'y' must have the same length")
     }
 
+    # Two dependent samples / one sample
     d <- mean(x - y, na.rm = na.rm) / sd(x - y, na.rm)
   }
 
@@ -126,7 +129,7 @@ cohens_d.htest <- function(ttest, corr = c("none", "hedges_g", "glass_delta"),
     stop('ttest must be a call to either `t_test` or `t.test`')
   }
 
-  # A call to t.test was passed to argument 'ttest'
+  # A call to `t.test` was passed to argument 'ttest'
   if (!is.null(ttest[["data"]]))
   {
     if (grepl("Paired", ttest$method))
@@ -142,7 +145,7 @@ cohens_d.htest <- function(ttest, corr = c("none", "hedges_g", "glass_delta"),
       cohens_d(ttest$data$x, ttest$data$y, corr = corr)
     }
   }
-  # A call to t_test was passed to argument 'ttest'
+  # A call to `t_test` was passed to argument 'ttest'
   else
   {
     if (grepl("Paired", ttest$method))
@@ -263,6 +266,9 @@ cohens_d_ <- function(m1 = NULL, m2 = NULL, sd1 = NULL, sd2 = NULL, n1 = NULL,
 #' @export
 petasq <- function(x, effect)
 {
+  # Use a pseudo-S3 method dispatch here, because `ezANOVA` returns a list
+  # without a particular class
+
   # aov
   if (inherits(x, "aov"))
   {
@@ -379,6 +385,10 @@ petasq_ <- function(ss_effect, ss_error)
 
 getasq <- function(x, effect)
 {
+  # Use a pseudo-S3 method dispatch here, because `ezANOVA` returns a list
+  # without a particular class
+
+  # afex
   if (inherits(x, "afex_aov"))
   {
     getasq_afex(x, effect)
