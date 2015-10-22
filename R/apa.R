@@ -217,20 +217,20 @@ t_apa <- function(x, es = "cohens_d", format = c("text", "markdown",
 #' }
 #'
 #' @export
-anova_apa <- function(x, sph_corr = "greenhouse-geisser", es = "petasq",
-                      format = c("text", "markdown", "rmarkdown", "html",
-                                 "latex", "docx"),
+anova_apa <- function(x, effect = NULL, sph_corr = "greenhouse-geisser",
+                      es = "petasq", format = c("text", "markdown", "rmarkdown",
+                                                "html", "latex", "docx"),
                       info = FALSE, print = TRUE)
 {
   format <- match.arg(format)
 
   if (inherits(x, "afex_aov"))
   {
-    anova_apa_afex(x, sph_corr, es, format, info, print)
+    anova_apa_afex(x, effect, sph_corr, es, format, info, print)
   }
   else if (is.list(x) && names(x)[1] == "ANOVA")
   {
-    anova_apa_ezanova(x, sph_corr, es, format, info, print)
+    anova_apa_ezanova(x, effect, sph_corr, es, format, info, print)
   }
   else
   {
@@ -240,7 +240,7 @@ anova_apa <- function(x, sph_corr = "greenhouse-geisser", es = "petasq",
 
 #' @importFrom dplyr data_frame
 #' @importFrom magrittr %>% %<>%
-anova_apa_afex <- function(x, sph_corr, es, format, info, print)
+anova_apa_afex <- function(x, effect, sph_corr, es, format, info, print)
 {
   info_msg <- ""
 
@@ -318,12 +318,12 @@ anova_apa_afex <- function(x, sph_corr, es, format, info, print)
 
   if (info && info_msg != "") message(info_msg)
 
-  anova_apa_build(tbl, es, format, print)
+  anova_apa_build(tbl, effect, es, format, print)
 }
 
 #' @importFrom dplyr data_frame left_join
 #' @importFrom magrittr %>% %<>%
-anova_apa_ezanova <- function(x, sph_corr, es, format, info, print)
+anova_apa_ezanova <- function(x, effect, sph_corr, es, format, info, print)
 {
   info_msg <- ""
 
@@ -400,14 +400,15 @@ anova_apa_ezanova <- function(x, sph_corr, es, format, info, print)
 
   if (info && info_msg != "") message(info_msg)
 
-  anova_apa_build(tbl, es, format, print)
+  anova_apa_build(tbl, effect, es, format, print)
 }
 
 #' @importFrom dplyr data_frame
 #' @importFrom magrittr %>% %<>%
 #' @importFrom rmarkdown render
-anova_apa_build <- function(tbl, es_name, format, print)
+anova_apa_build <- function(tbl, effect, es_name, format, print)
 {
+  # Output for default parameters
   if (format == "text" && print)
   {
     # Split test statistic and its sign, because the tabular output will be
@@ -415,14 +416,27 @@ anova_apa_build <- function(tbl, es_name, format, print)
     sign <- substr(tbl$statistic, 1, 1)
     statistic <- substr(tbl$statistic, 2, nchar(tbl$statistic))
 
-    print.data.frame(data_frame(
+    tbl <- data_frame(
       Effect = tbl$effects,
       ` ` = paste0("F(", tbl$df_n, ", ", tbl$df_d, ") ", sign,
                    format(statistic, width = max(nchar(statistic)),
                           justify = "right"),
                    ", p ", tbl$p, ", ", fmt_symb(es_name, format), " ", tbl$es,
                    " ", format(tbl$symb, width = 3))
-    ))
+    )
+
+    if (is.null(effect))
+    {
+      print.data.frame(tbl)
+    }
+    else
+    {
+      # Exctract text for specified effect from tbl
+      `[.data.frame`(tbl, tbl$Effect == effect, " ") %>%
+        # Remove alignment whitespaces
+        gsub("[[:blank:]]+", " ", .) %>%
+        cat()
+    }
   }
   else if (format == "docx")
   {
@@ -430,11 +444,25 @@ anova_apa_build <- function(tbl, es_name, format, print)
     tmp <- tempfile("anova_apa", fileext = ".md")
     sink(tmp)
     # Put the formatted string together
-    out <- paste0(tbl$effects, " *F*(", tbl$df_n, ", ", tbl$df_d, ") = ",
+    out <- paste0(tbl$effects, " *F*(", tbl$df_n, ", ", tbl$df_d, ") ",
                   tbl$statistic, ", *p* ", tbl$p, ", ",
                   fmt_symb(es_name, "rmarkdown"), " ", tbl$es, "\n\n")
-    # Write output line by line to the markdown file
-    for (i in seq_along(out)) cat(out[i])
+
+    if (is.null(effect))
+    {
+      # Write output line by line to the markdown file
+      for (i in seq_along(out)) cat(out[i])
+    }
+    else
+    {
+      # Select only the output string for 'effect'
+      out[which(tbl$effects == effect)] %>%
+        # Remove the name of the effect from the beginning of the string
+        sub("^.*\\s\\*F\\*", "\\*F\\*", .) %>%
+        # Write to markdown file
+        cat()
+    }
+
     sink()
     # Convert markdown to docx
     outfile <- render(tmp, output_format = "word_document", quiet = TRUE)
@@ -450,23 +478,39 @@ anova_apa_build <- function(tbl, es_name, format, print)
                    tbl$statistic, ", ", fmt_symb("p", format), " ", tbl$p, ", ",
                    fmt_symb(es_name, format), " ", tbl$es)
 
+    # cat to console
     if (print)
     {
-      # Align names of effects
-      tbl$effects <- format(paste0(tbl$effects, ":"),
-                            width = max(sapply(tbl$effects, nchar)))
-
-      # Add line breaks
-      text <- paste0(tbl$effects, text, "\n")
-
-      for (i in seq_along(text))
+      if (is.null(effect))
       {
-        cat(text[i])
+        # Align names of effects
+        tbl$effects <- format(paste0(tbl$effects, ": "),
+                              width = max(sapply(tbl$effects, nchar)))
+
+        # Add line breaks
+        text <- paste0(tbl$effects, text, "\n")
+
+        for (i in seq_along(text))
+        {
+          cat(text[i])
+        }
+      }
+      else
+      {
+        cat(text[which(tbl$effect == effect)])
       }
     }
+    # Return as string(s)
     else
     {
-      data_frame(effect = tbl$effects, text = text)
+      if (is.null(effect))
+      {
+        data_frame(effect = tbl$effects, text = text)
+      }
+      else
+      {
+        text[which(tbl$effect == effect)]
+      }
     }
   }
 }

@@ -4,9 +4,9 @@
 \alias{anova_apa}
 \title{Report ANOVA in APA style}
 \usage{
-anova_apa(x, sph_corr = "greenhouse-geisser", es = "petasq",
-  format = c("text", "markdown", "rmarkdown", "html", "latex", "docx"),
-  info = FALSE, print = TRUE)
+anova_apa(x, effect = NULL, sph_corr = "greenhouse-geisser",
+  es = "petasq", format = c("text", "markdown", "rmarkdown", "html",
+  "latex", "docx"), info = FALSE, print = TRUE)
 }
 \arguments{
 \item{x}{a call to \code{ez::ezANOVA}.}
