@@ -42,7 +42,7 @@ chisq_apa <- function(x, print_n = FALSE, format = c("text", "markdown",
 
   # Put the formatted string together
   text <- paste0(fmt_symb("chisq", format), "(", df, n, ") ", statistic, ", ",
-                   fmt_symb("p", format), " ", p)
+                 fmt_symb("p", format), " ", p)
 
   if (print)
   {
@@ -97,8 +97,8 @@ cor_apa <- function(x, format = c("text", "markdown", "rmarkdown", "html",
 
   # Put the formatted string together
   text <- paste0(fmt_symb(coef, format),
-                   if (coef == "pearson's") paste0("(", df, ") ") else " ",
-                   estimate, ", ", fmt_symb("p", format), " ", p)
+                 if (coef == "pearson's") paste0("(", df, ") ") else " ",
+                 estimate, ", ", fmt_symb("p", format), " ", p)
 
   if (print)
   {
@@ -170,8 +170,8 @@ t_apa <- function(x, es = "cohens_d", format = c("text", "markdown",
 
   # Put the formatted string together
   text <- paste0(fmt_symb("t", format), "(", df, ") ", statistic, ", ",
-                   fmt_symb("p", format), " ", p, ", ", fmt_symb(es, format),
-                   " ", d)
+                 fmt_symb("p", format), " ", p, ", ", fmt_symb(es, format), " ",
+                 d)
 
   if (print)
   {
@@ -185,7 +185,10 @@ t_apa <- function(x, es = "cohens_d", format = c("text", "markdown",
 
 #' Report ANOVA in APA style
 #'
-#' @param x a call to \code{ez::ezANOVA}.
+#' @param x a call to \code{ez::ezANOVA} or \code{afex::afex_ez},
+#'   \code{afex::afex_car} or \code{afex::afex_4}
+#' @param effect character string indicating the name of the effect to display.
+#'   If is \code{NULL}, all effects are reported (default).
 #' @param sph_corr character string indicating the method used for correction if
 #'   sphericity is violated (only applies to repeated-measures and mixed design
 #'   ANOVA). Can be one of \code{"greenhouse-geisser"} (default),
@@ -224,11 +227,14 @@ t_apa <- function(x, es = "cohens_d", format = c("text", "markdown",
 #' }
 #'
 #' @export
-anova_apa <- function(x, effect = NULL, sph_corr = "greenhouse-geisser",
+anova_apa <- function(x, effect = NULL,
+                      sph_corr = c("greenhouse-geisser", "gg", "huynh-feldt",
+                                   "hf", "none"),
                       es = "petasq", format = c("text", "markdown", "rmarkdown",
                                                 "html", "latex", "docx"),
                       info = FALSE, print = TRUE)
 {
+  sph_corr <- match.arg(sph_corr)
   format <- match.arg(format)
 
   # Use a pseudo-S3 method dispatch here, because `ezANOVA` returns a list
@@ -282,10 +288,6 @@ anova_apa_afex <- function(x, effect, sph_corr, es, format, info, print)
     {
       corr_method <- "HF"
     }
-    else
-    {
-      stop(paste0("Unknown correction method '", sph_corr, "'"))
-    }
 
     # Extract Mauchly's test of sphericity
     sph_tests <- s$sphericity.tests
@@ -311,7 +313,7 @@ anova_apa_afex <- function(x, effect, sph_corr, es, format, info, print)
       info_msg %<>% paste0(
         "Sphericity corrections:\n",
         "  The following effects were adjusted using the ",
-        ifelse(corr_method == "GG", "Greenhouse-Geisser", "Huynh-Feldt"),
+        if (corr_method == "GG") "Greenhouse-Geisser" else "Huynh-Feldt",
         " correction:\n",
         paste0("  ", mauchlys, " (Mauchly's W ",
                sapply(sph_tests[mauchlys, "Test statistic"], fmt_stat),
@@ -367,16 +369,11 @@ anova_apa_ezanova <- function(x, effect, sph_corr, es, format, info, print)
     {
       corr_method <- "HF"
     }
-    else
-    {
-      stop(paste0("Unknown correction method '", sph_corr, "'"))
-    }
 
     # Check which effects do not meet the assumption of sphericity
     mauchlys <- left_join(x$`Mauchly's Test for Sphericity`,
                           x$`Sphericity Corrections`, by = "Effect") %>%
       `[`(.$p < .05, )
-
 
     if (nrow(mauchlys) > 0)
     {
@@ -394,7 +391,7 @@ anova_apa_ezanova <- function(x, effect, sph_corr, es, format, info, print)
       info_msg %<>% paste0(
         "Sphericity corrections:\n",
         "  The following effects were adjusted using the ",
-        ifelse(corr_method == "GG", "Greenhouse-Geisser", "Huynh-Feldt"),
+        if (corr_method == "GG") "Greenhouse-Geisser" else "Huynh-Feldt",
         " correction:\n",
         paste0("  ", mauchlys$Effect, " (Mauchly's W ",
                sapply(mauchlys$W, fmt_stat), ", p ",

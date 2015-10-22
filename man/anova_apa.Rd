@@ -4,12 +4,17 @@
 \alias{anova_apa}
 \title{Report ANOVA in APA style}
 \usage{
-anova_apa(x, effect = NULL, sph_corr = "greenhouse-geisser",
-  es = "petasq", format = c("text", "markdown", "rmarkdown", "html",
-  "latex", "docx"), info = FALSE, print = TRUE)
+anova_apa(x, effect = NULL, sph_corr = c("greenhouse-geisser", "gg",
+  "huynh-feldt", "hf", "none"), es = "petasq", format = c("text",
+  "markdown", "rmarkdown", "html", "latex", "docx"), info = FALSE,
+  print = TRUE)
 }
 \arguments{
-\item{x}{a call to \code{ez::ezANOVA}.}
+\item{x}{a call to \code{ez::ezANOVA} or \code{afex::afex_ez},
+\code{afex::afex_car} or \code{afex::afex_4}}
+
+\item{effect}{character string indicating the name of the effect to display.
+If is \code{NULL}, all effects are reported (default).}
 
 \item{sph_corr}{character string indicating the method used for correction if
 sphericity is violated (only applies to repeated-measures and mixed design
