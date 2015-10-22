@@ -16,6 +16,7 @@
 #'   used, which requires the tabularx package.
 #' @param part character string indicating which part of the correlation matrix
 #'   should be printed, can be either \code{"lower"} or \code{"upper"}.
+#' @seealso \link{cor}
 #' @examples
 #' cor_table(height[4:9])
 #' @export
@@ -99,6 +100,19 @@ cor_table <- function(data, adjust = NULL, labels = names(data),
   }
   else
   {
+    tbl[] <- lapply(tbl, trim_cor_table_cells)
+
+    # TODO: maybe drop last column?
     tbl
   }
+}
+
+# Subsequently delete whitespaces from the end of each element of a vector of
+# strings, while ensuring that all strings stay the same length.
+# E.g. c(" .39 ** ", "-.07    ") is transformed to c(" .39 **", "-.07   ")
+trim_cor_table_cells <- function(x)
+{
+  while(identical(grep(" $", x), seq_along(x))) x <- substr(x, 1, nchar(x) - 1)
+
+  x
 }

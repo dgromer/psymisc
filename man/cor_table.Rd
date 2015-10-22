@@ -31,4 +31,7 @@ Correlation table
 \examples{
 cor_table(height[4:9])
 }
+\seealso{
+\link{cor}
+}
 
