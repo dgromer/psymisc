@@ -16,8 +16,8 @@ t_apa(x, es = "cohens_d", format = c("text", "markdown", "rmarkdown",
 samples or one sample t-test (cohen's d is reported for these test).}
 
 \item{format}{character string specifying the output format. One of
-\code{"default"}, \code{"text"}, \code{"markdown"}, \code{"rmarkdown"},
-\code{html}, \code{"latex"} or \code{"docx"}.}
+\code{"text"}, \code{"markdown"}, \code{"rmarkdown"}, \code{html},
+\code{"latex"} or \code{"docx"}.}
 
 \item{info}{logical indicating whether to print a message on the used test
 (default is \code{FALSE})}

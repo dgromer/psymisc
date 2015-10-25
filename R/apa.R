@@ -4,8 +4,8 @@
 #' @param x a call to \code{chisq.test}
 #' @param print_n logical indicating whether to show sample size in text
 #' @param format character string specifying the output format. One of
-#'   \code{"default"}, \code{"text"}, \code{"markdown"}, \code{"rmarkdown"},
-#'   \code{html}, \code{"latex"} or \code{"docx"}.
+#'   \code{"text"}, \code{"markdown"}, \code{"rmarkdown"}, \code{html},
+#'   \code{"latex"} or \code{"docx"}.
 #' @param info logical indicating whether to print a message on the used test
 #'   (default is \code{FALSE})
 #' @param print logical indicating wheter to print the formatted output via
@@ -59,8 +59,8 @@ chisq_apa <- function(x, print_n = FALSE, format = c("text", "markdown",
 #' @importFrom rmarkdown render
 #' @param x a call to \code{cor.test}
 #' @param format character string specifying the output format. One of
-#'   \code{"default"}, \code{"text"}, \code{"markdown"}, \code{"rmarkdown"},
-#'   \code{html}, \code{"latex"} or \code{"docx"}.
+#'   \code{"text"}, \code{"markdown"}, \code{"rmarkdown"}, \code{html},
+#'   \code{"latex"} or \code{"docx"}.
 #' @param info logical indicating whether to print a message on the used test
 #'   (default is \code{FALSE})
 #' @param print logical indicating wheter to print the formatted output via
@@ -119,8 +119,8 @@ cor_apa <- function(x, format = c("text", "markdown", "rmarkdown", "html",
 #'   \code{x} is an independent samples t-test. Ignored if \code{x} is a paired
 #'   samples or one sample t-test (cohen's d is reported for these test).
 #' @param format character string specifying the output format. One of
-#'   \code{"default"}, \code{"text"}, \code{"markdown"}, \code{"rmarkdown"},
-#'   \code{html}, \code{"latex"} or \code{"docx"}.
+#'   \code{"text"}, \code{"markdown"}, \code{"rmarkdown"}, \code{html},
+#'   \code{"latex"} or \code{"docx"}.
 #' @param info logical indicating whether to print a message on the used test
 #'   (default is \code{FALSE})
 #' @param print logical indicating wheter to print the formatted output via
@@ -194,11 +194,13 @@ t_apa <- function(x, es = "cohens_d", format = c("text", "markdown",
 #'   ANOVA). Can be one of \code{"greenhouse-geisser"} (default),
 #'   \code{"huynh-feldt"} or \code{"none"} (you may also use the abbreviations
 #'   \code{"gg"} or \code{"hf"}).
-#' @param es character string indicating the effect size to show in the output,
-#'   one of \code{"petasq"} or \code{"getasq"}.
+#' @param es character string indicating the effect size to display in the
+#'   output, one of \code{"petasq"} (partial eta squared) or \code{"getasq"}
+#'   (generalized eta squared) (you may also use the abbreviations \code{"pes"}
+#'   or \code{"ges"}).
 #' @param format character string specifying the output format. One of
-#'   \code{"default"}, \code{"text"}, \code{"markdown"}, \code{"rmarkdown"},
-#'   \code{html}, \code{"latex"} or \code{"docx"}.
+#'   \code{"text"}, \code{"markdown"}, \code{"rmarkdown"}, \code{html},
+#'   \code{"latex"} or \code{"docx"}.
 #' @param info logical indicating whether to print a message on the used test
 #'   (default is \code{FALSE})
 #' @param print logical indicating wheter to print the formatted output via
@@ -230,11 +232,13 @@ t_apa <- function(x, es = "cohens_d", format = c("text", "markdown",
 anova_apa <- function(x, effect = NULL,
                       sph_corr = c("greenhouse-geisser", "gg", "huynh-feldt",
                                    "hf", "none"),
-                      es = "petasq", format = c("text", "markdown", "rmarkdown",
-                                                "html", "latex", "docx"),
+                      es = c("petasq", "pes", "getasq", "ges"),
+                      format = c("text", "markdown", "rmarkdown", "html",
+                                 "latex", "docx"),
                       info = FALSE, print = TRUE)
 {
   sph_corr <- match.arg(sph_corr)
+  es <- match.arg(es)
   format <- match.arg(format)
 
   # Use a pseudo-S3 method dispatch here, because `ezANOVA` returns a list
@@ -440,7 +444,7 @@ anova_apa_build <- function(tbl, effect, es_name, format, print)
     }
     else
     {
-      # Exctract text for specified effect from tbl
+      # Extract text for specified effect from tbl.
       `[.data.frame`(tbl, tbl$Effect == effect, " ") %>%
         # Remove alignment whitespaces
         gsub("[[:blank:]]+", " ", .) %>%
@@ -554,3 +558,52 @@ sys_open <- function(filename)
     system(paste0("open \"", filename, "\""))
   }
 }
+
+
+#' APA Formatting for RMarkdown Reports
+#'
+#' A wrapper around the \code{*_apa} functions, providing a convenient way to
+#' use the formatters in inline code in RMarkdown documents.
+#'
+#' @param x an \R object. Must be a call to one of \code{afex::aov_4},
+#'   \code{afex::aov_car}, \code{afex::aov_ez}, \code{chisq.test},
+#'   \code{cor.test}, \code{ez::ezANOVA} or \code{t_test}.
+#' @param effect (only applicable if \code{x} is an ANOVA) character string
+#'   indicating the name of the effect to display. If is \code{NULL}, all
+#'   effects are reported (default).
+#' @param ... further arguments passed to other methods
+#' @seealso \link{anova_apa}, \link{chisq_apa},
+#'   \link{cor_apa}, \link{t_apa}
+#'
+#' @export
+apa <- function(x, effect = NULL, format = "rmarkdown", print = FALSE, ...)
+{
+  if (inherits(x, "htest"))
+  {
+    if (grepl("Chi-squared test", x$method))
+    {
+      chisq_apa(x, format = format, print = print, ...)
+    }
+    else if (grepl("correlation", x$method))
+    {
+      cor_apa(x, format = format, print = print, ...)
+    }
+    else if (grepl("t-test", x$method))
+    {
+      t_apa(x, format = format, print = print, ...)
+    }
+    else
+    {
+      stop("Unkown type passed to 'x'")
+    }
+  }
+  else if (inherits(x, "afex_aov") || (is.list(x) && names(x)[1] == "ANOVA"))
+  {
+    anova_apa(x, effect, format = format, print = print, ...)
+  }
+  else
+  {
+    stop("Unkown type passed to 'x'")
+  }
+}
+

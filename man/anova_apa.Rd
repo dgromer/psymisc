@@ -5,9 +5,9 @@
 \title{Report ANOVA in APA style}
 \usage{
 anova_apa(x, effect = NULL, sph_corr = c("greenhouse-geisser", "gg",
-  "huynh-feldt", "hf", "none"), es = "petasq", format = c("text",
-  "markdown", "rmarkdown", "html", "latex", "docx"), info = FALSE,
-  print = TRUE)
+  "huynh-feldt", "hf", "none"), es = c("petasq", "pes", "getasq", "ges"),
+  format = c("text", "markdown", "rmarkdown", "html", "latex", "docx"),
+  info = FALSE, print = TRUE)
 }
 \arguments{
 \item{x}{a call to \code{ez::ezANOVA} or \code{afex::afex_ez},
@@ -22,12 +22,14 @@ ANOVA). Can be one of \code{"greenhouse-geisser"} (default),
 \code{"huynh-feldt"} or \code{"none"} (you may also use the abbreviations
 \code{"gg"} or \code{"hf"}).}
 
-\item{es}{character string indicating the effect size to show in the output,
-one of \code{"petasq"} or \code{"getasq"}.}
+\item{es}{character string indicating the effect size to display in the
+output, one of \code{"petasq"} (partial eta squared) or \code{"getasq"}
+(generalized eta squared) (you may also use the abbreviations \code{"pes"}
+or \code{"ges"}).}
 
 \item{format}{character string specifying the output format. One of
-\code{"default"}, \code{"text"}, \code{"markdown"}, \code{"rmarkdown"},
-\code{html}, \code{"latex"} or \code{"docx"}.}
+\code{"text"}, \code{"markdown"}, \code{"rmarkdown"}, \code{html},
+\code{"latex"} or \code{"docx"}.}
 
 \item{info}{logical indicating whether to print a message on the used test
 (default is \code{FALSE})}

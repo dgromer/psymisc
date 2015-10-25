@@ -13,8 +13,8 @@ chisq_apa(x, print_n = FALSE, format = c("text", "markdown", "rmarkdown",
 \item{print_n}{logical indicating whether to show sample size in text}
 
 \item{format}{character string specifying the output format. One of
-\code{"default"}, \code{"text"}, \code{"markdown"}, \code{"rmarkdown"},
-\code{html}, \code{"latex"} or \code{"docx"}.}
+\code{"text"}, \code{"markdown"}, \code{"rmarkdown"}, \code{html},
+\code{"latex"} or \code{"docx"}.}
 
 \item{info}{logical indicating whether to print a message on the used test
 (default is \code{FALSE})}
