@@ -28,7 +28,20 @@ cor_table <- function(data, adjust = NULL, labels = names(data),
   format <- match.arg(format)
   part <- match.arg(part)
 
-  # Calculate p-values
+  # Calculate correlation matrix and format
+  tbl <-
+    cor(data, use = "pairwise") %>%
+    apply(c(1, 2), fmt_stat, leading_zero = FALSE, equal_sign = FALSE) %>%
+    format(width = 4, justify = "right")
+
+  # Remove everything except the lower or upper triangular part of the matrix
+  # using either the `lower.tri` or `upper.tri` function. Use whitespaces to
+  # align text output
+  tbl[!do.call(paste0(part, ".tri"), list(x = tbl))] <- "    "
+  # Set the diagonale to dash, use whitespaces to align text output
+  diag(tbl) <- "  - "
+
+  # Calculate the corresponding p-values for the correlations
   p_values <-
     # Apply cor.test to every column in 'data' with every other column as ys
     lapply(data, function(.x) lapply(data, function(.y) cor.test(.x, .y))) %>%
@@ -38,36 +51,25 @@ cor_table <- function(data, adjust = NULL, labels = names(data),
     # Convert to matrix
     matrix(nrow = length(data))
 
-  # Remove everything except the lower or upper triangular part using either the
-  # lower.tri or upper.tri function
+  # Remove everything except the lower or upper triangular part of the p-value
+  # matrix using either the `lower.tri` or `upper.tri` function
   p_values[!do.call(paste0(part, ".tri"), list(x = p_values))] <- NA
 
-  # Apply adjustation for multiple comparisons if requested
+  # Apply adjustation for multiple comparisons to p-values if requested
   if (!is.null(adjust))
   {
     p_values[] <- p.adjust(p_values, method = adjust)
   }
 
-  # Format p-values as asterisks and format strings with same width
+  # Format p-values as asterisks and format all strings to the same width
   p_values %<>%
     apply(c(1, 2), p_to_symbol) %>%
     format(width = 3, justify = "right")
 
-  # Calculate correlations, convert to matrix and format
-  tbl <-
-    cor(data, use = "pairwise") %>%
-    apply(c(1, 2), fmt_stat, leading_zero = FALSE, equal_sign = FALSE) %>%
-    format(width = 4, justify = "right")
-
-  # Remove everything except the lower or upper triangular part using either the
-  # lower.tri or upper.tri function. Use whitespaces to align text output
-  tbl[!do.call(paste0(part, ".tri"), list(x = tbl))] <- "    "
-  # Set the diagonale to dash, use whitespaces to align text output
-  diag(tbl) <- "  - "
-
-  # Concat correlation and significance asterisks
+  # Concatenate correlations and significance asterisks
   tbl[] <- paste(tbl, p_values)
 
+  # Convert to data.frame and set row and column names
   tbl <- as.data.frame(tbl, stringsAsFactors = FALSE)
   rownames(tbl) <- labels
   colnames(tbl) <- labels
