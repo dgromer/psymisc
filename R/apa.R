@@ -571,6 +571,11 @@ sys_open <- function(filename)
 #' @param effect (only applicable if \code{x} is an ANOVA) character string
 #'   indicating the name of the effect to display. If is \code{NULL}, all
 #'   effects are reported (default).
+#' @param format character string specifying the output format. One of
+#'   \code{"text"}, \code{"markdown"}, \code{"rmarkdown"}, \code{html},
+#'   \code{"latex"} or \code{"docx"}.
+#' @param print logical indicating whether to return the result as an \R object
+#'   (\code{FALSE}) or print using \code{cat} (\code{TRUE}).
 #' @param ... further arguments passed to other methods
 #' @seealso \link{anova_apa}, \link{chisq_apa},
 #'   \link{cor_apa}, \link{t_apa}

@@ -10,7 +10,8 @@ moe(x, quantile = 0.975, na.rm = FALSE)
 \item{x}{a numeric vector or an \R object which is coercible to one by
 \code{as.vector(x, "numeric")}}
 
-\item{quantile}{}
+\item{quantile}{numeric, quantile of the t-distribution. Default is
+\code{.975} for half the width of a 95\% confidence interval.}
 
 \item{na.rm}{logical. Should missing values be removed?}
 }

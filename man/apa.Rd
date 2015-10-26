@@ -15,6 +15,13 @@ apa(x, effect = NULL, format = "rmarkdown", print = FALSE, ...)
 indicating the name of the effect to display. If is \code{NULL}, all
 effects are reported (default).}
 
+\item{format}{character string specifying the output format. One of
+\code{"text"}, \code{"markdown"}, \code{"rmarkdown"}, \code{html},
+\code{"latex"} or \code{"docx"}.}
+
+\item{print}{logical indicating whether to return the result as an \R object
+(\code{FALSE}) or print using \code{cat} (\code{TRUE}).}
+
 \item{...}{further arguments passed to other methods}
 }
 \description{

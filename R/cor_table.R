@@ -64,7 +64,7 @@ cor_table <- function(data, adjust = NULL, labels = names(data),
   # Format p-values as asterisks and format all strings to the same width
   p_values %<>%
     apply(c(1, 2), p_to_symbol) %>%
-    format(width = 3, justify = "right")
+    format(width = 3, justify = "left")
 
   # Concatenate correlations and significance asterisks
   tbl[] <- paste(tbl, p_values)
@@ -104,8 +104,8 @@ cor_table <- function(data, adjust = NULL, labels = names(data),
   {
     tbl[] <- lapply(tbl, trim_cor_table_cells)
 
-    # TODO: maybe drop last column?
-    tbl
+    # Drop last column, because it takes unnecessary space in the console
+    tbl[, -length(tbl)]
   }
 }
 
