@@ -306,7 +306,7 @@ anova_apa_afex <- function(x, effect, sph_corr, es, format, info, print)
       # Apply correction to degrees of freedom
       tbl[tbl$effects == mauchlys, c("df_n", "df_d")] %<>%
         `*`(s$pval.adjustments[mauchlys, paste(corr_method, "eps")]) %>%
-        lapply(fmt_stat)
+        lapply(fmt_stat, equal_sign = FALSE)
 
       # Replace p-values in tbl with corrected ones
       tbl[tbl$effects == mauchlys, "p"] <-
@@ -384,7 +384,7 @@ anova_apa_ezanova <- function(x, effect, sph_corr, es, format, info, print)
       # Apply correction to degrees of freedom
       tbl[tbl$effects == mauchlys$Effect, c("df_n", "df_d")] %<>%
         `*`(mauchlys[[paste0(corr_method, "e")]]) %>%
-        lapply(fmt_stat)
+        lapply(fmt_stat, equal_sign = FALSE)
 
       # Replace p-values in tbl with corrected ones
       tbl[tbl$effects == mauchlys$Effect, "p"] <-
