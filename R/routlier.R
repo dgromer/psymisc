@@ -21,7 +21,7 @@
 routlier <- function(.data, ..., action = c("na", "flag", "remove"),
                      z = c(-3, 3), absolute = NULL, info = FALSE)
 {
-  action <- match(action)
+  action <- match.arg(action)
 
   x <- select(.data, ...)
 
