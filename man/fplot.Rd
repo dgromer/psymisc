@@ -4,21 +4,46 @@
 \alias{fplot}
 \title{fplot}
 \usage{
-fplot(.data, formula, geom = c("bar", "line", "boxplot"))
+fplot(.data, formula, geom = c("bar", "line", "boxplot"), error = c("se",
+  "sd", "moe"), ...)
 }
 \arguments{
 \item{.data}{a data frame containing the variables in the formula
 \code{formula}.}
 
-\item{formula}{a formula in the form \code{lhs ~ rhs} where \code{lhs} is
-the a numeric variable (dependent variable) and \code{rhs} one or more
+\item{formula}{a formula in the form \code{lhs ~ rhs} where \code{lhs} is a
+numeric variable (the dependent variable) and \code{rhs} one or more
 factors with two or more levels giving the corresponding groups.}
 
-\item{geom}{character indicating the ggplot2 geom used. One of \code{"bar"}
-(default), \code{"line"} and \code{"boxplot"}.}
+\item{geom}{character string indicating the ggplot2 geom used. One of
+\code{"bar"} (default), \code{"line"} and \code{"boxplot"}.}
+
+\item{error}{character string indicating the function used for calculating
+the error bars. One of \code{"se"} (default) \code{"sd"} or \code{"moe"}.
+Ignored if \code{geom} is \code{"boxplot"}.}
+
+\item{...}{Further arguments passed to methods. E.g. \code{quantile} if
+\code{error} is \code{"moe"} to indicate the quantile for the confidence
+interval.}
 }
 \description{
-Convenient plotting of means and standard errors or boxplots of factorial
+Convenient plotting of means and errors bars or boxplots of factorial
 data.
+}
+\examples{
+fplot(height, stai_trait ~ group + sex)
+
+# Standard deviation instead of standard error
+fplot(height, stai_trait ~ group + sex, error = "sd")
+
+# 95\% confidence intervals (moe = margin of error)
+fplot(height, stai_trait ~ group + sex, error = "moe")
+
+# Line graph
+fplot(height, stai_trait ~ group + sex, geom = "line")
+
+# Boxplot
+fplot(height, stai_trait ~ group + sex, geom = "boxplot")
+
 }
 
