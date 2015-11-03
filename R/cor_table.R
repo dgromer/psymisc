@@ -114,7 +114,11 @@ cor_table <- function(data, adjust = NULL, labels = names(data),
 # E.g. c(" .39 ** ", "-.07    ") is transformed to c(" .39 **", "-.07   ")
 trim_cor_table_cells <- function(x)
 {
-  while(identical(grep(" $", x), seq_along(x))) x <- substr(x, 1, nchar(x) - 1)
+  # Check if all strings in 'x' end with a whitespace
+  while(identical(grep(" $", x), seq_along(x)))
+  {
+    x <- substr(x, 1, nchar(x) - 1)
+  }
 
   x
 }
