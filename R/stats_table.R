@@ -17,7 +17,7 @@
 #' @param sig logical indicating whether to show significance with symbols in
 #'   the last column
 #' @param format character string indicating the output format, one of
-#'   \code{"default"}, \code{"html"} or \code{"latex"}. For HTML, the table is
+#'   \code{"text"}, \code{"html"} or \code{"latex"}. For HTML, the table is
 #'   displayed as a htmlwidget. For LaTeX, the \code{tabularx} environment is
 #'   used, which requires the tabularx package. The utilized \code{\\cmidrule}
 #'   command requires either the booktabs or ctable package.
@@ -30,7 +30,7 @@
 #'             args = list(var.equal = TRUE))
 #' @export
 stats_table <- function(.data, iv, ..., funs = c("mean", "sd"), sig = FALSE,
-                        format = c("default", "html", "latex"), args = list())
+                        format = c("text", "html", "latex"), args = list())
 {
   format <- match.arg(format)
 
