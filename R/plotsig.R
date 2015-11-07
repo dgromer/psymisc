@@ -2,7 +2,7 @@
 #' 
 #' A convenience function for displaying significance in ggplot2 plots
 #' 
-#' @import ggplot2
+#' @importFrom ggplot2 aes_string annotate geom_segment
 #' @param x_lo numeric, x position of left line ending
 #' @param x_hi numeric, x position of right line ending
 #' @param y_lo_left numeric, corresponding lower y position for \code{x_lo}

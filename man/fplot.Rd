@@ -27,7 +27,7 @@ Ignored if \code{geom} is \code{"boxplot"}.}
 interval.}
 }
 \description{
-Convenient plotting of means and errors bars or boxplots of factorial
+Convenient plotting of means and error bars or boxplots of factorial
 data.
 }
 \examples{

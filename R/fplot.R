@@ -1,6 +1,6 @@
 #' fplot
 #'
-#' Convenient plotting of means and errors bars or boxplots of factorial
+#' Convenient plotting of means and error bars or boxplots of factorial
 #' data.
 #'
 #' @importFrom dplyr left_join rename_
@@ -53,7 +53,7 @@ fplot <- function(.data, formula, geom = c("bar", "line", "boxplot"),
   }
 
   descr <-
-    # Calculate means and error bars
+    # Calculate means and errors
     ds(.data, formula, c("mean", error), na.rm = TRUE, ...) %>%
     # Rename column indicating error to "error", since it can be either "se",
     # "sd" or "moe".
@@ -61,13 +61,16 @@ fplot <- function(.data, formula, geom = c("bar", "line", "boxplot"),
     # Keep empty groups in descr
     complete_(vars, fill = list())
 
-  # Ensure that independent variables are factors
+  # Ensure that independent variables are factors for propper plotting in
+  # ggplot2
   descr[1:length(vars)] %<>% lapply(as.factor)
 
+  # Call either `fplot_bar` or `fplot_line`
   do.call(paste0("fplot_", geom), list(x = descr, dv = dv, vars = vars))
 }
 
-#' @import ggplot2
+#' @importFrom ggplot2 aes aes_string facet_grid geom_bar geom_errorbar ggplot
+#'   labs position_dodge theme_bw theme_classic
 fplot_bar <- function(x, dv, vars)
 {
   if (length(vars) == 1)
@@ -114,7 +117,8 @@ fplot_bar <- function(x, dv, vars)
   }
 }
 
-#' @import ggplot2
+#' @importFrom ggplot2 aes aes_string facet_grid geom_errorbar geom_line
+#'   geom_point ggplot labs theme_bw theme_classic
 fplot_line <- function(x, dv, vars)
 {
   if (length(vars) == 1)
@@ -169,7 +173,8 @@ fplot_line <- function(x, dv, vars)
   }
 }
 
-#' @import ggplot2
+#' @importFrom ggplot2 aes_string facet_grid geom_boxplot ggplot labs theme_bw
+#'   theme_classic
 fplot_boxplot <- function(x, dv, vars)
 {
   # Convert vars to factors
