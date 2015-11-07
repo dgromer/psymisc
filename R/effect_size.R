@@ -129,41 +129,48 @@ cohens_d.htest <- function(ttest, corr = c("none", "hedges_g", "glass_delta"),
     stop('ttest must be a call to either `t_test` or `t.test`')
   }
 
-  # A call to `t.test` was passed to argument 'ttest'
+  # A call to `t_test` was passed to argument 'ttest'
   if (!is.null(ttest[["data"]]))
   {
+    # t-test for two dependent samples
     if (grepl("Paired", ttest$method))
     {
       cohens_d(ttest$data$x, ttest$data$y, paired = TRUE)
     }
+    # t-test for one sample
     else if (grepl("One Sample", ttest$method))
     {
       cohens_d(ttest$data$x)
     }
+    # t-test for two independent samples
     else
     {
       cohens_d(ttest$data$x, ttest$data$y, corr = corr)
     }
   }
-  # A call to `t_test` was passed to argument 'ttest'
+  # A call to `t.test` was passed to argument 'ttest'
   else
   {
+    # t-test for two dependent samples
     if (grepl("Paired", ttest$method))
     {
       cohens_d_(t = unname(ttest$statistic), n = unname(ttest$parameter + 2),
                 paired = TRUE)
     }
+    # t-test for one sample
     else if (grepl("One Sample", ttest$method))
     {
       cohens_d_(t = unname(ttest$statistic), n = unname(ttest$parameter + 1),
                 paired = TRUE)
     }
+    # t-test for two independent samples with Welch's correction
     else if (grepl("Welch", ttest$method))
     {
       stop(paste(
         "A Welch test from a call to `t.test` is not supported.",
         "Use either `t_test` or set argument 'var.equal' in `t.test` to TRUE"))
     }
+    # t-test for two independent samples
     else
     {
       if (corr == "glass_delta")
@@ -218,8 +225,9 @@ cohens_d_ <- function(m1 = NULL, m2 = NULL, sd1 = NULL, sd2 = NULL, n1 = NULL,
 {
   corr <- match.arg(corr)
 
+  # Two independent samples with ms, sds and ns (no or hedges correction)
   if (!any(sapply(list(m1, m2, sd1, sd2, n1, n2), is.null)) &&
-      corr != "glass_delta")
+      corr != "glass_delta" && !paired)
   {
     d <- (m1 - m2) /
       sqrt(((n1 - 1) * sd1 ^ 2 + (n2 - 1) * sd2 ^ 2) / ((n1 + n2) - 2))
@@ -231,7 +239,8 @@ cohens_d_ <- function(m1 = NULL, m2 = NULL, sd1 = NULL, sd2 = NULL, n1 = NULL,
       d <- d * j(n1 + n2 - 2)
     }
   }
-  else if (corr == "glass_delta")
+  # Two independent samples with glass' correction
+  else if (corr == "glass_delta" && !paired)
   {
     if (!any(sapply(list(m1, m2, sd2), is.null)))
     {
@@ -242,14 +251,17 @@ cohens_d_ <- function(m1 = NULL, m2 = NULL, sd1 = NULL, sd2 = NULL, n1 = NULL,
       stop("Arguments 'm1', 'm2' and 'sd2' are required for Glass Delta")
     }
   }
+  # Two independent samples with t, n1 and n2
   else if (!any(sapply(list(n1, n2, t), is.null)))
   {
     d <- t * sqrt(1 / n1 + 1 / n2)
   }
+  # Two independent samples with t and n
   else if (!any(sapply(list(t, n), is.null)) && !paired)
   {
     d <- 2 * t / sqrt(n)
   }
+  # Two dependent samples with t and n
   else if (!any(sapply(list(t, n), is.null)) && paired)
   {
     d <- t / sqrt(n)
