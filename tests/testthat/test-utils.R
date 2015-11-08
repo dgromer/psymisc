@@ -1,3 +1,5 @@
+context("utils")
+
 test_that("Formatting of statistics", {
   expect_match(fmt_stat(12.345), "= 12\\.35")
   expect_match(fmt_stat(-12.345), "= -12\\.35")

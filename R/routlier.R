@@ -1,6 +1,8 @@
 #' Remove or flag outliers in a data frame
 #'
 #' @importFrom dplyr select
+#' @importFrom magrittr %>%
+#' @importFrom purrr map
 #' @param .data a data frame
 #' @param ... names of the columns to check for outliers
 #' @param action character string indicating how to deal with outliers, can be
@@ -28,11 +30,15 @@ routlier <- function(.data, ..., action = c("na", "flag", "remove"),
   if (is.null(absolute))
   {
     # Apply outlier detection to z-scores
-    outliers <- lapply(scale(x), detect_outliers, z)
+    outliers <-
+      as.list(x) %>% # As list because, `scale` converts data frame to matrix
+      map(scale) %>% # Apply z-transformation to all columns
+      map(~ .x[, 1]) %>% # Retrieve transformed columns as vectors
+      map(detect_outliers, z)
   }
   else
   {
-    outliers <- lapply(x, detect_outliers, absolute)
+    outliers <- map(x, detect_outliers, absolute)
   }
 
   if (info)
