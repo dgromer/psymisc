@@ -10,10 +10,10 @@
 #'   frame indicating which rows contain outliers).
 #' @param z numeric vector of length two indicating the lower and upper
 #'   z-score limits for outlier detection. If only one side should be scanned
-#'   use e.g. \code{c(NULL, 3)}.
+#'   use e.g. \code{c(NA, 3)}.
 #' @param absolute numeric vector of length two indicating the absolute lower
 #'   and upper limits for outlier detection. If only one side should be scanned
-#'   use e.g. \code{c(10, NULL)}.
+#'   use e.g. \code{c(10, NA)}.
 #' @param info logical indicating whether to print the number of outliers
 #'   detected to the console.
 #'
@@ -61,18 +61,18 @@ routlier <- function(.data, ..., action = c("na", "flag", "remove"),
 
 detect_outliers <- function(x, borders)
 {
-  if (!is.null(borders[1]))
+  if (!is.na(borders[1]))
   {
-    lower <- sapply(x, function(.) . < borders[1])
+    lower <- x < borders[1]
   }
   else
   {
     lower <- rep(FALSE, length(x))
   }
 
-  if (!is.null(borders[2]))
+  if (!is.na(borders[2]))
   {
-    upper <- sapply(x, function(.) . > borders[2])
+    upper <- x > borders[2]
   }
   else
   {

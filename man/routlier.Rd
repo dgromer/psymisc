@@ -20,11 +20,11 @@ frame indicating which rows contain outliers).}
 
 \item{z}{numeric vector of length two indicating the lower and upper
 z-score limits for outlier detection. If only one side should be scanned
-use e.g. \code{c(NULL, 3)}.}
+use e.g. \code{c(NA, 3)}.}
 
 \item{absolute}{numeric vector of length two indicating the absolute lower
 and upper limits for outlier detection. If only one side should be scanned
-use e.g. \code{c(10, NULL)}.}
+use e.g. \code{c(10, NA)}.}
 
 \item{info}{logical indicating whether to print the number of outliers
 detected to the console.}
