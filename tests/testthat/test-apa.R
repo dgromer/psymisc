@@ -1,3 +1,5 @@
+context("t_apa")
+
 # Example data from Lakens, D. (2013). Calculating and reporting effect sizes to
 # facilitate cumulative science: a practical primer for t-tests and ANOVAs. 
 # Frontiers in Psychology, 4, 863. doi:10.3389/fpsyg.2013.00863
@@ -29,6 +31,8 @@ test_that("Formal structure of t_apa output)", {
                       ", d [=<] [[:digit:]]+\\.[[:digit:]]{2}"))
 })
 
+context("cor_apa")
+
 # Example data from Hollander, M. & Wolfe, D. A. (1973). Nonparametric
 # Statistical Methods. New York: John Wiley & Sons. Pages 185–194.
 
@@ -52,6 +56,8 @@ test_that("Formal structure of cor_apa output", {
                       "[[:digit:]]{3}"))
 })
 
+context("chisq_apa")
+
 # Example data from Agresti, A. (2007) An Introduction to Categorical Data
 # Analysis, 2nd ed., New York: John Wiley & Sons. Page 38.
 
@@ -71,6 +77,8 @@ test_that("Formal structure for chisq_apa output", {
                paste0("chi\\^2\\([[:digit:]]+\\) = [[:digit:]]+\\.",
                       "[[:digit:]]{2}, p [=<] \\.[[:digit:]]{3}"))
 })
+
+context("anova_apa")
 
 library(ez)
 data(ANT)
