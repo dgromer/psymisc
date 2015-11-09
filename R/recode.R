@@ -30,25 +30,33 @@ recode <- function(x, ..., default = NULL, coerce = NULL)
   from <- names(r)
   to <- unlist(unname(r))
 
+  # Vector indicating which element in x has already been recoded so a single
+  # element is not changed twice
+  recoded <- logical(length(x))
+
   for (i in seq_along(from))
   {
     # Check if 'from' is a vector
     if (grepl("^c\\(.+\\)$", from[i]) || grepl("^[0-9]+\\:[0-9]+$", from[i]))
     {
-      x[x %in% eval(parse(text = from[i]))] <- to[i]
+      matches <- x %in% eval(parse(text = from[i]))
     }
     else
     {
-      x[x %in% from[i]] <- to[i]
+      matches <- x %in% from[i]
     }
+
+    # Recode matches
+    x[matches & !recoded] <- to[i]
+
+    # Add recoded elements to recoded
+    recoded <- recoded | matches
   }
 
   if (!is.null(default))
   {
-    # Get indices of values that didn't get recoded so far
-    def <- !Reduce(`|`, lapply(r, `==`, x))
-
-    x[def] <- default
+    # Set all elements that didn't get recoded so far to 'default'
+    x[!recoded] <- default
   }
 
   if (!is.null(coerce))
