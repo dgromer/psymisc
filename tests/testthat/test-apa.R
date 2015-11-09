@@ -1,7 +1,7 @@
 context("t_apa")
 
 # Example data from Lakens, D. (2013). Calculating and reporting effect sizes to
-# facilitate cumulative science: a practical primer for t-tests and ANOVAs. 
+# facilitate cumulative science: a practical primer for t-tests and ANOVAs.
 # Frontiers in Psychology, 4, 863. doi:10.3389/fpsyg.2013.00863
 
 df <- data.frame(movie_1 = c(9, 7, 8, 9, 8, 9, 9, 10, 9, 9),
@@ -99,9 +99,15 @@ anova <- anova_apa(
 )
 
 # test_that("Output for anova_apa", {
-#   
+#
 # })
 
 test_that("Formal structure for anova_apa output", {
-  expect_equal(nrow(anova), 3 + 3 + 1 + 1)
+  # Intercept, three main effects, three two-way interactions, one three way
+  # interactions
+  expect_equal(nrow(anova), 1 + 3 + 3 + 1)
+  expect_match(`[.data.frame`(anova, anova$effect == "group", "text"),
+               paste0("F\\([[:digit:]]+, [[:digit:]]+\\) = [[:digit:]]+\\.",
+                      "[[:digit:]]{2}, p [=<] \\.[[:digit:]]{3}, petasq ",
+                      "[=<] \\.[[:digit:]]{2}"))
 })
