@@ -24,9 +24,13 @@ Recode variables
 \details{
 The left hand side of the recode pairs in \code{...} can be one of:
 \describe{
-  \item{Single value}{e.g. \code{"CTX" = "Context"}}
-  \item{Range of values}{e.g. \code{"1:10" = 5}}
-  \item{Vector of values}{e.g. \code{"c('A', 'B')" = "AB"}}
+  \item{Single value}{e.g. \code{"CTX" = "Context"}, \code{"3" = 5}}
+  \item{Range of values}{e.g. \code{"1:10" = 5}, \code{"6:10" = "above
+  five"}}
+  \item{Vector of values}{e.g. \code{"c('A', 'B')" = "AB"} (note the use of
+  single quotes inside the double quotes)}
+  \item{Logical operation}{e.g. \code{"< 20" = "small"}, \code{"<= 10 | > 90"
+  = "outlier"}, \code{"> 40 & < 60" = "normal"}}
 }
 }
 \examples{
@@ -34,6 +38,8 @@ recode(c("female", "male", "male", "female"), "female" = "f", "male" = "m")
 
 recode(1:10, "1:5" = "a", "6:10" = "b")
 recode(1:20, "1:10" = 5, "11:20" = 15)
+
+recode(1:20, "< 3" = "small", ">= 3 & <= 8" = "medium", "> 8" = "large")
 
 recode(sample(letters[1:6]), "c('a', 'b', 'c')" = "abc",
        "c('d', 'e', 'f')" = "def")

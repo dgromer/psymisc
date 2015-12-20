@@ -25,4 +25,4 @@ Suggests:
     afex (>= 0.14),
     ez,
     testthat
-RoxygenNote: 5.0.0
+RoxygenNote: 5.0.1
