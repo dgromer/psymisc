@@ -7,8 +7,8 @@
 mean_cor(...)
 }
 \arguments{
-\item{...}{correlation coefficients to average (either as single numerics,
-a vector or a list)}
+\item{...}{correlation coefficients to average (either as single numeric,
+a numeric vector or a list)}
 }
 \description{
 Mean correlation using Fisher-Z-transformation

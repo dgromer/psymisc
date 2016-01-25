@@ -28,7 +28,8 @@ cor_table <- function(data, adjust = NULL, labels = names(data),
   format <- match.arg(format)
   part <- match.arg(part)
 
-  # Calculate correlation matrix and format
+  # Calculate correlation matrix and format (no leading zero and two decimal
+  # points)
   tbl <-
     cor(data, use = "pairwise") %>%
     apply(c(1, 2), fmt_stat, leading_zero = FALSE, equal_sign = FALSE) %>%

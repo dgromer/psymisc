@@ -32,14 +32,15 @@
 #' @export
 recode <- function(x, ..., default = NULL, coerce = NULL)
 {
+  # Put all recode pairs into a (named) list
   r <- list(...)
 
   from <- names(r)
   to <- unlist(unname(r))
 
   # Make a copy of 'x' that will be filled with new values so we don't run into
-  # the problem of numeric vector being changed to character vector and logical
-  # operations not working anymore
+  # the problem of a numeric vector being changed to a character vector while
+  # recoding and thus logical operations not working anymore
   xout <- x
 
   # Vector indicating which element in 'x' has already been recoded so a single

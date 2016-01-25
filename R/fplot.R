@@ -41,17 +41,20 @@ fplot <- function(.data, formula, geom = c("bar", "line", "boxplot"),
   geom <- match.arg(geom)
   error <- match.arg(error)
 
-  # Get dependent variable
+  # Extract dependent variable from formula
   dv <- all.vars(formula)[1]
 
-  # Get independent variables
+  # Extract independent variables from formula
   vars <- all.vars(formula)[-1]
 
+  # Call `fplot_boxplot` if boxplot was requested since calcuation of the
+  # statistics is handled by ggplot2
   if (geom == "boxplot")
   {
     return(fplot_boxplot(.data, dv, vars))
   }
 
+  # Calculate the descriptive statistics to be displayed in the plot
   descr <-
     # Calculate means and errors
     ds(.data, formula, c("mean", error), na.rm = TRUE, ...) %>%
