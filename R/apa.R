@@ -284,32 +284,24 @@ anova_apa_afex <- function(x, effect, sph_corr, es, format, info, print)
   {
     s <- summary(x)
 
-    if (sph_corr == "greenhouse-geisser" || sph_corr == "gg")
-    {
-      corr_method <- "GG"
-    }
-    else if (sph_corr == "huynh-feldt" || sph_corr == "hf")
-    {
-      corr_method <- "HF"
-    }
+    corr_method <- switch(sph_corr, `greenhouse-geisser` =, gg = "GG",
+                         `huynh-feldt` =, hf = "HF")
 
     # Extract Mauchly's test of sphericity
     sph_tests <- s$sphericity.tests
 
     # Check which effects do not meet the assumption of sphericity
-    mauchlys <- sph_tests[, "p-value"] %>%
-      `[`(. < .05) %>%
-      names()
+    mauchlys <- dimnames(sph_tests)[[1]][which(sph_tests[, "p-value"] < .05)]
 
     if (length(mauchlys) > 0)
     {
       # Apply correction to degrees of freedom
-      tbl[tbl$effects == mauchlys, c("df_n", "df_d")] %<>%
+      tbl[tbl$effects %in% mauchlys, c("df_n", "df_d")] %<>%
         `*`(s$pval.adjustments[mauchlys, paste(corr_method, "eps")]) %>%
         lapply(fmt_stat, equal_sign = FALSE)
 
       # Replace p-values in tbl with corrected ones
-      tbl[tbl$effects == mauchlys, "p"] <-
+      tbl[tbl$effects %in% mauchlys, "p"] <-
         s$pval.adjustments[mauchlys, paste0("Pr(>F[", corr_method, "])")] %>%
         sapply(fmt_pval)
 
@@ -365,14 +357,8 @@ anova_apa_ezanova <- function(x, effect, sph_corr, es, format, info, print)
   # Apply correction for violation of sphericity if required
   if ("Mauchly's Test for Sphericity" %in% names(x) && sph_corr != "none")
   {
-    if (sph_corr == "greenhouse-geisser" || sph_corr == "gg")
-    {
-      corr_method <- "GG"
-    }
-    else if (sph_corr == "huynh-feldt" || sph_corr == "hf")
-    {
-      corr_method <- "HF"
-    }
+    corr_method <- switch(sph_corr, `greenhouse-geisser` =, gg = "GG",
+                          `huynh-feldt` =, hf = "HF")
 
     # Check which effects do not meet the assumption of sphericity
     mauchlys <- left_join(x$`Mauchly's Test for Sphericity`,
@@ -382,12 +368,12 @@ anova_apa_ezanova <- function(x, effect, sph_corr, es, format, info, print)
     if (nrow(mauchlys) > 0)
     {
       # Apply correction to degrees of freedom
-      tbl[tbl$effects == mauchlys$Effect, c("df_n", "df_d")] %<>%
+      tbl[tbl$effects %in% mauchlys$Effect, c("df_n", "df_d")] %<>%
         `*`(mauchlys[[paste0(corr_method, "e")]]) %>%
         lapply(fmt_stat, equal_sign = FALSE)
 
       # Replace p-values in tbl with corrected ones
-      tbl[tbl$effects == mauchlys$Effect, "p"] <-
+      tbl[tbl$effects %in% mauchlys$Effect, "p"] <-
         mauchlys[[paste0("p[", corr_method, "]")]] %>%
         sapply(fmt_pval)
 
