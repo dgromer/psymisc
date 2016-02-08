@@ -1,20 +1,9 @@
-set.seed(1337)
-
-height <- dplyr::data_frame(
-  id = 1:50,
-  group = factor(rep(c("treatment", "control"), each = 25)),
-  sex = factor(sample(c("m", "f"), 50, replace = TRUE)),
-  age = round(rnorm(50, 23, 3)),
-  stai_trait = round(rnorm(50, 37, 3)),
-  stai_state_pre = stai_trait + round(rnorm(50)),
-  stai_state_post = stai_state_pre + round(c(rnorm(25, 3), rnorm(25, 5))),
-  aq_anx = round(rnorm(50, 60, 5)),
-  aq_avoi = round(rnorm(50, 18, 2)),
-  anx_lvl1 = round(c(rnorm(25, 20, 3), rnorm(25, 23, 3))),
-  anx_lvl2 = round(c(rnorm(25, 40, 4), rnorm(25, 42, 4))),
-  anx_lvl3 = round(c(rnorm(25, 60, 5), rnorm(25, 64, 5)))
+height <- data.frame(
+  id = 1:15,
+  group = rep(c("monitor", "hmd", "cave"), each = 5),
+  anx_lvl1 = c( 5,  5, 10, 10,  5, 10,  5, 15,  5,  5, 10, 15, 15,  5, 10),
+  anx_lvl2 = c(15,  5, 15, 10, 10, 25, 20, 30, 25, 25, 30, 40, 35, 30, 45),
+  anx_lvl3 = c(35, 35, 50, 40, 35, 50, 45, 50, 50, 55, 65, 40, 60, 65, 50)
 )
 
-height <- as.data.frame(height)
-
-set.seed(NULL)
+height <- tidyr::gather(height, "level", "anxiety", anx_lvl1:anx_lvl3)

@@ -4,18 +4,25 @@
 \alias{stats_table}
 \title{Statistical table}
 \usage{
-stats_table(.data, iv, ..., funs = c("mean", "sd"), sig = FALSE,
-  format = c("text", "html", "latex"), args = list())
+stats_table(.data, iv, dvs, funs = c("mean", "sd"), paired = FALSE, id,
+  sig = FALSE, format = c("text", "html", "latex"), ...)
 }
 \arguments{
 \item{.data}{a data frame}
 
 \item{iv}{name of the independent variable}
 
-\item{...}{names of the dependent variables}
+\item{dvs}{names of the dependent variables}
 
 \item{funs}{character vector with function names indicating the parameters to
 calculate (default: \code{c("mean", "sd")}).}
+
+\item{paired}{logical indicating whether you have paired data (\code{iv} is a
+within factor) or non-paired data (\code{iv} is a between factor).}
+
+\item{id}{name or character string indicating the subject identifier column
+in \code{.data}. Only required if the independent variable has more than
+two levels.}
 
 \item{sig}{logical indicating whether to show significance with symbols in
 the last column}
@@ -26,9 +33,9 @@ displayed as a htmlwidget. For LaTeX, the \code{tabularx} environment is
 used, which requires the tabularx package. The utilized \code{\\cmidrule}
 command requires either the booktabs or ctable package.}
 
-\item{args}{a list with further arguments passed to functions. If the
-independent variable has two levels, then \code{args} can contain arguments
-passed to \link{t_test}, e.g. \code{var.equal = TRUE}.}
+\item{...}{Further arguments passed to functions. If the independent variable
+has two levels, then \code{...} can contain arguments passed to
+\link{t_test}, e.g. \code{var.equal = TRUE}.}
 }
 \description{
 Compiles a table with descriptive and inferential statistics to compare group
@@ -36,8 +43,8 @@ characteristics, e.g. control variables of a treatment group and a control
 group.
 }
 \examples{
-stats_table(height, iv = group, age:aq_avoi)
-stats_table(height, iv = group, age:aq_avoi, sig = TRUE, format = "html",
-            args = list(var.equal = TRUE))
+stats_table(hquest, iv = group, dvs = age:sens_seek)
+stats_table(hquest, iv = group, dvs = age:sens_seek, sig = TRUE,
+            format = "html", var.equal = TRUE)
 }
 

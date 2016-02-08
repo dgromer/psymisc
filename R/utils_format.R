@@ -197,3 +197,32 @@ p_to_symbol <- function(p)
     "***"
   }
 }
+
+# Convert a data.frame or matrix to a string with LaTeX rows and columns
+#' @importFrom magrittr %>%
+#' @importFrom purrr map2 map_if
+tbl_to_latex <- function(x, colnames = FALSE, rownames = FALSE)
+{
+  # Separate columns with &
+  tbl <- apply(x, 1, paste, collapse = " & ")
+
+  if (rownames)
+  {
+    # Append row name to the front of each row
+    tbl <- map2(rownames(x), tbl, function(.x, .y) paste(.x, .y, sep = " & "))
+  }
+
+  if (colnames)
+  {
+    # Add a row with column names
+    tbl <- c(paste(colnames(x), collapse = " & "), "\\hline", tbl)
+
+    # If row names were requested, add empty cell in front of column names row
+    if (rownames) tbl[[1]] <- paste("&", tbl[[1]])
+  }
+
+  # Separate rows with \\
+  tbl <- map_if(tbl, !grepl("\\hline", tbl), paste, "\\\\")
+
+  paste(tbl, collapse = " \n")
+}

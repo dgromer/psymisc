@@ -1,0 +1,61 @@
+---
+title: "Introduction to psymisc"
+author: "Daniel Gromer"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to psymisc}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, warning=FALSE, echo=FALSE}
+library(psymisc)
+library(dplyr, warn.conflicts = FALSE)
+library(ez)
+library(tidyr)
+```
+
+## Descriptive statistics
+
+When beginning to analyze a data set, it's usually a good idea to take a look at descriptive statistics. Base R offers the `aggregate` function for computing summary statistics (e.g. mean, standard deviation) of factorial data.
+
+```{r}
+aggregate(trait_anx ~ group + gender, hquest, FUN = "mean")
+```
+
+Computing a second statistic needs to be done using a second call to `aggregate`:
+
+```{r}
+aggregate(trait_anx ~ group + gender, hquest, FUN = "sd")
+```
+
+So, a shortcoming of this function is that it does not allow you to compute multiple statistics at once.
+The [dplyr](https://cran.r-project.org/web/packages/dplyr/) package introduced another to compute summary statistics of grouped data with the functions `group_by` and `summarise`. (If you don't work with dplyr yet, you should definitely check it out: [dplyr vignette](https://cran.r-project.org/web/packages/dplyr/vignettes/introduction.html))
+
+```{r}
+hquest %>%
+  group_by(group, gender) %>%
+  summarise(mean = mean(trait_anx), sd = sd(trait_anx))
+```
+
+The function `ds` in psymisc is a wrapper for these two functions and provides an easy formula interface for descriptive statistics:
+
+```{r}
+ds(hquest, trait_anx ~ group + gender)
+```
+
+Note that `ds` calculates the mean and standard error of the mean by default. This behavior can be changed by using the `funs` argument:
+
+```{r}
+ds(hquest, trait_anx ~ group + gender, funs = c("n", "mean", "sd", "moe"))
+```
+
+The `fplot` function can be used to get a graphical overview of descriptive statistics:
+
+```{r}
+fplot(hquest, acrophobia ~ group + gender)
+# With SD
+fplot(hquest, acrophobia ~ group + gender, error = "sd")
+```
+

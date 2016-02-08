@@ -18,7 +18,7 @@ psymisc is an R package that provides some useful high-level and helper function
 -   `plotsig()`: A convenience function for displaying significance in ggplot2 plots.
 -   `recode()`: Recode variables based on multiple rules.
 -   `routlier()`: Remove or flag outliers.
--   `se()`: Standard error, SE = SD(x) / sqrt(n)
+-   `se()`: Standard error of the mean, SE = SD(x) / sqrt(n)
 -   `stats_table()`: Compare group characteristics (means and standard deviations plus significance tests). Outputs to either the console, HTML (which can then be copy-and-pasted directly into Word) or LaTeX.
 -   `t_test()`: A wrapper for `t.test()` that includes the original data in its return list (in order to calculate the effect size in `cohens_d()` and `t_apa()` directly from the data).
 

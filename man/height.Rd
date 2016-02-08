@@ -3,21 +3,11 @@
 \docType{data}
 \name{height}
 \alias{height}
-\title{Simulated height anxiety experiment}
-\format{A data frame with 50 rows and 12 variables:
+\title{Simulated height anxiety experiment.}
+\format{A data frame with 45 rows and 4 variables:
 \describe{
   \item{id}{Subject identifier}
-  \item{group}{Between subject factor (treatment vs. control)}
-  \item{sex}{Gender of participants}
-  \item{age}{Age of participants}
-  \item{stai_trait}{Score in the State-Trait Anxiety Inventory, subscale
-    trait}
-  \item{stai_state_pre}{Score in the State-Trait Anxiety Inventory, subscale
-    state, at the beginning of the experiment}
-  \item{stai_state_post}{Score in the State-Trait Anxiety Inventor, subscale
-    state, at the end of the experiment}
-  \item{aq_anx}{Score in the Acrophobia Questionnaire, subscale anxiety}
-  \item{aq_avoi}{Score in the Acrophobia Questionnaire, subscale avoidance}
+  \item{group}{Between subject factor (CAVE vs. HMD vs. monitor)}
   \item{anx_lvl1}{Subjective anxiety rating at 5 meters height}
   \item{anx_lvl2}{Subjective anxiety rating at 20 meters height}
   \item{anx_lvl3}{Subjective anxiety rating at 50 meters height}
@@ -26,7 +16,11 @@
 height
 }
 \description{
-Simulated height anxiety experiment
+Simulated data from a height anxiety experiment in virtual reality. Three
+groups of five participants each were immersed into a virtual height
+environment (using CAVE (computer automatic virtual environment), HMD
+(head-mounted display) and monitor) with three levels (5 m, 20 m, 50 m) and
+rated their subjective anxiety level (0-100).
 }
 \keyword{datasets}
 

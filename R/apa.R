@@ -44,14 +44,7 @@ chisq_apa <- function(x, print_n = FALSE, format = c("text", "markdown",
   text <- paste0(fmt_symb("chisq", format), "(", df, n, ") ", statistic, ", ",
                  fmt_symb("p", format), " ", p)
 
-  if (print)
-  {
-    cat(text)
-  }
-  else
-  {
-    text
-  }
+  if (print) cat(text) else text
 }
 
 #' Report Correlation in APA style
@@ -100,14 +93,7 @@ cor_apa <- function(x, format = c("text", "markdown", "rmarkdown", "html",
                  if (coef == "pearson's") paste0("(", df, ") ") else " ",
                  estimate, ", ", fmt_symb("p", format), " ", p)
 
-  if (print)
-  {
-    cat(text)
-  }
-  else
-  {
-    text
-  }
+  if (print) cat(text) else text
 }
 
 #' Report t-Test in APA style
@@ -173,14 +159,7 @@ t_apa <- function(x, es = "cohens_d", format = c("text", "markdown",
                  fmt_symb("p", format), " ", p, ", ", fmt_symb(es, format), " ",
                  d)
 
-  if (print)
-  {
-    cat(text)
-  }
-  else
-  {
-    text
-  }
+  if (print) cat(text) else text
 }
 
 #' Report ANOVA in APA style
@@ -207,23 +186,15 @@ t_apa <- function(x, es = "cohens_d", format = c("text", "markdown",
 #'   \code{cat} (\code{TRUE}, default) or return as a data frame.
 #' @examples
 #' \dontrun{
-#' library(dplyr)
-#' library(tidyr)
-#'
-#' # Convert data from wide format to long format
-#' data <- height %>%
-#'   select(id, group, anx_lvl1:anx_lvl3) %>%
-#'   gather(key = "level", value = "anxiety", anx_lvl1:anx_lvl3)
-#'
-#' # Use ez package
+#' # Using the ez package
 #' library(ez)
-#' ezANOVA(data, dv = anxiety, wid = id, within = level, between = group,
+#' ezANOVA(height, dv = anxiety, wid = id, within = level, between = group,
 #'         detailed = TRUE) %>%
 #'   anova_apa()
 #'
-#' # Use afex package
+#' # Using the afex package
 #' library(afex)
-#' aov_ez(id = "id", dv = "anxiety", data = data, between = "group",
+#' aov_ez(id = "id", dv = "anxiety", data = height, between = "group",
 #'        within = "level") %>%
 #'   anova_apa()
 #' }

@@ -4,16 +4,21 @@
 #' characteristics, e.g. control variables of a treatment group and a control
 #' group.
 #'
-#' @importFrom dplyr select
-#' @importFrom purrr splice
+#' @importFrom dplyr as_data_frame select_ bind_rows
+#' @importFrom purrr map
 #' @importFrom htmlTable htmlTable
 #' @importFrom magrittr %<>%
 #' @importFrom rmarkdown pandoc_convert
 #' @param .data a data frame
 #' @param iv name of the independent variable
-#' @param ... names of the dependent variables
+#' @param dvs names of the dependent variables
 #' @param funs character vector with function names indicating the parameters to
 #'   calculate (default: \code{c("mean", "sd")}).
+#' @param paired logical indicating whether you have paired data (\code{iv} is a
+#'   within factor) or non-paired data (\code{iv} is a between factor).
+#' @param id name or character string indicating the subject identifier column
+#'   in \code{.data}. Only required if the independent variable has more than
+#'   two levels.
 #' @param sig logical indicating whether to show significance with symbols in
 #'   the last column
 #' @param format character string indicating the output format, one of
@@ -21,51 +26,37 @@
 #'   displayed as a htmlwidget. For LaTeX, the \code{tabularx} environment is
 #'   used, which requires the tabularx package. The utilized \code{\\cmidrule}
 #'   command requires either the booktabs or ctable package.
-#' @param args a list with further arguments passed to functions. If the
-#'   independent variable has two levels, then \code{args} can contain arguments
-#'   passed to \link{t_test}, e.g. \code{var.equal = TRUE}.
+#' @param ... Further arguments passed to functions. If the independent variable
+#'   has two levels, then \code{...} can contain arguments passed to
+#'   \link{t_test}, e.g. \code{var.equal = TRUE}.
 #' @examples
-#' stats_table(height, iv = group, age:aq_avoi)
-#' stats_table(height, iv = group, age:aq_avoi, sig = TRUE, format = "html",
-#'             args = list(var.equal = TRUE))
+#' stats_table(hquest, iv = group, dvs = age:sens_seek)
+#' stats_table(hquest, iv = group, dvs = age:sens_seek, sig = TRUE,
+#'             format = "html", var.equal = TRUE)
 #' @export
-stats_table <- function(.data, iv, ..., funs = c("mean", "sd"), sig = FALSE,
-                        format = c("text", "html", "latex"), args = list())
+stats_table <- function(.data, iv, dvs, funs = c("mean", "sd"), paired = FALSE,
+                        id, sig = FALSE,
+                        format = c("text", "html", "latex"), ...)
 {
   format <- match.arg(format)
 
   # Convert iv to character if it is a name
-  if (!is.character(substitute(iv)))
-  {
-    iv <- as.character(substitute(iv))
-  }
+  if (!is.character(substitute(iv))) iv <- as.character(substitute(iv))
 
-  # Get a vector of the levels of the iv
-  group_names <- as.character(unique(.data[[iv]]))
+  # Get a vector with the levels of the iv
+  group_names <- levels(factor(.data[[iv]]))
 
-  # Get the column names of the dvs
-  dvs <- names(select(.data, ...))
+  # Get column names of the dvs
+  dvs <- names(select_(.data, .dots = substitute(dvs)))
 
-  # TODO: replace funs names with M, SD, etc.
+  # Build header (column names of the output table)
   header <- stats_table_header(group_names, funs, sig)
 
   # Calculate statistics for each dependent variable
-  if (length(group_names) == 2)
-  {
-    rows <- lapply(dvs, function(dv)
-      do.call("stats_table_row_ttest", splice(.data = .data, dv = dv, iv = iv,
-                                              funs = funs, sig = sig, args)))
-  }
-  else
-  {
-    rows <- lapply(dvs, function(dv) stats_table_row_aov(.data, dv, iv, funs,
-                                                         sig))
-  }
+  rows <- map(dvs, ~ stats_table_row(header, group_names, .data, .x, iv, funs,
+                                     paired, id, sig, ...))
 
-  rows <- lapply(rows, matrix, nrow = 1)
-  tbl <- as.data.frame(Reduce(rbind, rows), stringsAsFactors = FALSE)
-  names(tbl) <- header
-  row.names(tbl) <- NULL
+  tbl <- bind_rows(rows)
 
   # All statistics get formatted with two decimal places. If n was requested,
   # reformat this with no decimal places
@@ -104,37 +95,9 @@ stats_table <- function(.data, iv, ..., funs = c("mean", "sd"), sig = FALSE,
   }
   else
   {
-    tbl
+    # Return as data.frame instead of tbl_df for cleaner printing
+    as.data.frame(tbl)
   }
-}
-
-# Convert a data.frame or matrix to LaTeX rows and columns
-#' @importFrom magrittr %>%
-#' @importFrom purrr map2 map_if
-tbl_to_latex <- function(x, colnames = FALSE, rownames = FALSE)
-{
-  # Separate columns with &
-  tbl <- apply(x, 1, paste, collapse = " & ")
-
-  if (rownames)
-  {
-    # Append row name to the front of each row
-    tbl <- map2(rownames(x), tbl, function(.x, .y) paste(.x, .y, sep = " & "))
-  }
-
-  if (colnames)
-  {
-    # Add a row with column names
-    tbl <- c(paste(colnames(x), collapse = " & "), "\\hline", tbl)
-
-    # If row names were requested, add empty cell in front of column names row
-    if (rownames) tbl[[1]] <- paste("&", tbl[[1]])
-  }
-
-  # Separate rows with \\
-  tbl <- map_if(tbl, !grepl("\\hline", tbl), paste, "\\\\")
-
-  paste(tbl, collapse = " \n")
 }
 
 #' @importFrom magrittr %<>%
@@ -154,33 +117,71 @@ stats_table_header <- function(iv, funs, sig)
   header
 }
 
-stats_table_row_aov <- function(.data, dv, iv, es = "petasq", funs, sig)
-{
-  stats <- stats_table_descriptives(.data, dv, iv, funs)
-
-  test <- anova(aov(as.formula(paste(dv, "~", iv)), .data))
-
-  f <- test[["F value"]][1] %>% fmt_stat(equal_sign = FALSE)
-  p <- test[["Pr(>F)"]][1] %>% fmt_pval(equal_sign = FALSE)
-  es <- petasq(test, iv) %>% fmt_es(equal_sign = FALSE)
-  sig <- if (sig) test[["Pr(>F)"]][1] %>% p_to_symbol() else character(0)
-
-  c(dv, stats, f, p, es, sig)
-}
-
+#' @importFrom afex aov_ez
+#' @importFrom dplyr last
 #' @importFrom magrittr %>%
-stats_table_row_ttest <- function(.data, dv, iv, funs, sig, ...)
+#' @importFrom stringr str_extract str_extract_all
+stats_table_row <- function(header, group_names, .data, dv, iv, funs, paired,
+                            id, sig, ...)
 {
-  stats <- stats_table_descriptives(.data, dv, iv, funs)
+  # Compute descriptive statistics
+  descriptives <- stats_table_descriptives(.data, dv, iv, funs)
 
-  test <- t_test(as.formula(paste(dv, iv, sep = " ~ ")), .data, ...)
+  # Run t-test if independent variable has two levels
+  if (length(group_names) == 2)
+  {
+    test <-
+      t_test(as.formula(paste(dv, iv, sep = " ~ ")), .data, paired = paired,
+             ...) %>%
+      t_apa(print = FALSE)
+  }
+  # Run ANOVA otherwise
+  else
+  {
+    if (!missing(id))
+    {
+      if (!is.character(substitute(id))) id <- as.character(substitute(id))
+    }
 
-  t <- test$statistic %>% fmt_stat(equal_sign = FALSE)
-  p <- test$p.value %>% fmt_pval(equal_sign = FALSE)
-  d <- cohens_d(test) %>% fmt_es(equal_sign = FALSE)
-  sig <- if (sig) test$p.value %>% p_to_symbol() else character(0)
+    # List with arguments for `aov_ez`, because we call it with `do.call`
+    args <- list(id = id, dv = dv, data = .data, ...)
 
-  c(dv, stats, t, p, d, sig)
+    # Set independent variable as between of within factor
+    if (!paired) args$between <- iv else args$within <- iv
+
+    test <-
+      # Silence `aov_ez`; it informs about changing contrasts on each call
+      suppressMessages(do.call("aov_ez", args)) %>%
+      anova_apa(effect = iv, print = FALSE)
+  }
+
+  # Extract t- or F-value
+  statistic <- str_extract(test, "(?<= )(< )?-?[0-9]+\\.[0-9]{2}")
+
+  # Extract p-value (delete equal sign if present)
+  p <- str_extract(test, "([<>] )?\\.[0-9]{3}")
+
+  # Extract value of effect size
+  es <- str_extract_all(test, "(< )?-?[0-9]*\\.[0-9]{2}")[[1]] %>% last()
+
+  # Significance asterisks if requested
+  if (sig)
+  {
+    sig <-
+      sub("[<=>] ", "", p) %>%
+      as.numeric() %>%
+      p_to_symbol()
+  }
+  else
+  {
+    sig <- character(0)
+  }
+
+  # Build data frame
+  c(dv, descriptives, statistic, p, es, sig) %>%
+    setNames(header) %>%
+    as.list() %>%
+    as_data_frame()
 }
 
 #' @importFrom magrittr %>%
