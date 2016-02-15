@@ -35,6 +35,7 @@ recode <- function(x, ..., default = NULL, coerce = NULL)
   # Put all recode pairs into a (named) list
   r <- list(...)
 
+  # Separate old and new values
   from <- names(r)
   to <- unlist(unname(r))
 
@@ -75,7 +76,7 @@ recode <- function(x, ..., default = NULL, coerce = NULL)
     # Recode matches
     xout[matches & !recoded] <- to[i]
 
-    # Add recoded elements to recoded
+    # Add recoded elements to 'recoded'
     recoded <- recoded | matches
   }
 
