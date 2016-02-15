@@ -62,7 +62,7 @@ fplot <- function(.data, formula, geom = c("bar", "line", "boxplot"),
     # "sd" or "moe".
     rename_(.dots = setNames(error, "error")) %>%
     # Keep empty groups in descr
-    complete_(vars, fill = list())
+    complete_(vars)
 
   # Ensure that independent variables are factors for propper plotting in
   # ggplot2
