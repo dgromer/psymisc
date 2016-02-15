@@ -56,7 +56,7 @@ t_test(x, ...)
     \code{getOption("na.action")}.}
 }
 \description{
-A wrapper for \code{t.test} that also returns sample sizes.
+A wrapper for \code{t.test} that also returns the original data.
 }
 \seealso{
 \link{t.test}

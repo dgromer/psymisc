@@ -18,7 +18,7 @@
 #'   should be printed, can be either \code{"lower"} or \code{"upper"}.
 #' @seealso \link{cor}
 #' @examples
-#' cor_table(height[4:9])
+#' cor_table(hquest[4:7])
 #' @export
 cor_table <- function(data, adjust = NULL, labels = names(data),
                       format = c("text", "html", "latex", "markdown",

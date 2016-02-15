@@ -1,6 +1,6 @@
 #' Student's t-Test
 #'
-#' A wrapper for \code{t.test} that also returns sample sizes.
+#' A wrapper for \code{t.test} that also returns the original data.
 #'
 #' @inheritParams stats::t.test
 #' @seealso \link{t.test}

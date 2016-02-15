@@ -29,7 +29,7 @@ should be printed, can be either \code{"lower"} or \code{"upper"}.}
 Correlation table
 }
 \examples{
-cor_table(height[4:9])
+cor_table(hquest[4:7])
 }
 \seealso{
 \link{cor}

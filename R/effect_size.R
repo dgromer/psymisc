@@ -34,14 +34,14 @@
 #' cohens_d(c(10, 15, 11, 14, 17), c(22, 18, 23, 25, 20))
 #'
 #' # Methods when working with data frames
-#' cohens_d(height, dv = anx_lvl1, iv = group)
+#' cohens_d(hquest, dv = sens_seek, iv = group)
 #' # or
-#' cohens_d(height, dv = "anx_lvl1", iv = "group")
+#' cohens_d(hquest, dv = "sens_seek", iv = "group")
 #' # formula interface
-#' cohens_d(anx_lvl1 ~ group, height)
+#' cohens_d(sens_seek ~ group, hquest)
 #'
 #' # Or pass a call to t_test or t.test
-#' cohens_d(t_test(anx_lvl1 ~ group, height))
+#' cohens_d(t_test(sens_seek ~ group, hquest))
 #' @export
 cohens_d <- function(...) UseMethod("cohens_d")
 

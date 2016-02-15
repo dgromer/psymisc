@@ -31,19 +31,19 @@ Convenient plotting of means and error bars or boxplots of factorial
 data.
 }
 \examples{
-fplot(height, stai_trait ~ group + sex)
+fplot(hquest, trait_anx ~ group + gender)
 
 # Standard deviation instead of standard error
-fplot(height, stai_trait ~ group + sex, error = "sd")
+fplot(hquest, trait_anx ~ group + gender, error = "sd")
 
 # 95\% confidence intervals (moe = margin of error)
-fplot(height, stai_trait ~ group + sex, error = "moe")
+fplot(hquest, trait_anx ~ group + gender, error = "moe")
 
 # Line graph
-fplot(height, stai_trait ~ group + sex, geom = "line")
+fplot(hquest, trait_anx ~ group + gender, geom = "line")
 
 # Boxplot
-fplot(height, stai_trait ~ group + sex, geom = "boxplot")
+fplot(hquest, trait_anx ~ group + gender, geom = "boxplot")
 
 }
 

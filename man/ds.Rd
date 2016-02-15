@@ -31,7 +31,7 @@ statistics.
 ds(sleep, extra ~ group)
 ds(sleep, extra ~ group, funs = c("median", "var", "n"))
 
-ds(height, anx_lvl1 ~ group + sex)
+ds(hquest, trait_anx ~ group + gender)
 }
 \seealso{
 \link{aggregate}
