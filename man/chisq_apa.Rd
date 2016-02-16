@@ -5,7 +5,7 @@
 \title{Report Chi-squared test in APA style}
 \usage{
 chisq_apa(x, print_n = FALSE, format = c("text", "markdown", "rmarkdown",
-  "html", "latex", "docx"), info = FALSE, print = TRUE)
+  "html", "latex", "docx", "plotmath"), info = FALSE, print = TRUE)
 }
 \arguments{
 \item{x}{a call to \code{chisq.test}}
@@ -14,7 +14,7 @@ chisq_apa(x, print_n = FALSE, format = c("text", "markdown", "rmarkdown",
 
 \item{format}{character string specifying the output format. One of
 \code{"text"}, \code{"markdown"}, \code{"rmarkdown"}, \code{html},
-\code{"latex"} or \code{"docx"}.}
+\code{"latex"}, \code{"docx"} or \code{"plotmath"}.}
 
 \item{info}{logical indicating whether to print a message on the used test
 (default is \code{FALSE})}
@@ -26,7 +26,7 @@ chisq_apa(x, print_n = FALSE, format = c("text", "markdown", "rmarkdown",
 Report Chi-squared test in APA style
 }
 \examples{
-chisq_apa(chisq.test(height$group, height$sex))
+chisq_apa(chisq.test(hquest$group, hquest$gender))
 
 }
 

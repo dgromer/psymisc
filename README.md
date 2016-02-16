@@ -6,7 +6,7 @@ psymisc is an R package that provides some useful high-level and helper function
 
 ## Functions
 
--   `*_apa()`: A set of functions for formatting statistical output according to APA guidelines, ready to copy-and-paste into manuscripts (supports Text, Markdown, RMarkdown, HTML, LaTeX and docx<sup>1</sup>). Currently available methods are `anova_apa()`<sup>2</sup>, `chisq_apa()`, `cor_apa()` and `t_apa()`. These functions were heavily influenced by the `*_out()` functions in the [schoRsch package](http://cran.r-project.org/web/packages/schoRsch/).
+-   `*_apa()`: A set of functions for formatting statistical output according to APA guidelines, ready to copy-and-paste into manuscripts (supports Text, Markdown, RMarkdown, HTML, LaTeX, docx<sup>1</sup> and R's plotmath syntax). Currently available methods are `anova_apa()`<sup>2</sup>, `chisq_apa()`, `cor_apa()` and `t_apa()`. These functions were heavily influenced by the `*_out()` functions in the [schoRsch package](http://cran.r-project.org/web/packages/schoRsch/).
 -   `apa()`: A wrapper around the `*_apa()`-functions for use in inline code in RMarkdown documents.
 -   `cohens_d()`/`cohens_d_()`: Calculate Cohen's d effect size (from raw data, t-test or statistical parameters). Also supports Hedge's g* and Glass's &Delta;.
 -   `ci()`: Confidence interval around the mean.

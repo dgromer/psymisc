@@ -168,6 +168,23 @@ fmt_symb <- function(x, format)
            "spearman's"  = "<i>r<sub>s</sub></i>",
            "t"           = "<i>t</i>")
   }
+  else if (format == "plotmath")
+  {
+    switch(x,
+           "chisq"       = "chi^2",
+           "cohens_d"    = "italic('d')",
+           "F"           = "italic('F')",
+           "getasq"      = "eta[g]^2",
+           "glass_delta" = "Delta",
+           "hedges_g"    = "italic('g')",
+           "kendall's"   = "italic(r)[tau]",
+           "p"           = "italic('p')",
+           "pearson's"   = "italic('r')",
+           "petasq"      = "eta[p]^2",
+           "r"           = "italic('r')",
+           "spearman's"  = "italic(r)[s]",
+           "t"           = "italic('t')")
+  }
 }
 
 p_to_symbol <- function(p)

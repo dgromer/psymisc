@@ -5,7 +5,7 @@
 \title{Report t-Test in APA style}
 \usage{
 t_apa(x, es = "cohens_d", format = c("text", "markdown", "rmarkdown",
-  "html", "latex", "docx"), info = FALSE, print = TRUE)
+  "html", "latex", "docx", "plotmath"), info = FALSE, print = TRUE)
 }
 \arguments{
 \item{x}{a call to \code{t_test}}
@@ -17,7 +17,7 @@ samples or one sample t-test (cohen's d is reported for these test).}
 
 \item{format}{character string specifying the output format. One of
 \code{"text"}, \code{"markdown"}, \code{"rmarkdown"}, \code{html},
-\code{"latex"} or \code{"docx"}.}
+\code{"latex"}, \code{"docx"} or \code{"plotmath"}.}
 
 \item{info}{logical indicating whether to print a message on the used test
 (default is \code{FALSE})}
@@ -29,7 +29,7 @@ samples or one sample t-test (cohen's d is reported for these test).}
 Report t-Test in APA style
 }
 \examples{
-t_apa(t_test(anx_lvl1 ~ group, height))
+t_apa(t_test(sens_seek ~ group, hquest))
 
 }
 

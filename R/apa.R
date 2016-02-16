@@ -5,18 +5,19 @@
 #' @param print_n logical indicating whether to show sample size in text
 #' @param format character string specifying the output format. One of
 #'   \code{"text"}, \code{"markdown"}, \code{"rmarkdown"}, \code{html},
-#'   \code{"latex"} or \code{"docx"}.
+#'   \code{"latex"}, \code{"docx"} or \code{"plotmath"}.
 #' @param info logical indicating whether to print a message on the used test
 #'   (default is \code{FALSE})
 #' @param print logical indicating wheter to print the formatted output via
 #'   \code{cat} (\code{TRUE}, default) or return as character string.
 #' @examples
-#' chisq_apa(chisq.test(height$group, height$sex))
+#' chisq_apa(chisq.test(hquest$group, hquest$gender))
 #'
 #' @export
 chisq_apa <- function(x, print_n = FALSE, format = c("text", "markdown",
                                                      "rmarkdown", "html",
-                                                     "latex", "docx"),
+                                                     "latex", "docx",
+                                                     "plotmath"),
                       info = FALSE, print = TRUE)
 {
   format <- match.arg(format)
@@ -44,6 +45,16 @@ chisq_apa <- function(x, print_n = FALSE, format = c("text", "markdown",
   text <- paste0(fmt_symb("chisq", format), "(", df, n, ") ", statistic, ", ",
                  fmt_symb("p", format), " ", p)
 
+  if (format == "plotmath")
+  {
+    # Convert text to an expression
+    text <- apa_to_plotmath(text, "(\\([0-9]+.*\\) [<=] [0-9]\\.[0-9]{2}, )",
+                            "( [<=>] \\.[0-9]{3})")
+
+    # Text is an expression, so we can't use `cat` to print it to the console
+    print <- FALSE
+  }
+
   if (print) cat(text) else text
 }
 
@@ -53,17 +64,17 @@ chisq_apa <- function(x, print_n = FALSE, format = c("text", "markdown",
 #' @param x a call to \code{cor.test}
 #' @param format character string specifying the output format. One of
 #'   \code{"text"}, \code{"markdown"}, \code{"rmarkdown"}, \code{html},
-#'   \code{"latex"} or \code{"docx"}.
+#'   \code{"latex"}, \code{"docx"} or \code{"plotmath"}.
 #' @param info logical indicating whether to print a message on the used test
 #'   (default is \code{FALSE})
 #' @param print logical indicating wheter to print the formatted output via
 #'   \code{cat} (\code{TRUE}, default) or return as character string.
 #' @examples
-#' cor_apa(cor.test(~ anx_lvl1 + anx_lvl2, height))
+#' cor_apa(cor.test(~ acrophobia + sens_seek, hquest))
 #'
 #' @export
 cor_apa <- function(x, format = c("text", "markdown", "rmarkdown", "html",
-                                  "latex", "docx"),
+                                  "latex", "docx", "plotmath"),
                     info = FALSE, print = TRUE)
 {
   format <- match.arg(format)
@@ -82,7 +93,7 @@ cor_apa <- function(x, format = c("text", "markdown", "rmarkdown", "html",
   # Extract and format test statistics
   coef <- tolower(strsplit(x$method, " ")[[1]][1])
   estimate <- fmt_stat(x$estimate, leading_zero = FALSE,
-                       negative_values = FALSE)
+                       negative_values = TRUE)
   df <- x$parameter
   p <- fmt_pval(x$p.value)
 
@@ -92,6 +103,16 @@ cor_apa <- function(x, format = c("text", "markdown", "rmarkdown", "html",
   text <- paste0(fmt_symb(coef, format),
                  if (coef == "pearson's") paste0("(", df, ") ") else " ",
                  estimate, ", ", fmt_symb("p", format), " ", p)
+
+  if (format == "plotmath")
+  {
+    # Convert text to an expression
+    text <- apa_to_plotmath(text, "(\\([0-9]+\\))", "( [<=] -?\\.[0-9]{2}, )",
+                            "( [<=>] \\.[0-9]{3})")
+
+    # Text is an expression, so we can't use `cat` to print it to the console
+    print <- FALSE
+  }
 
   if (print) cat(text) else text
 }
@@ -106,18 +127,18 @@ cor_apa <- function(x, format = c("text", "markdown", "rmarkdown", "html",
 #'   samples or one sample t-test (cohen's d is reported for these test).
 #' @param format character string specifying the output format. One of
 #'   \code{"text"}, \code{"markdown"}, \code{"rmarkdown"}, \code{html},
-#'   \code{"latex"} or \code{"docx"}.
+#'   \code{"latex"}, \code{"docx"} or \code{"plotmath"}.
 #' @param info logical indicating whether to print a message on the used test
 #'   (default is \code{FALSE})
 #' @param print logical indicating wheter to print the formatted output via
 #'   \code{cat} (\code{TRUE}, default) or return as character string.
 #' @examples
-#' t_apa(t_test(anx_lvl1 ~ group, height))
+#' t_apa(t_test(sens_seek ~ group, hquest))
 #'
 #' @export
 t_apa <- function(x, es = "cohens_d", format = c("text", "markdown",
                                                  "rmarkdown", "html", "latex",
-                                                 "docx"),
+                                                 "docx", "plotmath"),
                   info = FALSE, print = TRUE)
 {
   format <- match.arg(format)
@@ -159,6 +180,18 @@ t_apa <- function(x, es = "cohens_d", format = c("text", "markdown",
                  fmt_symb("p", format), " ", p, ", ", fmt_symb(es, format), " ",
                  d)
 
+  if (format == "plotmath")
+  {
+    # Convert text to an expression
+    text <- apa_to_plotmath(
+      text, "(\\([0-9]+\\.[0-9]*\\) [<=] -?[0-9]+\\.[0-9]{2}, )",
+      "( [<=>] \\.[0-9]{3}, )", "( [<=] -?[0-9]+\\.[0-9]{2}$)"
+    )
+
+    # Text is an expression, so we can't use `cat` to print it to the console
+    print <- FALSE
+  }
+
   if (print) cat(text) else text
 }
 
@@ -179,7 +212,7 @@ t_apa <- function(x, es = "cohens_d", format = c("text", "markdown",
 #'   or \code{"ges"}).
 #' @param format character string specifying the output format. One of
 #'   \code{"text"}, \code{"markdown"}, \code{"rmarkdown"}, \code{html},
-#'   \code{"latex"} or \code{"docx"}.
+#'   \code{"latex"}, \code{"docx"} or \code{"plotmath"}.
 #' @param info logical indicating whether to print a message on the used test
 #'   (default is \code{FALSE})
 #' @param print logical indicating wheter to print the formatted output via
@@ -205,7 +238,7 @@ anova_apa <- function(x, effect = NULL,
                                    "hf", "none"),
                       es = c("petasq", "pes", "getasq", "ges"),
                       format = c("text", "markdown", "rmarkdown", "html",
-                                 "latex", "docx"),
+                                 "latex", "docx", "plotmath"),
                       info = FALSE, print = TRUE)
 {
   sph_corr <- match.arg(sph_corr)
@@ -448,6 +481,19 @@ anova_apa_build <- function(tbl, effect, es_name, format, print)
                    tbl$statistic, ", ", fmt_symb("p", format), " ", tbl$p, ", ",
                    fmt_symb(es_name, format), " ", tbl$es)
 
+    # Check if 'effect' is specified, because we can't print a data frame with
+    # expressions.
+    if (format == "plotmath")
+    {
+      if (is.null(effect))
+      {
+        stop("Argument 'effect' must be specified if 'format' is \"plotmath\"")
+      }
+
+      # Set 'print' to FALSE for plotmath format
+      print <- FALSE
+    }
+
     # cat to console
     if (print)
     {
@@ -479,7 +525,17 @@ anova_apa_build <- function(tbl, effect, es_name, format, print)
       }
       else
       {
-        text[which(tbl$effect == effect)]
+        text <- text[which(tbl$effects == effect)]
+
+        if (format == "plotmath")
+        {
+          text <- apa_to_plotmath(
+            text, "(\\([0-9]+\\.?[0-9]*, [0-9]+\\.?[0-9]*\\) [<=] [0-9]+\\.[0-9]{2}, )",
+            "( [<=>] \\.[0-9]{3}, )", "( [<=] -?[0-9]*\\.[0-9]{2}$)"
+          )
+        }
+
+        text
       }
     }
   }
@@ -516,6 +572,35 @@ sys_open <- function(filename)
   }
 }
 
+# Convert APA text to an expression in R's plotmath syntax
+#' @importFrom stringr str_trim
+apa_to_plotmath <- function(text, ...)
+{
+  # Remove significance asterisks if there are any
+  text <- str_trim(gsub("\\**", "", text))
+
+  dots <- list(...)
+
+  # Enclose plain text in single quotes and add comma between plotmath syntax
+  # and plain text because we are going to put everything in a call to `paste`.
+  for (i in seq_along(dots))
+  {
+    # If it is not the last element to be replaced, add comma before and after
+    if (i < length(dots))
+    {
+      text <- sub(dots[[i]], ", '\\1', ", text)
+    }
+    else
+    {
+      text <- sub(dots[[i]], ", '\\1'", text)
+    }
+  }
+
+  text <- paste0("paste(", text, ")")
+
+  # Create the expression
+  parse(text = text)
+}
 
 #' APA Formatting for RMarkdown Reports
 #'

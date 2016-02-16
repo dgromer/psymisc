@@ -5,14 +5,14 @@
 \title{Report Correlation in APA style}
 \usage{
 cor_apa(x, format = c("text", "markdown", "rmarkdown", "html", "latex",
-  "docx"), info = FALSE, print = TRUE)
+  "docx", "plotmath"), info = FALSE, print = TRUE)
 }
 \arguments{
 \item{x}{a call to \code{cor.test}}
 
 \item{format}{character string specifying the output format. One of
 \code{"text"}, \code{"markdown"}, \code{"rmarkdown"}, \code{html},
-\code{"latex"} or \code{"docx"}.}
+\code{"latex"}, \code{"docx"} or \code{"plotmath"}.}
 
 \item{info}{logical indicating whether to print a message on the used test
 (default is \code{FALSE})}
@@ -24,7 +24,7 @@ cor_apa(x, format = c("text", "markdown", "rmarkdown", "html", "latex",
 Report Correlation in APA style
 }
 \examples{
-cor_apa(cor.test(~ anx_lvl1 + anx_lvl2, height))
+cor_apa(cor.test(~ acrophobia + sens_seek, hquest))
 
 }
 
