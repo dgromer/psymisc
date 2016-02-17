@@ -62,7 +62,7 @@ data <- data.frame(factor1 = rep(letters[1:2], each = 2),
                    factor2 = rep(letters[3:4], times = 2),
                    mean = c(10, 12, 20, 35),
                    se = c(2.4, 3, 2.9, 3.1))
-                   
+
 ggplot(data, aes(x = factor1, y = mean, fill = factor2)) +
   geom_bar(stat = "identity", position = "dodge") +
   geom_errorbar(aes(ymin = mean - se, ymax = mean + se), width = .5,

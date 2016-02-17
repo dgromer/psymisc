@@ -1,8 +1,9 @@
 #' Display significance in ggplot2 plots
-#' 
+#'
 #' A convenience function for displaying significance in ggplot2 plots
-#' 
-#' @importFrom ggplot2 aes_string annotate geom_segment
+#'
+#' @importFrom ggplot2 annotate
+#' @importFrom magrittr %<>%
 #' @param x_lo numeric, x position of left line ending
 #' @param x_hi numeric, x position of right line ending
 #' @param y_lo_left numeric, corresponding lower y position for \code{x_lo}
@@ -25,19 +26,19 @@
 #' @param color character, color of label and line elements.
 #' @examples
 #' library(ggplot2)
-#' 
+#'
 #' data <- data.frame(group = c("a", "b"), mean = c(20, 30), se = c(2.5, 3.0))
-#' 
+#'
 #' ggplot(data, aes(x = group, y = mean)) +
 #'   geom_bar(stat = "identity") +
 #'   geom_errorbar(aes(ymin = mean - se, ymax = mean + se), width = .5) +
 #'   plotsig(1, 2, 25, 35, 40)
-#' 
+#'
 #' data <- data.frame(factor1 = rep(letters[1:2], each = 2),
 #'                    factor2 = rep(letters[3:4], times = 2),
 #'                    mean = c(10, 12, 20, 35),
 #'                    se = c(2.4, 3, 2.9, 3.1))
-#'                    
+#'
 #' ggplot(data, aes(x = factor1, y = mean, fill = factor2)) +
 #'   geom_bar(stat = "identity", position = "dodge") +
 #'   geom_errorbar(aes(ymin = mean - se, ymax = mean + se), width = .5,
@@ -53,49 +54,41 @@ plotsig <- function(x_lo, x_hi, y_lo_left, y_lo_right, y_hi, label = "*",
                     x_hi_hi = NULL, span_y = 1, color = "black")
 {
   geoms <- list(
-    geom_segment(aes_string(x = x_lo, xend = x_lo, y = y_lo_left, yend = y_hi),
-                 size = line_size, color = color),
-    geom_segment(aes_string(x = x_lo, xend = x_hi, y = y_hi, yend = y_hi),
-                 size = line_size, color = color),
-    geom_segment(aes_string(x = x_hi, xend = x_hi, y = y_hi, yend = y_lo_right),
-                 size = line_size, color = color),
+    annotate("segment", x = x_lo, xend = x_lo, y = y_lo_left, yend = y_hi,
+             size = line_size, color = color),
+    annotate("segment", x = x_lo, xend = x_hi, y = y_hi, yend = y_hi,
+             size = line_size, color = color),
+    annotate("segment", x = x_hi, xend = x_hi, y = y_hi, yend = y_lo_right,
+             size = line_size, color = color),
     annotate("text", x = (x_lo + x_hi) / 2, y = y_hi + label_margin,
              label = label, size = text_size, color = color)
   )
-  
-  # Span across multiple value left
+
+  # Span across multiple value (left side)
   if (!is.null(x_lo_lo) && !is.null(x_lo_hi))
   {
-    geoms <- c(
-      geoms,
-      geom_segment(aes_string(x = x_lo_lo, xend = x_lo_lo,
-                              y = y_lo_left - span_y, yend = y_lo_left),
-                   size = line_size, color = color),
-      geom_segment(aes_string(x = x_lo_lo, xend = x_lo_hi,
-                              y = y_lo_left, yend = y_lo_left),
-                   size = line_size, color = color),
-      geom_segment(aes_string(x = x_lo_hi, xend = x_lo_hi,
-                              y = y_lo_left, yend = y_lo_left - span_y),
-                   size = line_size, color = color)
+    geoms %<>% c(
+      annotate("segment", x = x_lo_lo, xend = x_lo_lo, y = y_lo_left - span_y,
+               yend = y_lo_left, size = line_size, color = color),
+      annotate("segment", x = x_lo_lo, xend = x_lo_hi, y = y_lo_left,
+               yend = y_lo_left, size = line_size, color = color),
+      annotate("segment", x = x_lo_hi, xend = x_lo_hi, y = y_lo_left,
+               yend = y_lo_left - span_y, size = line_size, color = color)
     )
   }
-  
-  # Span across multiple values right
+
+  # Span across multiple values (right side)
   if (!is.null(x_hi_lo) && !is.null(x_hi_hi))
   {
-    geoms <- c(
-      geoms,
-      geom_segment(aes_string(x = x_hi_lo, xend = x_hi_lo,
-                              y = y_lo_right - span_y, yend = y_lo_right),
-                   size = line_size, color = color),
-      geom_segment(aes_string(x = x_hi_lo, xend = x_hi_hi,
-                              y = y_lo_right, yend = y_lo_right),
-                   size = line_size, color = color),
-      geom_segment(aes_string(x = x_hi_hi, xend = x_hi_hi,
-                              y = y_lo_right, yend = y_lo_right - span_y),
-                   size = line_size, color = color)
+    geoms %<>% c(
+      annotate("segment", x = x_hi_lo, xend = x_hi_lo, y = y_lo_right - span_y,
+               yend = y_lo_right, size = line_size, color = color),
+      annotate("segment", x = x_hi_lo, xend = x_hi_hi, y = y_lo_right,
+               yend = y_lo_right, size = line_size, color = color),
+      annotate("segment", x = x_hi_hi, xend = x_hi_hi, y = y_lo_right,
+               yend = y_lo_right - span_y, size = line_size, color = color)
     )
   }
-  
+
   geoms
 }
