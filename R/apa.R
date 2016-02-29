@@ -45,7 +45,11 @@ chisq_apa <- function(x, print_n = FALSE, format = c("text", "markdown",
   text <- paste0(fmt_symb("chisq", format), "(", df, n, ") ", statistic, ", ",
                  fmt_symb("p", format), " ", p)
 
-  if (format == "plotmath")
+  if (format == "latex")
+  {
+    text <- spaces_latex(text)
+  }
+  else if (format == "plotmath")
   {
     # Convert text to an expression
     text <- apa_to_plotmath(text, "(\\([0-9]+.*\\) [<=] [0-9]\\.[0-9]{2}, )",
@@ -104,7 +108,11 @@ cor_apa <- function(x, format = c("text", "markdown", "rmarkdown", "html",
                  if (coef == "pearson's") paste0("(", df, ") ") else " ",
                  estimate, ", ", fmt_symb("p", format), " ", p)
 
-  if (format == "plotmath")
+  if (format == "latex")
+  {
+    text <- spaces_latex(text)
+  }
+  else if (format == "plotmath")
   {
     # Convert text to an expression
     text <- apa_to_plotmath(text, "(\\([0-9]+\\))", "( [<=] -?\\.[0-9]{2}, )",
@@ -180,7 +188,11 @@ t_apa <- function(x, es = "cohens_d", format = c("text", "markdown",
                  fmt_symb("p", format), " ", p, ", ", fmt_symb(es, format), " ",
                  d)
 
-  if (format == "plotmath")
+  if (format == "latex")
+  {
+    text <- spaces_latex(text)
+  }
+  else if (format == "plotmath")
   {
     # Convert text to an expression
     text <- apa_to_plotmath(
@@ -408,6 +420,7 @@ anova_apa_ezanova <- function(x, effect, sph_corr, es, format, info, print)
 
 #' @importFrom dplyr data_frame
 #' @importFrom magrittr %>% %<>%
+#' @importFrom purrr map_chr
 #' @importFrom rmarkdown render
 anova_apa_build <- function(tbl, effect, es_name, format, print)
 {
@@ -480,6 +493,11 @@ anova_apa_build <- function(tbl, effect, es_name, format, print)
     text <- paste0(fmt_symb("F", format), "(", tbl$df_n, ", ", tbl$df_d, ") ",
                    tbl$statistic, ", ", fmt_symb("p", format), " ", tbl$p, ", ",
                    fmt_symb(es_name, format), " ", tbl$es)
+
+    if (format == "latex")
+    {
+      text <- map_chr(text, spaces_latex)
+    }
 
     # Check if 'effect' is specified, because we can't print a data frame with
     # expressions.

@@ -103,7 +103,7 @@ fmt_symb <- function(x, format)
   else if (format == "latex")
   {
     switch(x,
-           "chisq"       = "\\textit{chisq}",
+           "chisq"       = "$chi^2$",
            "cohens_d"    = "\\textit{d}",
            "F"           = "\\textit{F}",
            "getasq"      = "$\\eta^2_g$",
@@ -242,4 +242,16 @@ tbl_to_latex <- function(x, colnames = FALSE, rownames = FALSE)
   tbl <- map_if(tbl, !grepl("\\hline", tbl), paste, "\\\\")
 
   paste(tbl, collapse = " \n")
+}
+
+#' @importFrom magrittr %>%
+spaces_latex <- function(x)
+{
+  x %>%
+    # Non-breaking spaces around equal sign, smaller than and greater than
+    gsub(" ([<=>]) ", "~\\1~", .) %>%
+    # Non-breaking space between degrees of freedom in F-value
+    gsub("(\\([0-9]+.*,) ([0-9]+.*\\))", "\\1~\\2", .) %>%
+    # Non-breaking spaces if n is displayed in chi^2 parantheses
+    gsub("(, n)", ",~n", .)
 }
