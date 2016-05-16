@@ -9,6 +9,7 @@
 t_test <- function(x, ...) UseMethod("t_test")
 
 #' @rdname t_test
+#' @importFrom stats complete.cases na.omit setNames t.test
 #' @export
 t_test.default <- function(x, y = NULL,
                            alternative = c("two.sided", "less", "greater"),
@@ -51,6 +52,7 @@ t_test.default <- function(x, y = NULL,
 }
 
 #' @rdname t_test
+#' @importFrom stats model.frame na.omit setNames t.test
 #' @export
 t_test.formula <- function(formula, data, subset, na.action, ...)
 {

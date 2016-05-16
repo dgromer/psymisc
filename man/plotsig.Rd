@@ -7,7 +7,7 @@
 plotsig(x_lo, x_hi, y_lo_left, y_lo_right, y_hi, label = "*",
   label_margin = 0.5, text_size = 8, line_size = 0.3, x_lo_lo = NULL,
   x_lo_hi = NULL, x_hi_lo = NULL, x_hi_hi = NULL, span_y = 1,
-  color = "black")
+  color = "black", family = "")
 }
 \arguments{
 \item{x_lo}{numeric, x position of left line ending}
@@ -44,6 +44,8 @@ over multiple values, then x_hi_lo defines the leftmost position.}
 \code{x_lo_lo}/\code{x_lo_hi} and/or \code{x_hi_lo}/\code{x_hi_hi}}
 
 \item{color}{character, color of label and line elements.}
+
+\item{family}{character, font family}
 }
 \description{
 A convenience function for displaying significance in ggplot2 plots

@@ -1,5 +1,6 @@
 #' Margin of Error
 #'
+#' @importFrom stats qt
 #' @param x a numeric vector or an \R object which is coercible to one by
 #'   \code{as.vector(x, "numeric")}
 #' @param quantile numeric, quantile of the t-distribution. Default is

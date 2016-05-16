@@ -42,6 +42,8 @@ Report ANOVA in APA style
 }
 \examples{
 \dontrun{
+library(magrittr)
+
 # Using the ez package
 library(ez)
 ezANOVA(height, dv = anxiety, wid = id, within = level, between = group,

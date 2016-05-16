@@ -5,6 +5,7 @@
 #'
 #' @importFrom dplyr left_join rename_
 #' @importFrom magrittr %<>% %>%
+#' @importFrom stats setNames
 #' @importFrom tidyr complete_
 #' @param .data a data frame containing the variables in the formula
 #'   \code{formula}.
@@ -74,6 +75,7 @@ fplot <- function(.data, formula, geom = c("bar", "line", "boxplot"),
 
 #' @importFrom ggplot2 aes aes_string facet_grid geom_bar geom_errorbar ggplot
 #'   labs position_dodge theme_bw theme_classic
+#' @importFrom stats as.formula
 fplot_bar <- function(x, dv, vars)
 {
   if (length(vars) == 1)
@@ -122,6 +124,7 @@ fplot_bar <- function(x, dv, vars)
 
 #' @importFrom ggplot2 aes aes_string facet_grid geom_errorbar geom_line
 #'   geom_point ggplot labs theme_bw theme_classic
+#' @importFrom stats as.formula
 fplot_line <- function(x, dv, vars)
 {
   if (length(vars) == 1)
@@ -178,6 +181,7 @@ fplot_line <- function(x, dv, vars)
 
 #' @importFrom ggplot2 aes_string facet_grid geom_boxplot ggplot labs theme_bw
 #'   theme_classic
+#' @importFrom stats as.formula
 fplot_boxplot <- function(x, dv, vars)
 {
   # Convert vars to factors

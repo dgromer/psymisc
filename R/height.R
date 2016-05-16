@@ -10,8 +10,7 @@
 #' \describe{
 #'   \item{id}{Subject identifier}
 #'   \item{group}{Between subject factor (CAVE vs. HMD vs. monitor)}
-#'   \item{anx_lvl1}{Subjective anxiety rating at 5 meters height}
-#'   \item{anx_lvl2}{Subjective anxiety rating at 20 meters height}
-#'   \item{anx_lvl3}{Subjective anxiety rating at 50 meters height}
+#'   \item{level}{Within subjects factor (5 m, 20 m, 50 m)}
+#'   \item{anxiety}{Subjective anxiety rating}
 #' }
 "height"

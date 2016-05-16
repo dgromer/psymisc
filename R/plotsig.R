@@ -24,6 +24,7 @@
 #' @param span_y numeric, y length of the bracket for
 #'   \code{x_lo_lo}/\code{x_lo_hi} and/or \code{x_hi_lo}/\code{x_hi_hi}
 #' @param color character, color of label and line elements.
+#' @param family character, font family
 #' @examples
 #' library(ggplot2)
 #'
@@ -51,7 +52,7 @@
 plotsig <- function(x_lo, x_hi, y_lo_left, y_lo_right, y_hi, label = "*",
                     label_margin = .5, text_size = 8, line_size = .3,
                     x_lo_lo = NULL, x_lo_hi = NULL, x_hi_lo = NULL,
-                    x_hi_hi = NULL, span_y = 1, color = "black")
+                    x_hi_hi = NULL, span_y = 1, color = "black", family = "")
 {
   geoms <- list(
     annotate("segment", x = x_lo, xend = x_lo, y = y_lo_left, yend = y_hi,
@@ -61,7 +62,7 @@ plotsig <- function(x_lo, x_hi, y_lo_left, y_lo_right, y_hi, label = "*",
     annotate("segment", x = x_hi, xend = x_hi, y = y_hi, yend = y_lo_right,
              size = line_size, color = color),
     annotate("text", x = (x_lo + x_hi) / 2, y = y_hi + label_margin,
-             label = label, size = text_size, color = color)
+             label = label, size = text_size, color = color, family = family)
   )
 
   # Span across multiple value (left side)

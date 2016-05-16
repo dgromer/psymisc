@@ -38,6 +38,9 @@ stats_table <- function(.data, iv, dvs, funs = c("mean", "sd"), paired = FALSE,
                         id, sig = FALSE,
                         format = c("text", "html", "latex"), ...)
 {
+  # TODO: parameter for overwriting variable names for printing
+  # TODO: parameter for overwriting group names for printing
+
   format <- match.arg(format)
 
   # Convert iv to character if it is a name
@@ -62,7 +65,7 @@ stats_table <- function(.data, iv, dvs, funs = c("mean", "sd"), paired = FALSE,
   # reformat this with no decimal places
   if ("n" %in% funs)
   {
-    tbl[, grep("^n_", names(tbl))] %<>% lapply(function(.) round(as.numeric(.)))
+    tbl[, grep("^n_", names(tbl))] %<>% map(~ round(as.numeric(.x)))
   }
 
   if (format == "html")
@@ -70,6 +73,8 @@ stats_table <- function(.data, iv, dvs, funs = c("mean", "sd"), paired = FALSE,
     # Remove group names from statistics, e.g. "mean_group" to "mean", since
     # group names go to their own lines
     header <- gsub("_.*$", "", names(tbl))[-1]
+
+    tbl[] <- map(tbl, ~ sub("<(.*)", "&lt;\\1", .x))
 
     # Use htmlTable::htmlTable
     htmlTable(
@@ -85,12 +90,17 @@ stats_table <- function(.data, iv, dvs, funs = c("mean", "sd"), paired = FALSE,
   {
     header <- gsub("_.*$", "", names(tbl))[-1]
 
+    # TODO: replace _ with \_
+    # TODO: make stats_table_latex function? (similar for html)
+    # TODO: center parameter row with \cmidrule{1}{c}{text} for each element
+    # TODO: option for fill with whitespaces for better alignment
+
     cat("\\begin{tabularx}{\\textwidth}{Xrrrrrrr}\n\\hline\n",
         paste0(" & \\multicolumn{2}{c}{", group_names, "}"), " & & & \\\\\n",
         "\\cmidrule(lr){2-3}\\cmidrule(lr){4-5}\n",
         " & ", paste(paste0("\\textit{", header, "}"), collapse = " & "),
         " \\\\\n",
-        tbl_to_latex(tbl), " \\\\\n",
+        tbl_to_latex(tbl), " \\\n",
         "\\hline\n\\end{tabularx}", sep = "")
   }
   else
@@ -120,6 +130,7 @@ stats_table_header <- function(iv, funs, sig)
 #' @importFrom afex aov_ez
 #' @importFrom dplyr last
 #' @importFrom magrittr %>%
+#' @importFrom stats as.formula setNames
 #' @importFrom stringr str_extract str_extract_all
 stats_table_row <- function(header, group_names, .data, dv, iv, funs, paired,
                             id, sig, ...)
@@ -185,6 +196,7 @@ stats_table_row <- function(header, group_names, .data, dv, iv, funs, paired,
 }
 
 #' @importFrom magrittr %>%
+#' @importFrom stats as.formula
 stats_table_descriptives <- function(.data, dv, iv, funs)
 {
   # Calculate descriptive statistics

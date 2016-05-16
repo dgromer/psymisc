@@ -2,6 +2,7 @@
 #'
 #' Calculate Cohen's d from raw data or a call to \code{t_test}/\code{t.test}.
 #'
+#' @importFrom stats sd
 #' @param x a (non-empty) numeric vector of data values.
 #' @param y an optional (non-empty) numeric vector of data values.
 #' @param paired a logical indicating whether Cohen's d should be calculated for
@@ -104,6 +105,7 @@ cohens_d.data.frame <- function(data, dv, iv, paired = FALSE,
 }
 
 #' @rdname cohens_d
+#' @importFrom stats model.frame setNames
 #' @export
 cohens_d.formula <- function(formula, data, paired = FALSE,
                              corr = c("none", "hedges_g", "glass_delta"),
@@ -307,6 +309,7 @@ petasq <- function(x, effect)
   }
 }
 
+#' @importFrom stats anova
 petasq_aov <- function(x, effect)
 {
   x <- anova(x)

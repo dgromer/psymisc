@@ -4,6 +4,7 @@
 #' @importFrom magrittr %>% %<>%
 #' @importFrom purrr at_depth
 #' @importFrom stringr str_trim
+#' @importFrom stats cor cor.test p.adjust
 #' @param data a data frame
 #' @param adjust character string indicating the method used for adjusting
 #'   p-values for muliple comparisons. See \link{p.adjust.methods} for available
@@ -77,6 +78,9 @@ cor_table <- function(data, adjust = NULL, labels = names(data),
 
   if (format == "html")
   {
+    # Replace cells with whitespaces-only or dashes with empty strings
+    tbl[] <- map(tbl, ~ ifelse(grepl("(\\s+-\\s+)|(^\\s+$)", .x), "", .x))
+
     htmlTable(tbl, header = labels, rnames = labels)
   }
   else if (format == "latex")

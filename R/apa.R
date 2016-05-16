@@ -231,6 +231,8 @@ t_apa <- function(x, es = "cohens_d", format = c("text", "markdown",
 #'   \code{cat} (\code{TRUE}, default) or return as a data frame.
 #' @examples
 #' \dontrun{
+#' library(magrittr)
+#'
 #' # Using the ez package
 #' library(ez)
 #' ezANOVA(height, dv = anxiety, wid = id, within = level, between = group,

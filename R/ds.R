@@ -4,6 +4,7 @@
 #' statistics.
 #'
 #' @importFrom dplyr group_by_ summarise_ ungroup
+#' @importFrom stats as.formula setNames
 #' @param .data a data frame containing the variables in the formula
 #'   \code{formula}.
 #' @param formula a formula in the form \code{lhs ~ rhs} where \code{lhs} is a
